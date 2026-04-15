@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Quotation Creator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
+*{font-family:'Inter',sans-serif;box-sizing:border-box;margin:0;padding:0}
+body{background:#f8fafc;color:#1e293b;overflow:hidden}
+
+/* Japandi UI font override — headings + brand use Cormorant when theme-japandi */
+body.theme-japandi .brand-title,
+body.theme-japandi .sec-title,
+body.theme-japandi .lcard-model,
+body.theme-japandi .modal h3{font-family:'Cormorant Garamond',serif;letter-spacing:.01em}
+
+/* ── Color Theme Variables ── */
+:root {
+  --theme-primary: #0f172a;
+  --theme-primary-hover: #1e293b;
+  --theme-accent: #0f172a;
+  --theme-accent-light: #f1f5f9;
+  --theme-badge-bg: #0f172a;
+  --theme-badge-text: #ffffff;
+  --theme-table-head: #0f172a;
+  --theme-aw-head: #334155;
+  --theme-series-default: #1e293b;
+  --theme-tag-bg: #f1f5f9;
+  --theme-tag-text: #475569;
+  --theme-total-border: #0f172a;
+  --theme-total-text: #0f172a;
+  --theme-aw-total-border: #334155;
+}
+
+/* Theme 1: Industrial Navy – Deep Blue & Steel */
+body.theme-industrial { --theme-primary:#1B365D; --theme-primary-hover:#142848; --theme-accent:#708090; --theme-accent-light:#E6F0FA; --theme-badge-bg:#1B365D; --theme-badge-text:#fff; --theme-table-head:#1B365D; --theme-aw-head:#708090; --theme-series-default:#1B365D; --theme-tag-bg:#E6F0FA; --theme-tag-text:#1B365D; --theme-total-border:#1B365D; --theme-total-text:#1B365D; --theme-aw-total-border:#708090; }
+/* Theme 2: Japandi – Warm Charcoal & Stone */
+body.theme-japandi { --theme-primary:#2C2C2C; --theme-primary-hover:#1a1a1a; --theme-accent:#8B8176; --theme-accent-light:#F2EDE6; --theme-badge-bg:#2C2C2C; --theme-badge-text:#F5F0E8; --theme-table-head:#2C2C2C; --theme-aw-head:#8B8176; --theme-series-default:#2C2C2C; --theme-tag-bg:#EDE8E0; --theme-tag-text:#2C2C2C; --theme-total-border:#2C2C2C; --theme-total-text:#2C2C2C; --theme-aw-total-border:#8B8176; background:#FAF7F2; }
+
+/* Apply theme to UI elements */
+.btn-dark,.btn-icon{background:var(--theme-primary)!important}
+.btn-dark:hover,.btn-icon:hover{background:var(--theme-primary-hover)!important}
+.tab-btn.active::after{background:var(--theme-primary)!important}
+.tab-btn.active{color:var(--theme-primary)!important}
+.toggle-pill button.active{background:var(--theme-primary)!important}
+.mob-nav-btn{background:var(--theme-primary)!important}
+.pdf-btn{background:linear-gradient(135deg,var(--theme-primary),var(--theme-primary-hover))!important}
+
+/* Theme swatches */
+.theme-swatches{display:flex;gap:8px;flex-wrap:wrap}
+.theme-swatch{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative;flex-shrink:0}
+.theme-swatch.active{border-color:#1e293b;box-shadow:0 0 0 2px #fff,0 0 0 4px #1e293b}
+.theme-swatch:hover{transform:scale(1.12)}
+.theme-swatch-label{font-size:10px;color:#94a3b8;text-align:center;margin-top:4px}
+.theme-option{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+
+/* Logo upload area */
+.logo-upload-area{border:1.5px dashed #cbd5e1;border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;text-align:center}
+.logo-upload-area:hover{border-color:#94a3b8;background:#f8fafc}
+.logo-preview-wrap{display:flex;align-items:center;gap:12px}
+.logo-preview-img{max-height:60px;max-width:160px;object-fit:contain;border-radius:6px;border:1px solid #e2e8f0}
+.logo-remove-btn{background:none;border:1px solid #fca5a5;color:#ef4444;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
+.logo-remove-btn:hover{background:#fef2f2}
+.tone-btn{padding:5px 11px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.tone-btn:hover{border-color:#94a3b8;color:#334155}
+.tone-btn.active{background:var(--theme-primary);border-color:var(--theme-primary);color:#fff}
+.validity-btn{padding:5px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
+.validity-btn:hover{border-color:#94a3b8;color:#334155}
+.validity-btn.active{background:var(--theme-primary);border-color:var(--theme-primary);color:#fff}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#f8f8f8}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+
+.app{display:flex;height:100vh}
+#leftPanel{height:100vh;display:flex;flex-direction:column;min-width:280px;max-width:680px;width:380px;flex-shrink:0;background:#fff;border-right:1px solid #f1f5f9}
+#rightPanel{height:100vh;overflow-y:auto;background:#d1d5db;flex:1;min-width:300px;display:flex;flex-direction:column;align-items:center}
+#resizer{width:5px;cursor:col-resize;background:#e2e8f0;flex-shrink:0;transition:background .15s;position:relative;z-index:10}
+#resizer:hover,#resizer.dragging{background:#94a3b8}
+#resizer::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);height:32px;width:3px;border-left:1px solid #94a3b8;border-right:1px solid #94a3b8;opacity:.5}
+
+#topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid #f1f5f9;flex-shrink:0}
+.brand-sub{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6B7280;line-height:1;margin-bottom:3px}
+.brand-title{font-size:15px;font-weight:700;color:#0f172a;line-height:1}
+.topbar-actions{display:flex;align-items:center;gap:6px}
+.tb-btn{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#374151;background:#f1f5f9;border:none;padding:5px 8px;border-radius:8px;cursor:pointer;transition:background .15s;font-family:inherit}
+.tb-btn:hover{background:#e2e8f0}
+.tb-btn svg{width:14px;height:14px}
+
+.tab-bar{display:flex;border-bottom:1px solid #f1f5f9;background:#fff;flex-shrink:0}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 4px 8px;cursor:pointer;border:none;background:transparent;color:#6B7280;transition:color .15s;position:relative;font-size:9px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;font-family:inherit}
+.tab-btn svg{width:20px;height:20px;flex-shrink:0}
+.tab-btn.active{color:#0f172a}
+.tab-btn.active::after{content:'';position:absolute;bottom:0;left:12px;right:12px;height:2px;background:#0f172a;border-radius:2px 2px 0 0}
+.tab-panel{display:none;flex:1;overflow-y:auto;padding:20px 20px 24px}
+.tab-panel.active{display:block}
+
+.inp{width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:6px 12px;font-size:14px;outline:none;background:#fff;color:#1e293b;font-family:inherit}
+.inp:focus{box-shadow:0 0 0 2px #cbd5e1}
+textarea.inp{resize:none}
+.sec{margin-bottom:20px}
+.sec-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:10px}
+.vy2>*+*{margin-top:8px}
+.vy3>*+*{margin-top:12px}
+.lbl{font-size:11px;color:#4B5563;display:block;margin-bottom:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row{display:flex;align-items:center;gap:8px}
+.f1{flex:1}
+.btn-dark{width:100%;border-radius:10px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;padding:10px;border:none;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}
+.btn-dark:hover{background:#1e293b}
+.btn-icon{width:32px;height:32px;border-radius:8px;background:#0f172a;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.btn-icon:hover{background:#334155}
+.btn-icon svg{width:16px;height:16px}
+.btn-outline{border-radius:10px;border:1px solid #e2e8f0;color:#64748b;font-size:13px;font-weight:600;padding:10px 16px;background:#fff;cursor:pointer;transition:background .15s;font-family:inherit}
+.btn-outline:hover{background:#f8fafc}
+.btn-dashed{width:100%;border-radius:8px;border:1px dashed #cbd5e1;color:#64748b;font-size:11px;font-weight:600;padding:8px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;font-family:inherit}
+.btn-dashed:hover{border-color:#64748b;color:#334155}
+.btn-dashed svg,.btn-dark svg{width:16px;height:16px}
+.btn-xred{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:2px;transition:color .15s}
+.btn-xred:hover{color:#f87171}
+.btn-xblue{background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;transition:color .15s}
+.btn-xblue:hover{color:#3b82f6}
+.btn-xred svg,.btn-xblue svg{width:14px;height:14px}
+.card{background:#f8fafc;border:1px solid #f1f5f9;border-radius:12px;padding:12px}
+.card-dash{border-radius:12px;border:1px dashed #e2e8f0;padding:12px;transition:border-color .15s}
+.card-dash:hover{border-color:#94a3b8}
+.card-hint{font-size:11px;color:#4B5563;margin-bottom:8px}
+.file-lbl{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:11px;font-weight:500;color:#374151;background:#f8fafc;border-radius:8px;padding:7px 12px;transition:background .15s;font-family:inherit}
+.file-lbl:hover{background:#f1f5f9}
+.file-lbl svg{width:16px;height:16px;flex-shrink:0}
+.st-ok{font-size:11px;color:#16a34a;font-weight:500;margin-top:4px;display:none}
+.st-ok.on{display:block}
+.toggle-pill{display:flex;background:#f1f5f9;border-radius:9999px;padding:3px;gap:2px}
+.toggle-pill button{flex:1;padding:4px 10px;border-radius:9999px;font-size:11px;font-weight:600;transition:all .2s;color:#4B5563;border:none;cursor:pointer;background:transparent;font-family:inherit}
+.toggle-pill button.active{background:#1e293b;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:#e2e8f0;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#1e293b;cursor:pointer}
+
+/* A4 page — used in desktop right panel AND mobile preview */
+.a4-page{background:#fff;width:794px;min-height:1123px;flex-shrink:0;padding:56px 64px;box-shadow:0 4px 24px rgba(0,0,0,.13);position:relative;display:flex;flex-direction:column}
+.spec-table{width:100%;border-collapse:collapse}
+.spec-table td{padding:5px 10px;vertical-align:top;border-bottom:1px solid #eef0f3}
+.spec-table tr:nth-child(even) td{background:#f4f6f9}
+.spec-table tr:last-child td{border-bottom:none}
+.spec-table td:first-child{color:#64748b;width:46%;white-space:nowrap;font-size:11px}
+.spec-table td:last-child{color:#1e293b;font-weight:600}
+
+/* Desktop right panel */
+#pagesWrapper{width:100%;flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:32px 16px;gap:32px}
+#pageNav{position:sticky;bottom:0;background:rgba(184,190,199,.8);backdrop-filter:blur(6px);width:100%;display:flex;align-items:center;justify-content:center;gap:16px;padding:10px;z-index:20}
+.nav-btn{display:flex;align-items:center;gap:4px;padding:6px 16px;border-radius:8px;background:rgba(255,255,255,.8);color:#334155;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:background .15s;font-family:inherit}
+.nav-btn:hover{background:#fff}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.nav-btn svg{width:16px;height:16px}
+#pageIndicator{font-size:13px;font-weight:600;color:#334155;min-width:90px;text-align:center}
+
+/* Mobile preview scaler */
+#mobilePreviewWrapper{display:none;flex-direction:column;gap:20px;align-items:center;padding:16px 0 24px}
+#mobilePageNav{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 0 4px}
+.mob-nav-btn{display:flex;align-items:center;gap:4px;padding:6px 14px;border-radius:8px;background:#0f172a;color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
+.mob-nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.mob-nav-btn svg{width:14px;height:14px}
+#mobPageIndicator{font-size:12px;font-weight:600;color:#334155;min-width:80px;text-align:center}
+.page-scaler{transform-origin:top center;display:block}
+
+/* Modals */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100;align-items:center;justify-content:center}
+.modal-bg.on{display:flex}
+.modal{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);padding:28px}
+.modal h3{font-size:15px;font-weight:700;color:#0f172a}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mx{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:2px;transition:color .15s}
+.mx:hover{color:#64748b}
+.mx svg{width:20px;height:20px}
+.m-actions{display:flex;gap:8px;margin-top:12px}
+.m-err{font-size:11px;color:#ef4444;margin-top:4px;display:none}
+.m-err.on{display:block}
+.saved-list{max-height:160px;overflow-y:auto;margin-bottom:4px}
+.saved-item{display:flex;align-items:center;gap:8px;border-radius:8px;border:1px solid #f1f5f9;background:#f8fafc;padding:8px 12px;margin-bottom:4px}
+.saved-item span{flex:1;font-size:11px;font-weight:500;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.edit-lbl{font-size:11px;font-weight:600;color:#3b82f6;margin-bottom:4px;display:none}
+.edit-lbl.on{display:block}
+.bdr-t{border-top:1px solid #f1f5f9;padding-top:12px;margin-top:4px}
+.lcard{background:#f8fafc;border:1px solid #f1f5f9;border-radius:12px;padding:12px}
+.lcard-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.lcard-model{font-size:13px;font-weight:600;color:#1e293b}
+.lcard-sub{font-size:11px;color:#6B7280;margin-top:1px}
+.lcard-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:4px}
+.lt-pair{display:flex;align-items:center;gap:4px}
+.lt-pair input{width:52px;text-align:center;font-size:11px}
+.lt-pair span{font-size:11px;color:#6B7280}
+.no-items{font-size:11px;color:#6B7280;text-align:center;padding:16px 0}
+.lcard[draggable]{cursor:default}
+.lcard.drag-over{border:1px solid #f1f5f9}
+.lcard.dragging{opacity:1}
+.move-btns{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.move-btn{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;border:1px solid #e2e8f0;background:#f8fafc;color:#6B7280;cursor:pointer;transition:all .15s;flex-shrink:0}
+.move-btn:hover:not(:disabled){background:#e2e8f0;color:#334155;border-color:#cbd5e1}
+.move-btn:disabled{opacity:.25;cursor:not-allowed}
+.move-btn svg{width:12px;height:12px}
+/* Smart markup info box — green "deal" styling */
+.smart-markup-box{margin-top:6px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px}
+.smart-markup-badge{display:inline-flex;align-items:center;gap:4px;background:#16a34a;color:#fff;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin-bottom:6px}
+.sm-preset-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.sm-preset-btn{padding:3px 9px;border-radius:999px;border:1px solid #bbf7d0;background:#fff;font-size:10px;font-weight:600;color:#16a34a;cursor:pointer;transition:all .15s;font-family:inherit}
+.sm-preset-btn:hover,.sm-preset-btn.active{background:#16a34a;color:#fff;border-color:#16a34a}
+
+/* Preview order list */
+.order-row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;border:1px solid #f1f5f9;background:#fff;margin-bottom:4px;transition:background .1s,box-shadow .1s;user-select:none}
+.order-row.drag-over-row{border-color:#94a3b8;background:#f8fafc}
+.order-row.dragging-row{opacity:.4}
+.order-row-num{font-size:10px;font-weight:700;color:#cbd5e1;width:16px;text-align:center;flex-shrink:0}
+.order-row-info{flex:1;min-width:0}
+.order-row-model{font-size:12px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-row-series{font-size:10px;color:#94a3b8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-row-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.order-move-btn{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;border:1px solid #e2e8f0;background:#f8fafc;color:#94a3b8;cursor:pointer;transition:all .15s}
+.order-move-btn:hover:not(:disabled){background:#e2e8f0;color:#334155}
+.order-move-btn:disabled{opacity:.2;cursor:not-allowed}
+.order-move-btn svg{width:11px;height:11px}
+.order-drag-handle{display:flex;align-items:center;justify-content:center;width:20px;height:20px;color:#cbd5e1;cursor:grab;border-radius:5px;transition:color .15s}
+.order-drag-handle:hover{color:#64748b}
+.order-drag-handle svg{width:14px;height:14px}
+
+.disc-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sum-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.sum-row .l{color:#94a3b8}
+.sum-row .v{font-weight:600;color:#334155}
+.sum-tot{display:flex;justify-content:space-between;font-size:11px;border-top:1px solid #e2e8f0;padding-top:6px;margin-top:6px}
+.sum-tot .l{font-weight:600;color:#64748b}
+.sum-tot .v{font-weight:700;color:#0f172a}
+.pdf-btn{width:100%;border-radius:12px;background:linear-gradient(135deg,#1e293b,#475569);color:#fff;font-size:13px;font-weight:600;padding:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;transition:opacity .15s}
+.pdf-btn:disabled{opacity:.6;cursor:not-allowed}
+.pdf-btn svg{width:16px;height:16px}
+.reset-opt{width:100%;border-radius:10px;font-size:13px;font-weight:600;padding:10px;border:none;cursor:pointer;text-align:left;font-family:inherit;display:block}
+.reset-opt.dk{background:#0f172a;color:#fff;margin-bottom:8px}
+.reset-opt.dk:hover{background:#1e293b}
+.reset-opt.lt{background:#fff;border:1px solid #e2e8f0;color:#334155}
+.reset-opt.lt:hover{background:#f8fafc}
+.reset-opt small{display:block;font-size:10px;font-weight:400;margin-top:2px;opacity:.6}
+.m-cancel{width:100%;font-size:11px;color:#94a3b8;background:none;border:none;cursor:pointer;padding:6px;margin-top:8px;font-family:inherit}
+.m-cancel:hover{color:#475569}
+
+/* ── Mobile overrides ── */
+@media(max-width:640px){
+  body{overflow:auto}
+  .app{flex-direction:column;height:auto;min-height:100vh}
+  #leftPanel{width:100%!important;max-width:100%;min-width:0;height:auto;border-right:none;flex-shrink:0}
+  #rightPanel{display:none!important}
+  #resizer{display:none!important}
+  .tab-panel{padding:16px 16px 24px}
+  /* show mobile preview wrapper inside tab-preview */
+  #mobilePreviewWrapper{display:flex}
+  /* fix modal width on small screens */
+  .modal{width:calc(100vw - 32px)!important;max-width:480px}
+}
+
+/* ── Mitsumori Auth Screen ── */
+#authLoading {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  background: #FAF7F2;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.auth-spinner {
+  width: 32px; height: 32px;
+  border: 3px solid #E8E0D6;
+  border-top-color: #2C2C2C;
+  border-radius: 50%;
+  animation: auth-spin 0.7s linear infinite;
+}
+@keyframes auth-spin { to { transform: rotate(360deg); } }
+
+#authScreen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #FAF7F2;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  font-family: 'Inter', sans-serif;
+}
+.auth-card {
+  background: #fff;
+  border: 1px solid #E8E0D6;
+  border-radius: 20px;
+  padding: 52px 48px 44px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 8px 40px rgba(44,44,44,0.08);
+}
+.auth-logo-area {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.auth-app-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.auth-app-sub {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8B8176;
+}
+.auth-field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+.auth-input {
+  width: 100%;
+  border: 1.5px solid #DDD6CE;
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  background: #FDFCFB;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 16px;
+}
+.auth-input:focus {
+  border-color: #2C2C2C;
+  box-shadow: 0 0 0 3px rgba(44,44,44,0.08);
+}
+.auth-input::placeholder {
+  color: #B0A898;
+}
+.auth-btn {
+  width: 100%;
+  background: #2C2C2C;
+  color: #FAF7F2;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: 'Inter', sans-serif;
+  margin-top: 4px;
+  letter-spacing: 0.01em;
+}
+.auth-btn:hover { background: #1a1a1a; }
+.auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.auth-error {
+  display: none;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #B91C1C;
+  margin-top: 12px;
+}
+.auth-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #B0A898;
+  margin-top: 28px;
+  letter-spacing: 0.05em;
+}
+/* User badge in topbar */
+#userBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6B7280;
+  padding: 4px 10px;
+  background: #F2EDE6;
+  border-radius: 999px;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
+
+<!-- Firebase Auth -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDIkJgs8AH04gESfwPAKf1p3ZfUcyCh28M",
+    authDomain: "qmaker-e2033.firebaseapp.com",
+    projectId: "qmaker-e2033",
+    storageBucket: "qmaker-e2033.firebasestorage.app",
+    messagingSenderId: "21900320955",
+    appId: "1:21900320955:web:178fe6e0d6a496a2af899e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Username → email mapping (username@mitsumori.app)
+  const DOMAIN = '@mitsumori.app';
+
+  function showLogin() {
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('appWrapper').style.display = 'none';
+    document.getElementById('authLoading').style.display = 'none';
+  }
+  function showApp(user) {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('appWrapper').style.display = '';
+    document.getElementById('authLoading').style.display = 'none';
+    // Show username in topbar
+    const uname = user.email.replace(DOMAIN, '');
+    const badge = document.getElementById('userBadge');
+    if (badge) badge.textContent = uname;
+  }
+  function showLoading() {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('appWrapper').style.display = 'none';
+    document.getElementById('authLoading').style.display = 'flex';
+  }
+
+  // Auth state listener
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      showApp(user);
+    } else {
+      showLogin();
+    }
+  });
+
+  // Login handler — exposed globally
+  window._mitLogin = async function() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errEl = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+
+    if (!username || !password) {
+      errEl.textContent = 'Please enter your username and password.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    errEl.style.display = 'none';
+
+    try {
+      await signInWithEmailAndPassword(auth, username + DOMAIN, password);
+      // onAuthStateChanged will handle the rest
+    } catch(e) {
+      let msg = 'Incorrect username or password.';
+      if (e.code === 'auth/too-many-requests') msg = 'Too many attempts. Please try again later.';
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  };
+
+  // Logout handler — exposed globally
+  window._mitLogout = async function() {
+    await signOut(auth);
+  };
+
+  // Allow Enter key on login form
+  document.addEventListener('DOMContentLoaded', () => {
+    ['loginUsername','loginPassword'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('keydown', e => { if(e.key==='Enter') window._mitLogin(); });
+    });
+  });
+</script>
+</head>
+<body>
+
+<!-- Loading screen -->
+<div id="authLoading">
+  <div class="auth-spinner"></div>
+</div>
+
+<!-- Login screen -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo-area">
+      <div class="auth-app-name">見積もり</div>
+      <div class="auth-app-sub">Mitsumori &nbsp;·&nbsp; Quotation Creator</div>
+    </div>
+    <label class="auth-field-label" for="loginUsername">Username</label>
+    <input id="loginUsername" class="auth-input" type="text" placeholder="Enter your username" autocomplete="username" autocapitalize="off" spellcheck="false"/>
+    <label class="auth-field-label" for="loginPassword">Password</label>
+    <input id="loginPassword" class="auth-input" type="password" placeholder="Enter your password" autocomplete="current-password"/>
+    <button id="loginBtn" class="auth-btn" onclick="window._mitLogin()">Sign In</button>
+    <div id="loginError" class="auth-error"></div>
+    <div class="auth-footer">AUTHORISED ACCESS ONLY</div>
+  </div>
+</div>
+
+<!-- App wrapper (hidden until authenticated) -->
+<div id="appWrapper" style="display:none">
+
+<div id="modal" class="modal-bg">
+  <div class="modal" style="width:320px">
+    <h3 style="margin-bottom:8px">New Quotation</h3>
+    <p style="font-size:13px;color:#64748b;margin-bottom:16px">What would you like to reset?</p>
+    <button onclick="resetAll()" class="reset-opt dk">Reset Everything<small>Clears all data including company info &amp; libraries</small></button>
+    <button onclick="resetQuotation()" class="reset-opt lt">Reset Quotation Only<small>Keeps your company info &amp; imported libraries</small></button>
+    <button onclick="closeModal()" class="m-cancel">Cancel</button>
+  </div>
+</div>
+<div id="custModal" class="modal-bg">
+  <div class="modal" style="width:400px">
+    <div class="mhdr"><h3 id="custModalTitle">Add Customer</h3><button onclick="closeCustModal()" class="mx"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div class="vy2"><input id="newCustName" placeholder="Contact Name *" class="inp"/><input id="newCustCompany" placeholder="Company" class="inp"/><input id="newCustPhone" placeholder="Contact Number" class="inp"/><input id="newCustEmail" placeholder="Email" class="inp"/><textarea id="newCustAddress" placeholder="Address" rows="2" class="inp"></textarea></div>
+    <div class="m-actions"><button onclick="saveCustModal()" class="btn-dark" style="flex:1">Save Customer</button><button onclick="closeCustModal()" class="btn-outline">Cancel</button></div>
+    <p id="custModalErr" class="m-err">Contact name is required.</p>
+  </div>
+</div>
+<div id="termsModal" class="modal-bg">
+  <div class="modal" style="width:500px">
+    <div class="mhdr"><h3>T&amp;C Templates</h3><button onclick="closeTermsModal()" class="mx"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div id="termsSavedList" class="saved-list"></div>
+    <div class="bdr-t vy2"><p id="termsEditingLabel" class="edit-lbl"></p><input id="termsTemplateName" placeholder="Template name *" class="inp"/><textarea id="termsTemplateBody" placeholder="Terms &amp; conditions…" rows="7" class="inp"></textarea></div>
+    <div class="m-actions"><button onclick="saveTermsTemplate()" class="btn-dark" style="flex:1">Save Template</button><button id="termsCancelEditBtn" onclick="cancelTermsEdit()" class="btn-outline" style="display:none">Cancel Edit</button><button onclick="closeTermsModal()" class="btn-outline">Close</button></div>
+    <p id="termsModalErr" class="m-err">Template name is required.</p>
+  </div>
+</div>
+<div id="payModal" class="modal-bg">
+  <div class="modal" style="width:500px">
+    <div class="mhdr"><h3>Payment Term Templates</h3><button onclick="closePayModal()" class="mx"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div id="paySavedList" class="saved-list"></div>
+    <div class="bdr-t vy2"><p id="payEditingLabel" class="edit-lbl"></p><input id="payTemplateName" placeholder="Template name *" class="inp"/><textarea id="payTemplateBody" placeholder="Payment terms…" rows="7" class="inp"></textarea></div>
+    <div class="m-actions"><button onclick="savePayTemplate()" class="btn-dark" style="flex:1">Save Template</button><button id="payCancelEditBtn" onclick="cancelPayEdit()" class="btn-outline" style="display:none">Cancel Edit</button><button onclick="closePayModal()" class="btn-outline">Close</button></div>
+    <p id="payModalErr" class="m-err">Template name is required.</p>
+  </div>
+</div>
+
+<div class="app">
+<div id="leftPanel">
+  <div id="topbar">
+    <div><p class="brand-sub">Document</p><h1 class="brand-title">Quotation Creator</h1></div>
+    <div class="topbar-actions">
+      <button onclick="saveToFile()" class="tb-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>Save</button>
+      <label class="tb-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Load<input type="file" accept=".json" style="display:none" onchange="loadFromFile(this)"/></label>
+      <button onclick="window._mitLogout()" class="tb-btn" title="Sign out"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Sign out</button><span id="userBadge"></span><button onclick="openModal()" class="tb-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New</button>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('settings',this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Settings</button>
+    <button class="tab-btn" onclick="switchTab('info',this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Info</button>
+    <button class="tab-btn" onclick="switchTab('items',this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>Items</button>
+    <button class="tab-btn" onclick="switchTab('preview',this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Preview</button>
+  </div>
+
+  <!-- Settings -->
+  <div id="tab-settings" class="tab-panel active">
+    <div class="sec"><p class="sec-title">Color Theme</p>
+      <div class="card">
+        <p class="card-hint" style="margin-bottom:12px">Choose a color theme for your quotation documents.</p>
+        <div class="theme-swatches" style="gap:10px">
+          <div class="theme-option" onclick="setTheme('default')" title="Default Slate">
+            <div class="theme-swatch active" id="swatch-default" style="background:linear-gradient(135deg,#0f172a 50%,#475569 50%)"></div>
+            <span class="theme-swatch-label">Slate</span>
+          </div>
+          <div class="theme-option" onclick="setTheme('industrial')" title="Industrial Navy">
+            <div class="theme-swatch" id="swatch-industrial" style="background:linear-gradient(135deg,#1B365D 50%,#708090 50%)"></div>
+            <span class="theme-swatch-label">Navy</span>
+          </div>
+          <div class="theme-option" onclick="setTheme('japandi')" title="Japandi">
+            <div class="theme-swatch" id="swatch-japandi" style="background:linear-gradient(135deg,#2C2C2C 50%,#8B8176 50%)"></div>
+            <span class="theme-swatch-label">Japandi</span>
+          </div>
+        </div>
+        <div id="themeDesc" style="margin-top:12px;padding:8px 10px;background:#f8fafc;border-radius:8px;border:1px solid #f1f5f9">
+          <p id="themeDescTitle" style="font-size:11px;font-weight:700;color:#1e293b;margin-bottom:2px">Default Slate</p>
+          <p id="themeDescText" style="font-size:10px;color:#4B5563;line-height:1.5">Clean and professional dark slate. Works for any industry.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sec"><p class="sec-title">Company Logo</p>
+      <div class="card">
+        <p class="card-hint" style="margin-bottom:10px">Upload a logo to display on every page of your quotation.</p>
+        <div id="logoUploadArea" class="logo-upload-area" onclick="document.getElementById('logoFileInput').click()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:28px;height:28px;color:#cbd5e1;margin:0 auto 6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <p style="font-size:12px;font-weight:600;color:#64748b">Click to upload logo</p>
+          <p style="font-size:11px;color:#94a3b8;margin-top:2px">PNG, JPG, SVG — recommended max 300×80px</p>
+        </div>
+        <input id="logoFileInput" type="file" accept="image/*" style="display:none" onchange="uploadLogo(this)"/>
+        <div id="logoPreviewWrap" style="display:none;margin-top:10px">
+          <div class="logo-preview-wrap">
+            <img id="logoPreviewImg" class="logo-preview-img" src="" alt="Logo"/>
+            <div style="flex:1">
+              <p style="font-size:11px;font-weight:600;color:#334155" id="logoFileName"></p>
+              <p style="font-size:10px;color:#94a3b8;margin-top:2px">Displayed top-right on all pages</p>
+            </div>
+            <button class="logo-remove-btn" onclick="removeLogo()">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sec"><p class="sec-title">Equipment Library</p>
+      <div class="card-dash"><p class="card-hint">CSV or XLSX — all series in one file</p>
+        <label class="file-lbl"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Choose File<input id="equipFile" type="file" accept=".csv,.xlsx,.xls" style="display:none" onchange="importEquipment(this)"/></label>
+        <p id="equipStatus" class="st-ok"></p></div></div>
+    <div class="sec"><p class="sec-title">Customer Library</p>
+      <div class="card-dash"><p class="card-hint">CSV/XLSX — Name, Company, Email, Country, State, Address, Postcode, Contact No</p>
+        <label class="file-lbl"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Choose File<input id="custFile" type="file" accept=".csv,.xlsx,.xls" style="display:none" onchange="importCustomers(this)"/></label>
+        <p id="custStatus" class="st-ok"></p></div></div>
+    <div class="sec"><p class="sec-title">Spec Font Size</p>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:#64748b">Size</span><span id="fontSizeLabel" style="font-size:11px;font-weight:700;color:#1e293b">11px</span></div>
+        <input type="range" id="specFontSize" min="8" max="16" step="1" value="11" oninput="updateFontSize(this.value)"/>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#cbd5e1;margin-top:4px"><span>8px</span><span>16px</span></div>
+        <div style="border:1px solid #e2e8f0;border-radius:8px;background:#fff;padding:8px;margin-top:8px">
+          <table style="width:100%;border-collapse:collapse">
+            <tr><td id="pvFL1" style="font-size:11px;color:#64748b;padding:2px 4px">Loading Pressure</td><td id="pvFV1" style="font-size:11px;color:#1e293b;font-weight:500;padding:2px 4px">7 bar (g)</td></tr>
+            <tr><td id="pvFL2" style="font-size:11px;color:#64748b;padding:2px 4px">Motor Type</td><td id="pvFV2" style="font-size:11px;color:#1e293b;font-weight:500;padding:2px 4px">IE3 Premium</td></tr>
+          </table></div></div></div>
+  </div>
+
+  <!-- Info -->
+  <div id="tab-info" class="tab-panel">
+    <div class="sec"><p class="sec-title">Your Company</p>
+      <div class="vy2"><input id="companyName" placeholder="Company Name" class="inp"/><input id="companyTagline" placeholder="Tagline / Slogan" class="inp"/><input id="companyAddress" placeholder="Address" class="inp"/><input id="companyPhone" placeholder="Phone / Email" class="inp"/><input id="quoteNumber" placeholder="Quote No. QT-2025-001" class="inp"/><input id="quoteDate" type="date" class="inp"/><div>
+  <label class="lbl">Validity Period</label>
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
+    <button class="validity-btn" onclick="setValidity(0,this)">None</button>
+    <button class="validity-btn" onclick="setValidity(15,this)">15 days</button>
+    <button class="validity-btn" onclick="setValidity(30,this)">30 days</button>
+    <button class="validity-btn" onclick="setValidity(45,this)">45 days</button>
+    <button class="validity-btn" onclick="setValidity(60,this)">60 days</button>
+    <button class="validity-btn" onclick="setValidity(90,this)">90 days</button>
+  </div>
+  <input type="hidden" id="quoteValidity" value=""/>
+</div></div></div>
+    <div class="sec"><p class="sec-title">Document Footer</p>
+      <input id="quoteFooter" placeholder="e.g. Thank you for considering us." class="inp"/>
+      <p style="font-size:10px;color:#94a3b8;margin-top:4px">Appears at the bottom of every page. Leave blank for default.</p>
+    </div>
+    <div class="sec"><p class="sec-title">Salesperson</p>
+      <div class="vy2"><input id="salesName" placeholder="Salesperson Name" class="inp"/><input id="salesPhone" placeholder="Contact No." class="inp"/><input id="salesEmail" placeholder="Email" class="inp"/></div></div>
+    <div class="sec"><p class="sec-title">Customer</p>
+      <div class="vy2">
+        <div class="row"><select id="customerSelect" onchange="selectCustomer()" class="inp f1"></select><button onclick="openCustModal()" class="btn-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button></div>
+        <input id="custName" placeholder="Contact Name" class="inp"/><input id="custCompany" placeholder="Company" class="inp"/><input id="custPhone" placeholder="Contact Number" class="inp"/><input id="custEmail" placeholder="Email" class="inp"/><textarea id="custAddress" placeholder="Address" rows="2" class="inp"></textarea></div></div>
+    <div class="sec"><p class="sec-title">Notes</p><textarea id="quoteNotes" placeholder="Notes to customer…" rows="3" class="inp"></textarea></div>
+    <div class="sec"><p class="sec-title">Payment Terms</p>
+      <div class="vy2"><div class="row"><select id="paySelect" onchange="applyPayTemplate()" class="inp f1" style="font-size:12px"></select><button onclick="openPayModal()" class="btn-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button></div><textarea id="quotePayment" placeholder="Payment terms…" rows="4" class="inp"></textarea></div></div>
+    <div class="sec"><p class="sec-title">Terms &amp; Conditions</p>
+      <div class="vy2"><div class="row"><select id="termsSelect" onchange="applyTermsTemplate()" class="inp f1" style="font-size:12px"></select><button onclick="openTermsModal()" class="btn-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button></div><textarea id="quoteTerms" placeholder="Terms &amp; Conditions…" rows="4" class="inp"></textarea></div></div>
+  </div>
+
+  <!-- Items -->
+  <div id="tab-items" class="tab-panel">
+    <div class="sec">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <p class="sec-title" style="margin-bottom:0">Add Equipment</p>
+      </div>
+      <div class="vy2" id="addEquipSection">
+        <div><label class="lbl" id="lbl-series">① Series</label><select id="seriesSelect" onchange="onSeriesChange()" class="inp"></select></div>
+        <div><label class="lbl" id="lbl-starter">② Starter Type</label><select id="starterSelect" onchange="onStarterChange()" class="inp"></select></div>
+        <div><label class="lbl" id="lbl-equip">③ Equipment</label><select id="equipSelect" class="inp"></select></div>
+        <button onclick="addEquipment()" class="btn-dark" id="addEquipBtn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Add to Quotation</button>
+      </div></div>
+    <div class="sec"><div class="card">
+      <div class="disc-row"><span style="font-size:11px;font-weight:600;color:#475569">Discount Mode</span>
+        <div class="toggle-pill"><button id="btnModeIndividual" onclick="setDiscountMode('individual')" class="active">Individual</button><button id="btnModeOverall" onclick="setDiscountMode('overall')">Overall</button></div></div>
+      <div id="overallDiscountPanel" style="display:none">
+        <div class="g2" style="margin-bottom:8px">
+          <div><label class="lbl">Type</label><select id="overallModType" onchange="updateOverallDiscount()" class="inp" style="font-size:13px"><option value="none">None</option><option value="markup">Markup %</option><option value="discount">Discount %</option><option value="smartmarkup">✨ Smart Markup</option></select></div>
+          <div><label class="lbl">Markup / Discount %</label><input id="overallModPct" type="number" min="0" max="500" step="0.1" value="0" onchange="updateOverallDiscount()" class="inp"/></div>
+        </div>
+        <div id="overallSmartPanel" style="display:none;margin-bottom:8px">
+          <label class="lbl">Smart Inflate %</label>
+          <div class="sm-preset-row" id="overallSmPresets">
+            <button class="sm-preset-btn" onclick="setOverallSmartPct(10)">10%</button>
+            <button class="sm-preset-btn" onclick="setOverallSmartPct(15)">15%</button>
+            <button class="sm-preset-btn active" onclick="setOverallSmartPct(20)">20%</button>
+            <button class="sm-preset-btn" onclick="setOverallSmartPct(25)">25%</button>
+            <button class="sm-preset-btn" onclick="setOverallSmartPct(30)">30%</button>
+          </div>
+          <input id="overallSmartPct" type="number" min="1" max="500" step="0.1" value="20" onchange="syncOverallSmartPct(this.value)" class="inp" placeholder="Custom %"/>
+        </div>
+        <p style="font-size:11px;color:#94a3b8">Equipment items only. Does not affect Additional Works.</p>
+      </div></div></div>
+    <div class="sec">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <p class="sec-title" style="margin-bottom:0">Equipment Line Items</p>
+        <div style="display:flex;align-items:center;gap:5px" title="Card text size">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:11px;height:11px;color:#cbd5e1;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <input type="range" id="itemsFontSize" min="11" max="18" step="1" value="14" oninput="updateItemsFontSize(this.value)" style="width:56px;height:4px;cursor:pointer"/>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:15px;height:15px;color:#cbd5e1;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </div>
+      </div>
+      <div id="lineItemsContainer" class="vy3"></div><p id="noItemsMsg" class="no-items">No equipment added yet.</p></div>
+    <div class="sec"><p class="sec-title">Additional Works</p>
+      <div class="vy2"><input id="awTitle" placeholder="Section title e.g. M&amp;E Works…" class="inp" oninput="updatePreview();save()"/>
+        <div id="awItemsContainer" class="vy2"></div><p id="awNoItems" class="no-items">No works added yet.</p>
+        <button onclick="addAWItem()" class="btn-dashed"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Add Work Item</button></div></div>
+  </div>
+
+  <!-- Preview -->
+  <div id="tab-preview" class="tab-panel">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button id="pdfBtn" onclick="downloadPDF()" class="pdf-btn" style="flex:1"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download PDF</button>
+      <button onclick="openEmailDraft()" class="pdf-btn" style="flex:1;background:linear-gradient(135deg,#0369a1,#0284c7)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Email Draft</button>
+    </div>
+    <!-- Oil carry over toggle -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><p style="font-size:11px;font-weight:600;color:#334155;margin-bottom:2px">Oil Carry Over</p><p style="font-size:10px;color:#94a3b8">Show in compressor specs</p></div>
+        <div class="toggle-pill" style="width:auto"><button id="oilToggleOff" class="active" onclick="setOilCarryOver(false)">Off</button><button id="oilToggleOn" onclick="setOilCarryOver(true)">On</button></div>
+      </div>
+    </div>
+    <!-- Equipment order panel -->
+    <div class="card" style="margin-bottom:12px" id="previewOrderCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <p class="sec-title" style="margin-bottom:0">Item Order</p>
+        <span style="font-size:10px;color:#94a3b8">Drag or use ↑↓ to reorder</span>
+      </div>
+      <div id="previewOrderList"></div>
+      <p id="previewOrderEmpty" style="font-size:11px;color:#cbd5e1;text-align:center;padding:10px 0;display:none">No equipment added yet.</p>
+    </div>
+    <!-- Attachments block -->
+    <div class="card" style="margin-bottom:12px" id="attachmentsCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div><p class="sec-title" style="margin-bottom:0">Attachments</p><p style="font-size:10px;color:#94a3b8;margin-top:2px">JPEG / PNG images appended to PDF</p></div>
+        <label style="cursor:pointer">
+          <input type="file" accept="image/jpeg,image/png" multiple style="display:none" onchange="addAttachments(this)"/>
+          <span class="btn-icon" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;cursor:pointer">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </span>
+        </label>
+      </div>
+      <div id="attachmentList"></div>
+      <p id="attachmentEmpty" style="font-size:11px;color:#cbd5e1;text-align:center;padding:8px 0">No attachments added.</p>
+    </div>
+    <!-- Equipment Picture block -->
+    <div class="card" style="margin-bottom:12px" id="equipPicCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleEquipPicBlock()">
+        <div>
+          <p class="sec-title" style="margin-bottom:0">Equipment Picture</p>
+          <p style="font-size:10px;color:#6B7280;margin-top:2px">Added as picture pages after tech details</p>
+        </div>
+        <svg id="equipPicChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;color:#6B7280;transition:transform .2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+      <div id="equipPicBlock" style="display:none;margin-top:12px">
+        <div id="equipPicList"></div>
+        <p id="equipPicEmpty" style="font-size:11px;color:#6B7280;text-align:center;padding:8px 0">Add equipment items first.</p>
+      </div>
+    </div>
+    <!-- Mobile-only scaled page preview -->
+    <div id="mobilePreviewWrapper">
+      <div id="mobilePageNav">
+        <button class="mob-nav-btn" id="mobBtnPrev" onclick="mobChangePage(-1)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>Prev</button>
+        <span id="mobPageIndicator">Page 1 of 1</span>
+        <button class="mob-nav-btn" id="mobBtnNext" onclick="mobChangePage(1)">Next<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <div id="mobPagesContainer"></div>
+    </div>
+  </div>
+</div><!-- end leftPanel -->
+
+<div id="resizer"></div>
+<div id="rightPanel">
+  <div id="pagesWrapper"></div>
+  <div id="pageNav">
+    <button onclick="changePage(-1)" id="btnPrev" class="nav-btn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>Prev</button>
+    <span id="pageIndicator">Page 1 of 1</span>
+    <button onclick="changePage(1)" id="btnNext" class="nav-btn">Next<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+</div>
+<div id="emailModal" class="modal-bg">
+  <div class="modal" style="width:520px;max-width:95vw">
+    <div class="mhdr">
+      <h3>Email Draft</h3>
+      <button onclick="closeEmailModal()" class="mx"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <!-- Day tone selector -->
+    <p class="lbl" style="margin-bottom:6px">Tone</p>
+    <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="tone-btn" data-day="1" onclick="selectTone(1,this)">Mon — Formal</button>
+      <button class="tone-btn" data-day="2" onclick="selectTone(2,this)">Tue — Professional</button>
+      <button class="tone-btn" data-day="3" onclick="selectTone(3,this)">Wed — Balanced</button>
+      <button class="tone-btn" data-day="4" onclick="selectTone(4,this)">Thu — Warm</button>
+      <button class="tone-btn" data-day="5" onclick="selectTone(5,this)">Fri — Casual</button>
+    </div>
+    <!-- Subject -->
+    <p class="lbl" style="margin-bottom:4px">Subject</p>
+    <input id="emailSubject" class="inp" style="margin-bottom:12px" readonly/>
+    <!-- Body -->
+    <p class="lbl" style="margin-bottom:4px">Body</p>
+    <textarea id="emailBody" class="inp" rows="9" style="resize:vertical;line-height:1.7"></textarea>
+    <!-- Actions -->
+    <div class="m-actions" style="margin-top:14px">
+      <button onclick="copyEmailBody()" class="btn-outline" style="flex:1">Copy Body</button>
+      <button onclick="openInMail()" class="btn-dark" style="flex:1">Open in Mail</button>
+    </div>
+  </div>
+</div>
+</div><!-- end app -->
+
+<script>
+let equipmentLib=[], customerLib=[], lineItems=[], awItems=[], termsTemplates=[], payTemplates=[];
+let equipmentPictures={}; // { [lineItemId]: [dataUrl1, dataUrl2] } — keyed by item ID, max 2 photos
+let currentPage=0, mobCurrentPage=0, discountMode='individual', overallModType='none', overallModPct=0, overallSmartMarkupPct=20, specFontSizePx=11, itemsFontSizePx=14;
+let custModalEditIdx=-1, termsModalEditId=null, payModalEditId=null;
+let activeTheme='default', companyLogoDataUrl='', companyLogoFileName='';
+
+// Theme definitions for PDF rendering
+const THEMES = {
+  default:    {primary:'#0f172a', primaryHover:'#1e293b', tableHead:'#0f172a', awHead:'#334155', totalBorder:'#0f172a', totalText:'#0f172a', awTotalBorder:'#334155', tagBg:'#f1f5f9', tagText:'#475569', accentLight:'#f1f5f9'},
+  industrial: {primary:'#1B365D', primaryHover:'#142848', tableHead:'#1B365D', awHead:'#708090', totalBorder:'#1B365D', totalText:'#1B365D', awTotalBorder:'#708090', tagBg:'#E6F0FA', tagText:'#1B365D', accentLight:'#E6F0FA'},
+  japandi:    {primary:'#2C2C2C', primaryHover:'#1a1a1a', tableHead:'#2C2C2C', awHead:'#8B8176', totalBorder:'#2C2C2C', totalText:'#2C2C2C', awTotalBorder:'#8B8176', tagBg:'#EDE8E0', tagText:'#2C2C2C', accentLight:'#F2EDE6', headingFont:"font-family:'Cormorant Garamond',serif;"},
+};
+
+const THEME_DESCRIPTIONS = {
+  default:    {title:'Default Slate',     text:'Clean and professional dark slate. Works for any industry.'},
+  industrial: {title:'Industrial Navy',   text:'Deep Navy & Steel — reliability and precision for technical service contracts.'},
+  japandi:    {title:'Japandi',           text:'Warm Charcoal & Stone — editorial calm for premium, considered proposals.'},
+};
+
+function setTheme(name){
+  // Migrate old theme names to the 3-theme set
+  if(!THEMES[name]) name='default';
+  activeTheme=name;
+  document.body.className=document.body.className.replace(/theme-\S+/g,'').trim();
+  if(name!=='default') document.body.classList.add('theme-'+name);
+  document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.remove('active'));
+  const sw=document.getElementById('swatch-'+name);
+  if(sw) sw.classList.add('active');
+  const desc=THEME_DESCRIPTIONS[name]||THEME_DESCRIPTIONS.default;
+  const dt=document.getElementById('themeDescTitle'),dx=document.getElementById('themeDescText');
+  if(dt)dt.textContent=desc.title;if(dx)dx.textContent=desc.text;
+  updatePreview();save();
+}
+function getTheme(){return THEMES[activeTheme]||THEMES.default;}
+
+function uploadLogo(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    companyLogoDataUrl=e.target.result;
+    companyLogoFileName=file.name;
+    document.getElementById('logoPreviewImg').src=companyLogoDataUrl;
+    document.getElementById('logoFileName').textContent=file.name;
+    document.getElementById('logoPreviewWrap').style.display='';
+    document.getElementById('logoUploadArea').style.display='none';
+    updatePreview();save();
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+function removeLogo(){
+  companyLogoDataUrl='';companyLogoFileName='';
+  document.getElementById('logoPreviewImg').src='';
+  document.getElementById('logoFileName').textContent='';
+  document.getElementById('logoPreviewWrap').style.display='none';
+  document.getElementById('logoUploadArea').style.display='';
+  updatePreview();save();
+}
+function logoHTML(){
+  if(!companyLogoDataUrl)return'';
+  return`<img src="${companyLogoDataUrl}" style="max-height:52px;max-width:140px;object-fit:contain;display:block" alt="logo"/>`;
+}
+
+// ── Equipment Picture (Review tab, keyed by line item ID) ────────────────────
+let equipPicBlockOpen=false;
+
+function toggleEquipPicBlock(){
+  equipPicBlockOpen=!equipPicBlockOpen;
+  const block=document.getElementById('equipPicBlock');
+  const chevron=document.getElementById('equipPicChevron');
+  block.style.display=equipPicBlockOpen?'':'none';
+  chevron.style.transform=equipPicBlockOpen?'rotate(180deg)':'';
+  if(equipPicBlockOpen) renderEquipPicBlock();
+}
+
+function renderEquipPicBlock(){
+  const list=document.getElementById('equipPicList');
+  const empty=document.getElementById('equipPicEmpty');
+  if(!list) return;
+  const valid=lineItems.filter(item=>equipmentLib[item.equipIdx]);
+  if(!valid.length){
+    list.innerHTML='';
+    empty.style.display='';
+    return;
+  }
+  empty.style.display='none';
+  const t=getTheme();
+  list.innerHTML=valid.map(item=>{
+    const e=equipmentLib[item.equipIdx];
+    const pics=equipmentPictures[item.id]||[];
+    const slots=[0,1].map(i=>{
+      if(pics[i]){
+        return`<div style="position:relative;flex:1">
+          <img src="${pics[i]}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;display:block"/>
+          <button onclick="removeEquipItemPic(${item.id},${i})" style="position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,.6);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0" title="Remove photo">
+            <svg fill="none" stroke="#fff" viewBox="0 0 24 24" style="width:10px;height:10px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>`;
+      }
+      return`<label style="flex:1;height:80px;border:1.5px dashed #cbd5e1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:#fafafa;transition:border-color .15s" onmouseover="this.style.borderColor='#94a3b8'" onmouseout="this.style.borderColor='#cbd5e1'">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;color:#94a3b8"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span style="font-size:9px;color:#94a3b8;font-weight:600">Photo ${i+1}</span>
+        <input type="file" accept="image/*" style="display:none" onchange="addEquipItemPic(${item.id},${i},this)"/>
+      </label>`;
+    }).join('');
+    const picCount=pics.filter(Boolean).length;
+    return`<div style="margin-bottom:10px;padding:10px 12px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="flex:1;min-width:0">
+          <p style="font-size:12px;font-weight:600;color:#1e293b;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.model}</p>
+          ${e.series?`<span style="font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:${t.primary};color:#fff;padding:1px 8px;border-radius:999px;display:inline-block;margin-top:3px">${e.series}</span>`:''}
+        </div>
+        <span style="font-size:10px;color:#6B7280;flex-shrink:0">${picCount}/2</span>
+      </div>
+      <div style="display:flex;gap:8px">${slots}</div>
+    </div>`;
+  }).join('');
+}
+
+function addEquipItemPic(itemId,slot,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    if(!equipmentPictures[itemId]) equipmentPictures[itemId]=[];
+    equipmentPictures[itemId][slot]=e.target.result;
+    renderEquipPicBlock();
+    updatePreview();save();
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+
+function removeEquipItemPic(itemId,slot){
+  if(!equipmentPictures[itemId])return;
+  equipmentPictures[itemId][slot]=null;
+  while(equipmentPictures[itemId].length&&!equipmentPictures[itemId][equipmentPictures[itemId].length-1])
+    equipmentPictures[itemId].pop();
+  if(!equipmentPictures[itemId].length) delete equipmentPictures[itemId];
+  renderEquipPicBlock();
+  updatePreview();save();
+}
+
+const isMobile=()=>window.innerWidth<=640;
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function seriesType(s){const u=(s||'').trim().toUpperCase();if(u==='DRYER')return'dryer';if(u==='AF')return'af';if(u==='AT')return'at';return'compressor';}
+
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='preview'){renderPreviewOrderList();if(equipPicBlockOpen)renderEquipPicBlock();if(isMobile())renderMobilePreview();}
+}
+
+
+let previewDragSrc=null;
+function renderPreviewOrderList(){
+  const list=document.getElementById('previewOrderList');
+  const empty=document.getElementById('previewOrderEmpty');
+  if(!list)return;
+  const valid=lineItems.filter(item=>equipmentLib[item.equipIdx]);
+  if(!valid.length){list.innerHTML='';empty.style.display='';return;}
+  empty.style.display='none';
+  list.innerHTML='';
+  valid.forEach((item,i)=>{
+    const e=equipmentLib[item.equipIdx];
+    const globalIdx=lineItems.indexOf(item);
+    const row=document.createElement('div');
+    row.className='order-row';
+    row.dataset.gidx=globalIdx;
+
+    // Drag events
+    row.setAttribute('draggable','true');
+    row.addEventListener('dragstart',ev=>{previewDragSrc=globalIdx;row.classList.add('dragging-row');ev.dataTransfer.effectAllowed='move';});
+    row.addEventListener('dragend',()=>{row.classList.remove('dragging-row');list.querySelectorAll('.order-row').forEach(r=>r.classList.remove('drag-over-row'));});
+    row.addEventListener('dragover',ev=>{ev.preventDefault();row.classList.add('drag-over-row');});
+    row.addEventListener('dragleave',()=>row.classList.remove('drag-over-row'));
+    row.addEventListener('drop',ev=>{
+      ev.preventDefault();row.classList.remove('drag-over-row');
+      if(previewDragSrc===null||previewDragSrc===globalIdx)return;
+      // find positions in lineItems
+      const fromI=lineItems.findIndex(x=>lineItems.indexOf(x)===previewDragSrc);
+      const toI=lineItems.findIndex(x=>lineItems.indexOf(x)===globalIdx);
+      if(fromI<0||toI<0)return;
+      const moved=lineItems.splice(fromI,1)[0];
+      lineItems.splice(toI,0,moved);
+      previewDragSrc=null;
+      renderPreviewOrderList();
+      renderLineItems();
+      save();
+    });
+
+    row.innerHTML=`
+      <span class="order-row-num">${i+1}</span>
+      <div class="order-row-info">
+        <div class="order-row-model">${e.model}</div>
+        <div class="order-row-series">${[e.series,e.type].filter(Boolean).join(' · ')}</div>
+      </div>
+      <div class="order-row-actions">
+        <button class="order-move-btn" onclick="moveItemFromPreview(${globalIdx},-1)" ${i===0?'disabled':''} title="Move up"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg></button>
+        <button class="order-move-btn" onclick="moveItemFromPreview(${globalIdx},1)" ${i===valid.length-1?'disabled':''} title="Move down"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg></button>
+        <div class="order-drag-handle" title="Drag to reorder"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 12h16M4 16h16"/></svg></div>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+function moveItemFromPreview(globalIdx,dir){
+  const validIndices=lineItems.map((item,i)=>equipmentLib[item.equipIdx]?i:-1).filter(i=>i>=0);
+  const pos=validIndices.indexOf(globalIdx);
+  if(pos<0)return;
+  const targetPos=pos+dir;
+  if(targetPos<0||targetPos>=validIndices.length)return;
+  const targetGlobalIdx=validIndices[targetPos];
+  const tmp=lineItems[globalIdx];lineItems[globalIdx]=lineItems[targetGlobalIdx];lineItems[targetGlobalIdx]=tmp;
+  renderPreviewOrderList();
+  renderLineItems();
+  save();
+}
+
+// ── Mobile preview ──────────────────────────────────────────────────────────
+function getMobScale(){
+  const padding=32; // 16px each side
+  const available=window.innerWidth-padding;
+  return available/794;
+}
+function renderMobilePreview(){
+  const container=document.getElementById('mobPagesContainer');
+  const tp=totalPages();
+  const scale=getMobScale();
+  const scaledH=Math.round(1123*scale);
+
+  // Build page HTML array
+  const htmlPages=[];
+  htmlPages.push(buildCoverPage());
+  // Tech detail pages
+  lineItems.forEach((item,i)=>{if(!equipmentLib[item.equipIdx])return;htmlPages.push(buildEquipPage(item,i+2,tp));});
+  // Equipment picture pages after all tech pages
+  let picOffset=1+lineItems.filter(i=>equipmentLib[i.equipIdx]).length;
+  lineItems.forEach(item=>{
+    if(!equipmentLib[item.equipIdx])return;
+    const pics=(equipmentPictures[item.id]||[]).filter(Boolean);
+    if(!pics.length)return;
+    picOffset++;
+    htmlPages.push(buildEquipPicturePage(item,picOffset,tp));
+  });
+  if(awItems.length>0)htmlPages.push(buildAWPage(htmlPages.length+1,tp));
+
+  // Render only current mobile page
+  const idx=Math.min(mobCurrentPage,htmlPages.length-1);
+  const pg=document.createElement('div');
+  pg.className='a4-page page-scaler';
+  pg.style.cssText=`transform:scale(${scale});margin-bottom:${scaledH-1123}px;box-shadow:0 2px 16px rgba(0,0,0,.15);`;
+  pg.innerHTML=htmlPages[idx];
+  container.innerHTML='';
+  container.appendChild(pg);
+
+  document.getElementById('mobPageIndicator').textContent=`Page ${idx+1} of ${tp}`;
+  document.getElementById('mobBtnPrev').disabled=idx===0;
+  document.getElementById('mobBtnNext').disabled=idx>=tp-1;
+}
+function mobChangePage(dir){
+  const tp=totalPages();
+  mobCurrentPage=Math.max(0,Math.min(tp-1,mobCurrentPage+dir));
+  renderMobilePreview();
+  document.getElementById('mobPagesContainer').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// Modals
+function openModal(){document.getElementById('modal').classList.add('on');}
+function closeModal(){document.getElementById('modal').classList.remove('on');}
+function openCustModal(ei=-1){custModalEditIdx=ei;document.getElementById('custModalTitle').textContent=ei>=0?'Edit Customer':'Add Customer';document.getElementById('custModalErr').classList.remove('on');if(ei>=0){const c=customerLib[ei];['Name','Company','Phone','Email','Address'].forEach(f=>document.getElementById('newCust'+f).value=c[f.toLowerCase()]||'');}else['newCustName','newCustCompany','newCustPhone','newCustEmail','newCustAddress'].forEach(id=>document.getElementById(id).value='');document.getElementById('custModal').classList.add('on');document.getElementById('newCustName').focus();}
+function closeCustModal(){document.getElementById('custModal').classList.remove('on');}
+function saveCustModal(){const name=document.getElementById('newCustName').value.trim();if(!name){document.getElementById('custModalErr').classList.add('on');return;}document.getElementById('custModalErr').classList.remove('on');const c={name,company:document.getElementById('newCustCompany').value.trim(),phone:document.getElementById('newCustPhone').value.trim(),email:document.getElementById('newCustEmail').value.trim(),address:document.getElementById('newCustAddress').value.trim()};if(custModalEditIdx>=0)customerLib[custModalEditIdx]=c;else customerLib.push(c);populateCustDropdown();const ni=custModalEditIdx>=0?custModalEditIdx:customerLib.length-1;document.getElementById('customerSelect').value=ni;selectCustomer();save();closeCustModal();}
+function openTermsModal(){termsModalEditId=null;cancelTermsEdit();renderTermsSavedList();document.getElementById('termsModal').classList.add('on');document.getElementById('termsTemplateName').focus();}
+function closeTermsModal(){document.getElementById('termsModal').classList.remove('on');cancelTermsEdit();}
+function cancelTermsEdit(){termsModalEditId=null;document.getElementById('termsTemplateName').value='';document.getElementById('termsTemplateBody').value='';document.getElementById('termsEditingLabel').classList.remove('on');document.getElementById('termsCancelEditBtn').style.display='none';document.getElementById('termsModalErr').classList.remove('on');}
+function saveTermsTemplate(){const name=document.getElementById('termsTemplateName').value.trim();if(!name){document.getElementById('termsModalErr').classList.add('on');return;}document.getElementById('termsModalErr').classList.remove('on');const body=document.getElementById('termsTemplateBody').value;if(termsModalEditId){const t=termsTemplates.find(t=>t.id===termsModalEditId);if(t){t.name=name;t.body=body;}}else termsTemplates.push({id:uid(),name,body});cancelTermsEdit();populateTermsDropdown();renderTermsSavedList();save();}
+function editTermsTemplate(id){const t=termsTemplates.find(t=>t.id===id);if(!t)return;termsModalEditId=id;document.getElementById('termsTemplateName').value=t.name;document.getElementById('termsTemplateBody').value=t.body;document.getElementById('termsEditingLabel').textContent=`Editing: "${t.name}"`;document.getElementById('termsEditingLabel').classList.add('on');document.getElementById('termsCancelEditBtn').style.display='';document.getElementById('termsTemplateName').focus();}
+function deleteTermsTemplate(id){if(!confirm('Delete?'))return;termsTemplates=termsTemplates.filter(t=>t.id!==id);populateTermsDropdown();renderTermsSavedList();save();}
+function renderTermsSavedList(){const el=document.getElementById('termsSavedList');el.innerHTML=termsTemplates.length?termsTemplates.map(t=>`<div class="saved-item"><span>${t.name}</span><button onclick="editTermsTemplate('${t.id}')" class="btn-xblue"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button onclick="deleteTermsTemplate('${t.id}')" class="btn-xred"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>`).join(''):'<p class="no-items" style="padding:6px 0">No saved templates yet.</p>';}
+function populateTermsDropdown(){const sel=document.getElementById('termsSelect');sel.innerHTML='<option value="">— Select saved template —</option>';termsTemplates.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.name;sel.appendChild(o);});}
+function applyTermsTemplate(){const id=document.getElementById('termsSelect').value;if(!id)return;const t=termsTemplates.find(t=>t.id===id);if(!t)return;document.getElementById('quoteTerms').value=t.body;updatePreview();save();}
+function openPayModal(){payModalEditId=null;cancelPayEdit();renderPaySavedList();document.getElementById('payModal').classList.add('on');document.getElementById('payTemplateName').focus();}
+function closePayModal(){document.getElementById('payModal').classList.remove('on');cancelPayEdit();}
+function cancelPayEdit(){payModalEditId=null;document.getElementById('payTemplateName').value='';document.getElementById('payTemplateBody').value='';document.getElementById('payEditingLabel').classList.remove('on');document.getElementById('payCancelEditBtn').style.display='none';document.getElementById('payModalErr').classList.remove('on');}
+function savePayTemplate(){const name=document.getElementById('payTemplateName').value.trim();if(!name){document.getElementById('payModalErr').classList.add('on');return;}document.getElementById('payModalErr').classList.remove('on');const body=document.getElementById('payTemplateBody').value;if(payModalEditId){const t=payTemplates.find(t=>t.id===payModalEditId);if(t){t.name=name;t.body=body;}}else payTemplates.push({id:uid(),name,body});cancelPayEdit();populatePayDropdown();renderPaySavedList();save();}
+function editPayTemplate(id){const t=payTemplates.find(t=>t.id===id);if(!t)return;payModalEditId=id;document.getElementById('payTemplateName').value=t.name;document.getElementById('payTemplateBody').value=t.body;document.getElementById('payEditingLabel').textContent=`Editing: "${t.name}"`;document.getElementById('payEditingLabel').classList.add('on');document.getElementById('payCancelEditBtn').style.display='';document.getElementById('payTemplateName').focus();}
+function deletePayTemplate(id){if(!confirm('Delete?'))return;payTemplates=payTemplates.filter(t=>t.id!==id);populatePayDropdown();renderPaySavedList();save();}
+function renderPaySavedList(){const el=document.getElementById('paySavedList');el.innerHTML=payTemplates.length?payTemplates.map(t=>`<div class="saved-item"><span>${t.name}</span><button onclick="editPayTemplate('${t.id}')" class="btn-xblue"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button><button onclick="deletePayTemplate('${t.id}')" class="btn-xred"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>`).join(''):'<p class="no-items" style="padding:6px 0">No saved templates yet.</p>';}
+function populatePayDropdown(){const sel=document.getElementById('paySelect');sel.innerHTML='<option value="">— Select saved template —</option>';payTemplates.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.name;sel.appendChild(o);});}
+function applyPayTemplate(){const id=document.getElementById('paySelect').value;if(!id)return;const t=payTemplates.find(t=>t.id===id);if(!t)return;document.getElementById('quotePayment').value=t.body;updatePreview();save();}
+
+const CF=['companyName','companyTagline','companyAddress','companyPhone','salesName','salesPhone','salesEmail','quoteFooter'];
+const QF=['quoteNumber','quoteDate','quoteValidity'];
+const KF=['custName','custCompany','custPhone','custEmail','custAddress'];
+const NF=['quoteNotes','quotePayment','quoteTerms'];
+const AF=[...CF,...QF,...KF,...NF];
+function save(){const d={};AF.forEach(id=>d[id]=document.getElementById(id).value);d.awTitle=document.getElementById('awTitle').value;d.equipmentLib=equipmentLib;d.customerLib=customerLib;d.lineItems=lineItems;d.awItems=awItems;d.termsTemplates=termsTemplates;d.payTemplates=payTemplates;d.discountMode=discountMode;d.overallModType=overallModType;d.overallModPct=overallModPct;d.overallSmartMarkupPct=overallSmartMarkupPct;d.specFontSizePx=specFontSizePx;d.itemsFontSizePx=itemsFontSizePx;d.activeTheme=activeTheme;d.companyLogoDataUrl=companyLogoDataUrl;d.companyLogoFileName=companyLogoFileName;d.equipmentPictures=equipmentPictures;try{localStorage.setItem('qc_v13',JSON.stringify(d));}catch(e){console.warn('Save failed (storage full?)',e);}}
+function load(){try{const raw=localStorage.getItem('qc_v13')||localStorage.getItem('qc_v12')||localStorage.getItem('qc_v11')||localStorage.getItem('qc_v10');const d=JSON.parse(raw);if(!d)return;AF.forEach(id=>{if(d[id]!==undefined)document.getElementById(id).value=d[id];});if(d.awTitle)document.getElementById('awTitle').value=d.awTitle;if(d.equipmentLib?.length){equipmentLib=d.equipmentLib;populateSeriesDropdown();populateStarterDropdown();populateEquipDropdown();}if(d.customerLib?.length){customerLib=d.customerLib;populateCustDropdown();}if(d.termsTemplates?.length){termsTemplates=d.termsTemplates;populateTermsDropdown();}if(d.payTemplates?.length){payTemplates=d.payTemplates;populatePayDropdown();}if(d.lineItems?.length)lineItems=d.lineItems;if(d.awItems?.length)awItems=d.awItems;if(d.discountMode){discountMode=d.discountMode;overallModType=d.overallModType||'none';overallModPct=d.overallModPct||0;overallSmartMarkupPct=d.overallSmartMarkupPct||20;document.getElementById('overallModType').value=overallModType;document.getElementById('overallModPct').value=overallModPct;document.getElementById('overallSmartPct').value=overallSmartMarkupPct;syncOverallSmartPresets(overallSmartMarkupPct);setDiscountMode(discountMode);}if(d.specFontSizePx){specFontSizePx=d.specFontSizePx;document.getElementById('specFontSize').value=specFontSizePx;updateFontSize(specFontSizePx);}if(d.itemsFontSizePx){itemsFontSizePx=d.itemsFontSizePx;document.getElementById('itemsFontSize').value=itemsFontSizePx;updateItemsFontSize(itemsFontSizePx);}
+      if(d.activeTheme){setTheme(d.activeTheme);}
+      if(d.companyLogoDataUrl){companyLogoDataUrl=d.companyLogoDataUrl;companyLogoFileName=d.companyLogoFileName||'';document.getElementById('logoPreviewImg').src=companyLogoDataUrl;document.getElementById('logoFileName').textContent=companyLogoFileName;document.getElementById('logoPreviewWrap').style.display='';document.getElementById('logoUploadArea').style.display='none';}
+      if(d.equipmentPictures){equipmentPictures=d.equipmentPictures;}
+      renderLineItems();renderAWItems();}catch(e){}}
+function saveToFile(){const d={};AF.forEach(id=>d[id]=document.getElementById(id).value);d.awTitle=document.getElementById('awTitle').value;d.equipmentLib=equipmentLib;d.customerLib=customerLib;d.lineItems=lineItems;d.awItems=awItems;d.termsTemplates=termsTemplates;d.payTemplates=payTemplates;d.discountMode=discountMode;d.overallModType=overallModType;d.overallModPct=overallModPct;d.specFontSizePx=specFontSizePx;d.itemsFontSizePx=itemsFontSizePx;d.activeTheme=activeTheme;d.companyLogoDataUrl=companyLogoDataUrl;d.companyLogoFileName=companyLogoFileName;d.equipmentPictures=equipmentPictures;const qn=(document.getElementById('quoteNumber').value||'quotation').replace(/[/\\?%*:|"<>]/g,'-');const now=new Date();const fn=`${qn}_${String(now.getDate()).padStart(2,'0')}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getFullYear()).slice(-2)}.json`;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download=fn;a.click();URL.revokeObjectURL(a.href);}
+function loadFromFile(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const d=JSON.parse(e.target.result);AF.forEach(id=>{if(d[id]!==undefined)document.getElementById(id).value=d[id];});if(d.awTitle)document.getElementById('awTitle').value=d.awTitle;if(d.equipmentLib?.length){equipmentLib=d.equipmentLib;populateSeriesDropdown();populateStarterDropdown();populateEquipDropdown();const s=document.getElementById('equipStatus');s.textContent=`✓ ${equipmentLib.length} items loaded`;s.classList.add('on');}if(d.customerLib?.length){customerLib=d.customerLib;populateCustDropdown();const s=document.getElementById('custStatus');s.textContent=`✓ ${customerLib.length} customers`;s.classList.add('on');}if(d.termsTemplates?.length){termsTemplates=d.termsTemplates;populateTermsDropdown();}if(d.payTemplates?.length){payTemplates=d.payTemplates;populatePayDropdown();}lineItems=d.lineItems||[];awItems=d.awItems||[];if(d.discountMode){discountMode=d.discountMode;overallModType=d.overallModType||'none';overallModPct=d.overallModPct||0;overallSmartMarkupPct=d.overallSmartMarkupPct||20;document.getElementById('overallModType').value=overallModType;document.getElementById('overallModPct').value=overallModPct;document.getElementById('overallSmartPct').value=overallSmartMarkupPct;syncOverallSmartPresets(overallSmartMarkupPct);setDiscountMode(discountMode);}if(d.specFontSizePx){specFontSizePx=d.specFontSizePx;document.getElementById('specFontSize').value=specFontSizePx;updateFontSize(specFontSizePx);}if(d.itemsFontSizePx){itemsFontSizePx=d.itemsFontSizePx;document.getElementById('itemsFontSize').value=itemsFontSizePx;updateItemsFontSize(itemsFontSizePx);}
+            if(d.activeTheme){setTheme(d.activeTheme);}
+            if(d.companyLogoDataUrl){companyLogoDataUrl=d.companyLogoDataUrl;companyLogoFileName=d.companyLogoFileName||'';document.getElementById('logoPreviewImg').src=companyLogoDataUrl;document.getElementById('logoFileName').textContent=companyLogoFileName;document.getElementById('logoPreviewWrap').style.display='';document.getElementById('logoUploadArea').style.display='none';}
+            if(d.equipmentPictures){equipmentPictures=d.equipmentPictures;}else{equipmentPictures={};}
+            currentPage=0;mobCurrentPage=0;renderLineItems();renderAWItems();save();updatePreview();alert(`✓ Loaded: ${file.name}`);}catch(err){alert('Failed to load file.');}};reader.readAsText(file);input.value='';}
+function today(){return new Date().toISOString().split('T')[0];}
+function resetAll(){closeModal();AF.forEach(id=>document.getElementById(id).value='');equipmentLib=[];customerLib=[];lineItems=[];awItems=[];termsTemplates=[];payTemplates=[];discountMode='individual';overallModType='none';overallModPct=0;activeTheme='default';companyLogoDataUrl='';companyLogoFileName='';equipmentPictures={};document.getElementById('logoPreviewWrap').style.display='none';document.getElementById('logoUploadArea').style.display='';setTheme('default');document.getElementById('awTitle').value='';['equipStatus','custStatus'].forEach(id=>document.getElementById(id).classList.remove('on'));populateSeriesDropdown();populateStarterDropdown();populateEquipDropdown();populateCustDropdown();populateTermsDropdown();populatePayDropdown();document.getElementById('quoteDate').value=today();setDiscountMode('individual');currentPage=0;mobCurrentPage=0;renderLineItems();renderAWItems();save();updatePreview();}
+function resetQuotation(){closeModal();[...QF,...KF,...NF].forEach(id=>document.getElementById(id).value='');lineItems=[];awItems=[];document.getElementById('awTitle').value='';document.getElementById('quoteDate').value=today();document.getElementById('customerSelect').value='';setValidity(0,document.querySelector('.validity-btn'));setDiscountMode('individual');currentPage=0;mobCurrentPage=0;renderLineItems();renderAWItems();save();updatePreview();}
+
+function parseFile(file,cb){const ext=file.name.split('.').pop().toLowerCase();if(ext==='csv'){Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>cb(r.data)});}else{const r=new FileReader();r.onload=e=>{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});cb(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}));};r.readAsArrayBuffer(file);}}
+function importEquipment(input){const file=input.files[0];if(!file)return;parseFile(file,rows=>{const norm=rows.map(r=>{const n={};Object.keys(r).forEach(k=>{n[k.replace(/^\uFEFF/,'').trim()]=String(r[k]===null||r[k]===undefined?'':r[k]).trim();});return n;});equipmentLib=norm.map(r=>({model:r['Model']||'',tpl:r['TPL']||'',type:r['Type']||'',series:r['Series']||'',rmUnit:parseFloat(String(r['RM/ Unit']||'').replace(/[^0-9.]/g,''))||0,airQuality:r['Air Quality']||'',wcac:r['WC/AC']||'',kw:r['kW']||'',hp:r['hp']||'',loadP:r['Loading Pressure']||'',unloadP:r['Unload Pressure']||'',minM3:r['Min m3/min']||'',maxM3:r['Max m3/min']||'',minCFM:r['Min CFM']||'',maxCFM:r['Max CFM']||'',ieRating:r['IE Rating']||'',motorType:r['Motor Type']||'',dimension:r['Dimension']||'',outletSize:r['Outlet size']||'',weight:r['Weight']||'',noise:r['Noise level']||'',power:r['Power Supply']||'',outletTemp:r['Outlet air temperature']||'',starter:r['Starter Type']||'',waterFlow:r['Input water flow']||'',waterPres:r['water pressure']||'',presDrop:r['Pressure drop']||'',oilCarry:r['Oil carry over']||'',refrigerant:r['Refrigerant']||'',filterM3:r['Filter, m3/min']||r['filter, m3/min']||'',filterCFM:r['Filter, cfm']||r['filter, cfm']||'',filterOil:r['Filter oil carry over']||r['filter oil carry over']||'',filterPart:r['Particle removal']||r['particle removal']||'',filterDim:r['Filter dimension']||r['filter dimension']||'',filterOutlet:r['Filter outlet']||r['filter outlet']||'',filterWeight:r['Filter weight']||r['filter weigh']||r['Filter weigh']||'',tankVolume:r['tank volume']||r['Tank volume']||'',tankMat:r['Air tank Material']||r['air tank material']||'',tankPres:r['tank pressure']||r['Tank pressure']||'',tankDim:r['tank dimension']||r['Tank dimension']||'',tankOutlet:r['tank outlet']||r['Tank outlet']||''})).filter(e=>e.model);populateSeriesDropdown();populateStarterDropdown();populateEquipDropdown();const s=document.getElementById('equipStatus');s.textContent=`✓ ${equipmentLib.length} items loaded`;s.classList.add('on');save();});}
+function importCustomers(input){const file=input.files[0];if(!file)return;parseFile(file,rows=>{const norm=rows.map(r=>{const n={};Object.keys(r).forEach(k=>{n[k.replace(/^\uFEFF/,'').trim()]=String(r[k]||'').trim();});return n;});customerLib=norm.map(r=>{const ap=[r['Address'],r['Postcode'],r['State'],r['Country']].filter(Boolean);return{name:r['Name']||'',company:r['Company']||'',phone:r['Contact No']||'',email:r['Email']||'',address:ap.join(', ')};}).filter(c=>c.name||c.company);populateCustDropdown();const s=document.getElementById('custStatus');s.textContent=`✓ ${customerLib.length} customers`;s.classList.add('on');save();});}
+
+function populateSeriesDropdown(){const sel=document.getElementById('seriesSelect'),cur=sel.value;sel.innerHTML='<option value="">— All series —</option>';[...new Set(equipmentLib.map(e=>e.series).filter(Boolean))].sort().forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;if(s===cur)o.selected=true;sel.appendChild(o);});}
+function populateStarterDropdown(){const series=document.getElementById('seriesSelect').value,sel=document.getElementById('starterSelect'),cur=sel.value;sel.innerHTML='<option value="">— All —</option>';[...new Set(equipmentLib.filter(e=>(!series||e.series===series)&&seriesType(e.series)==='compressor').map(e=>e.starter).filter(Boolean))].sort().forEach(st=>{const o=document.createElement('option');o.value=st;o.textContent=st;if(st===cur)o.selected=true;sel.appendChild(o);});}
+function populateEquipDropdown(){const series=document.getElementById('seriesSelect').value,starter=document.getElementById('starterSelect').value,sel=document.getElementById('equipSelect');sel.innerHTML='<option value="">— Select equipment —</option>';equipmentLib.filter(e=>{if(series&&e.series!==series)return false;if(starter&&seriesType(e.series)==='compressor'&&e.starter!==starter)return false;return true;}).sort((a,b)=>(parseFloat(a.kw)||0)-(parseFloat(b.kw)||0)).forEach(e=>{const idx=equipmentLib.indexOf(e),o=document.createElement('option');o.value=idx;const st=seriesType(e.series);let label=e.model;if(st==='compressor')label+=[e.kw?` · ${e.kw}kW`:'',e.starter?` · ${e.starter}`:''].join('');else if(st==='dryer')label+=e.maxM3?` · ${e.maxM3} m³/min`:'';else if(st==='af')label+=e.filterM3?` · ${e.filterM3} m³/min`:'';else if(st==='at')label+=e.tankVolume?` · ${e.tankVolume}`:'';o.textContent=label;sel.appendChild(o);});}
+function onSeriesChange(){populateStarterDropdown();populateEquipDropdown();}
+function onStarterChange(){populateEquipDropdown();}
+function populateCustDropdown(){const sel=document.getElementById('customerSelect'),cur=sel.value;sel.innerHTML='<option value="">— Select or enter manually —</option>';customerLib.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.name+(c.company?` — ${c.company}`:'');if(String(i)===String(cur))o.selected=true;sel.appendChild(o);});}
+function selectCustomer(){const idx=document.getElementById('customerSelect').value;if(idx==='')return;const c=customerLib[parseInt(idx)];document.getElementById('custName').value=c.name;document.getElementById('custCompany').value=c.company;document.getElementById('custPhone').value=c.phone;document.getElementById('custEmail').value=c.email;document.getElementById('custAddress').value=c.address;updatePreview();}
+
+function addEquipment(){const idx=document.getElementById('equipSelect').value;if(idx===''){alert('Please select equipment first.');return;}lineItems.push({id:Date.now(),equipIdx:parseInt(idx),qty:1,modType:'none',modPct:0,smartMarkupPct:20,ltMin:0,ltMax:0});renderLineItems();save();}
+let dragSrcIdx=null;
+function moveItem(idx,dir){
+  const newIdx=idx+dir;
+  if(newIdx<0||newIdx>=lineItems.length)return;
+  const tmp=lineItems[idx];lineItems[idx]=lineItems[newIdx];lineItems[newIdx]=tmp;
+  renderLineItems();save();
+}
+function renderLineItems(){
+  const container=document.getElementById('lineItemsContainer'),msg=document.getElementById('noItemsMsg');
+  container.innerHTML='';if(!lineItems.length){msg.style.display='';updatePreview();return;}msg.style.display='none';
+  const total=lineItems.filter(item=>equipmentLib[item.equipIdx]).length;
+  lineItems.forEach((item,idx)=>{
+    const e=equipmentLib[item.equipIdx];if(!e)return;
+    const div=document.createElement('div');div.className='lcard';
+
+    const isFirst=idx===0, isLast=idx===total-1;
+    const isSmart=item.modType==='smartmarkup';
+    const smartMarkupPct=item.smartMarkupPct||20;
+
+    let modHTML='';
+    if(discountMode==='individual'){
+      const modTypeSelect=`<select onchange="updateItem(${idx},'modType',this.value)" class="inp"><option value="none"${item.modType==='none'?' selected':''}>None</option><option value="markup"${item.modType==='markup'?' selected':''}>Markup %</option><option value="discount"${item.modType==='discount'?' selected':''}>Discount %</option><option value="smartmarkup"${isSmart?' selected':''}>✨ Smart Markup</option></select>`;
+      modHTML=`<div class="g2"><div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div><div><label class="lbl">Modifier</label>${modTypeSelect}</div></div>`;
+      if(isSmart){
+        const presets=[10,15,20,25,30];
+        const presetBtns=presets.map(p=>`<button class="sm-preset-btn${smartMarkupPct===p?' active':''}" onclick="setItemSmartPct(${idx},${p})">${p}%</button>`).join('');
+        modHTML+=`<div><label class="lbl">Markup %</label><input type="number" min="0" max="99.9" step="0.1" value="${item.modPct}" oninput="updateItem(${idx},'modPct',this.value)" class="inp"/></div>
+        <div><label class="lbl">Smart Inflate %</label>
+          <div class="sm-preset-row">${presetBtns}</div>
+          <input type="number" min="0" max="99.9" step="0.1" value="${smartMarkupPct}" oninput="setItemSmartPct(${idx},this.value)" class="inp" placeholder="Custom %"/>
+        </div>`;
+      }else if(item.modType!=='none'){
+        modHTML+=`<div><label class="lbl">${item.modType==='markup'?'Markup':'Discount'} %</label><input type="number" min="0" max="100" step="0.1" value="${item.modPct}" onchange="updateItem(${idx},'modPct',this.value)" class="inp"/></div>`;
+      }
+    }else{
+      modHTML=`<div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div>`;
+    }
+
+    const origUnit=e.rmUnit;
+    const{modType:iModType,modPct:iModPct,smartMarkupPct:iSmartPct}=getModifier(item);
+    const adjUnit=calcUnitPrice(item);
+    const hasActiveMod=iModType!=='none'&&iModPct>0;
+
+    let priceInfoHTML='';
+    if(iModType==='smartmarkup'){
+      // markupPrice = what customer pays; listedPrice = what customer sees (then gets discount to markupPrice)
+      const markupPrice=calcUnitPrice(item);
+      const listedPrice=calcSmartInflatedPrice(item);
+      const discountBack=((listedPrice-markupPrice)/listedPrice*100).toFixed(1);
+      const sp=iSmartPct||20;
+      const mp=iModPct||0;
+      priceInfoHTML=`<div class="smart-markup-box">
+        <div class="smart-markup-badge">✨ Smart Markup</div>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:4px;align-items:center;margin-bottom:8px">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:4px 6px;text-align:center">
+            <div style="font-size:9px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">Original</div>
+            <div style="font-size:11px;font-weight:600;color:#334155">RM ${fmt(origUnit)}</div>
+          </div>
+          <svg fill="none" stroke="#16a34a" viewBox="0 0 24 24" style="width:12px;height:12px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+          <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:4px 6px;text-align:center">
+            <div style="font-size:9px;color:#16a34a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">Markup ${mp}% · Pays</div>
+            <div style="font-size:11px;font-weight:700;color:#15803d">RM ${fmt(markupPrice)}</div>
+          </div>
+          <svg fill="none" stroke="#16a34a" viewBox="0 0 24 24" style="width:12px;height:12px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+          <div style="background:#dcfce7;border:1px solid #86efac;border-radius:6px;padding:4px 6px;text-align:center">
+            <div style="font-size:9px;color:#16a34a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">Listed ${sp}% · Sees</div>
+            <div style="font-size:14px;font-weight:700;color:#14532d">RM ${fmt(listedPrice)}</div>
+          </div>
+        </div>
+        <p style="font-size:10px;color:#64748b;line-height:1.5">Customer sees <strong style="color:#14532d">RM ${fmt(listedPrice)}</strong> listed, pays <strong style="color:#15803d">RM ${fmt(markupPrice)}</strong> — a <strong style="color:#16a34a">${discountBack}% discount</strong> appearance.</p>
+      </div>`;
+    }else if(hasActiveMod){
+      priceInfoHTML=iModType==='markup'
+        ?`<div style="margin-top:6px;padding:8px 10px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;display:flex;justify-content:space-between;align-items:center"><div><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#3b82f6">Markup Applied</span><br/><span style="font-size:10px;color:#64748b;margin-top:1px;display:inline-block">Original: RM ${fmt(origUnit)}</span></div><div style="text-align:right"><span style="font-size:11px;color:#64748b">+${iModPct}%</span><br/><span style="font-size:13px;font-weight:700;color:#2563eb">RM ${fmt(adjUnit)}</span></div></div>`
+        :`<div style="margin-top:6px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#16a34a">Discount Applied</span><span style="font-size:11px;font-weight:600;color:#16a34a;background:#dcfce7;padding:1px 7px;border-radius:999px">−${iModPct}%</span></div><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#fff;border:1px solid #d1fae5;border-radius:6px;padding:4px 8px;text-align:center"><div style="font-size:9px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">Before</div><div style="font-size:12px;font-weight:600;color:#64748b">RM ${fmt(origUnit)}</div></div><svg fill="none" stroke="#16a34a" viewBox="0 0 24 24" style="width:14px;height:14px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg><div style="flex:1;background:#dcfce7;border:1px solid #86efac;border-radius:6px;padding:4px 8px;text-align:center"><div style="font-size:9px;color:#16a34a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px">After</div><div style="font-size:12px;font-weight:700;color:#15803d">RM ${fmt(adjUnit)}</div></div></div></div>`;
+    }else{
+      priceInfoHTML=`<div style="margin-top:6px;padding:6px 10px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:10px;color:#6B7280">Unit Price</span><span style="font-size:13px;font-weight:600;color:#334155">RM ${fmt(origUnit)}</span></div>`;
+    }
+
+    div.innerHTML=`<div class="lcard-hdr"><div style="display:flex;align-items:center;gap:8px"><div class="move-btns"><button class="move-btn" onclick="moveItem(${idx},-1)" ${isFirst?'disabled':''} title="Move up"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg></button><button class="move-btn" onclick="moveItem(${idx},1)" ${isLast?'disabled':''} title="Move down"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg></button></div><div><p class="lcard-model" style="font-size:${itemsFontSizePx}px">${e.model}</p><p class="lcard-sub" style="font-size:${Math.max(10,itemsFontSizePx-2)}px">${[e.series,e.type].filter(Boolean).join(' · ')}</p></div></div><button onclick="removeItem(${idx})" class="btn-xred"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div><div class="vy2">${modHTML}${priceInfoHTML}</div><div class="lcard-foot"><div><label class="lbl">Lead Time (weeks)</label><div class="lt-pair"><input type="number" min="1" max="99" value="${item.ltMin||''}" placeholder="Min" onchange="updateItem(${idx},'ltMin',this.value)" class="inp"/><span>–</span><input type="number" min="1" max="99" value="${item.ltMax||''}" placeholder="Max" onchange="updateItem(${idx},'ltMax',this.value)" class="inp"/></div></div><div style="text-align:right;padding-top:16px"><span style="font-size:11px;color:#94a3b8">Line Total</span><br/><span style="font-size:${itemsFontSizePx}px;font-weight:600;color:#334155">RM ${fmt(calcLine(item))}</span></div></div>`;
+    container.appendChild(div);
+  });updatePreview();
+}
+
+function updateItem(idx,field,val){if(field==='qty')lineItems[idx].qty=Math.max(1,parseInt(val)||1);else if(field==='modType'){lineItems[idx].modType=val;if(val!=='smartmarkup'){lineItems[idx].smartMarkupPct=lineItems[idx].smartMarkupPct||20;}}else if(field==='modPct')lineItems[idx].modPct=parseFloat(val)||0;else if(field==='smartMarkupPct')lineItems[idx].smartMarkupPct=parseFloat(val)||20;else if(field==='ltMin')lineItems[idx].ltMin=parseInt(val)||0;else if(field==='ltMax')lineItems[idx].ltMax=parseInt(val)||0;renderLineItems();save();}
+function setItemSmartPct(idx,val){lineItems[idx].smartMarkupPct=parseFloat(val)||20;renderLineItems();save();}
+function removeItem(idx){lineItems.splice(idx,1);renderLineItems();save();}
+function addAWItem(){awItems.push({id:Date.now(),jobScope:'',qty:1,unitPrice:0});renderAWItems();save();}
+function removeAWItem(idx){awItems.splice(idx,1);renderAWItems();save();}
+function updateAWItem(idx,field,val){if(field==='jobScope')awItems[idx].jobScope=val;if(field==='qty')awItems[idx].qty=Math.max(1,parseInt(val)||1);if(field==='unitPrice')awItems[idx].unitPrice=parseFloat(val)||0;updatePreview();save();}
+function awLineTotal(item){return item.qty*(item.unitPrice||0);}
+function renderAWItems(){
+  const container=document.getElementById('awItemsContainer'),msg=document.getElementById('awNoItems');
+  container.innerHTML='';if(!awItems.length){msg.style.display='';updatePreview();return;}msg.style.display='none';
+  awItems.forEach((item,idx)=>{
+    const div=document.createElement('div');div.className='lcard';
+    div.innerHTML=`<div class="lcard-hdr"><span style="font-size:11px;font-weight:600;color:#64748b">Item ${idx+1}</span><button onclick="removeAWItem(${idx})" class="btn-xred"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div><div class="vy2"><div><label class="lbl">Job Scope</label><textarea rows="2" placeholder="Describe the work scope…" class="inp" onchange="updateAWItem(${idx},'jobScope',this.value)">${item.jobScope}</textarea></div><div class="g2"><div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateAWItem(${idx},'qty',this.value)" class="inp"/></div><div><label class="lbl">Unit Price (RM)</label><input type="number" min="0" step="0.01" value="${item.unitPrice}" onchange="updateAWItem(${idx},'unitPrice',this.value)" class="inp"/></div></div></div><div style="display:flex;justify-content:space-between;font-size:11px;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px"><span style="color:#94a3b8">Line Total</span><span style="font-weight:600;color:#334155">RM ${fmt(awLineTotal(item))}</span></div>`;
+    container.appendChild(div);
+  });updatePreview();
+}
+function setDiscountMode(mode){discountMode=mode;document.getElementById('btnModeIndividual').classList.toggle('active',mode==='individual');document.getElementById('btnModeOverall').classList.toggle('active',mode==='overall');document.getElementById('overallDiscountPanel').style.display=mode==='individual'?'none':'';if(mode==='overall'){lineItems.forEach(item=>{item.modType='none';item.modPct=0;});updateOverallSmartPanel();}renderLineItems();save();}
+function updateOverallSmartPanel(){const type=document.getElementById('overallModType').value;document.getElementById('overallSmartPanel').style.display=type==='smartmarkup'?'':'none';}
+function updateOverallDiscount(){overallModType=document.getElementById('overallModType').value;overallModPct=parseFloat(document.getElementById('overallModPct').value)||0;updateOverallSmartPanel();updatePreview();save();}
+function setOverallSmartPct(val){overallSmartMarkupPct=val;document.getElementById('overallSmartPct').value=val;syncOverallSmartPresets(val);updatePreview();save();}
+function syncOverallSmartPct(val){overallSmartMarkupPct=parseFloat(val)||20;syncOverallSmartPresets(overallSmartMarkupPct);updatePreview();save();}
+function syncOverallSmartPresets(val){document.querySelectorAll('#overallSmPresets .sm-preset-btn').forEach(b=>{b.classList.toggle('active',parseFloat(b.textContent)===parseFloat(val));});}
+function getModifier(item){if(discountMode==='overall')return{modType:overallModType,modPct:overallModPct,smartMarkupPct:overallSmartMarkupPct};return{modType:item.modType,modPct:item.modPct,smartMarkupPct:item.smartMarkupPct||20};}
+
+function calcUnitPrice(item){
+  const e=equipmentLib[item.equipIdx];if(!e)return 0;
+  const{modType,modPct,smartMarkupPct}=getModifier(item);
+  let p=e.rmUnit;
+  if(modType==='markup') p*=(1+modPct/100);
+  else if(modType==='discount') p*=(1-modPct/100);
+  else if(modType==='smartmarkup'){
+    // What customer PAYS = original ÷ (1 − markup%)
+    const mp=Math.max(0,Math.min(modPct,99.9));
+    p=e.rmUnit/(1-mp/100);
+  }
+  return p;
+}
+// What customer SEES listed = markupPrice ÷ (1 − inflate%)
+function calcSmartInflatedPrice(item){
+  const e=equipmentLib[item.equipIdx];if(!e)return 0;
+  const{modPct,smartMarkupPct}=getModifier(item);
+  const mp=Math.max(0,Math.min(modPct,99.9));
+  const sp=Math.max(0,Math.min(smartMarkupPct||20,99.9));
+  const markupPrice=e.rmUnit/(1-mp/100);
+  return markupPrice/(1-sp/100);
+}
+
+function calcLine(item){return calcUnitPrice(item)*item.qty;}
+function fmt(n){return Number(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function updateFontSize(val){specFontSizePx=parseInt(val);document.getElementById('fontSizeLabel').textContent=val+'px';['pvFL1','pvFL2'].forEach(id=>document.getElementById(id).style.fontSize=val+'px');['pvFV1','pvFV2'].forEach(id=>document.getElementById(id).style.fontSize=val+'px');document.querySelectorAll('.spec-table td').forEach(td=>td.style.fontSize=val+'px');save();}
+function updateItemsFontSize(val){
+  itemsFontSizePx=parseInt(val);
+  renderLineItems();
+  save();
+}
+
+function specRow(label,val){const v=(val===null||val===undefined)?'':String(val).trim();if(!v)return'';return`<tr><td style="font-size:${specFontSizePx}px">${label}</td><td style="font-size:${specFontSizePx}px">${v}</td></tr>`;}
+function buildSpecCompressor(e){const sLow=(e.starter||'').toLowerCase(),isVFD=sLow.includes('inverter')||sLow.includes('vfd'),isWC=(e.wcac||'').toLowerCase().includes('water');const flowRows=isVFD?specRow('Flow Rate (m³/min)',(e.minM3&&e.maxM3)?`${e.minM3} – ${e.maxM3}`:(e.maxM3||e.minM3))+specRow('Flow Rate (CFM)',(e.minCFM&&e.maxCFM)?`${e.minCFM} – ${e.maxCFM}`:(e.maxCFM||e.minCFM)):specRow('Max Flow Rate (m³/min)',e.maxM3)+specRow('Max Flow Rate (CFM)',e.maxCFM);const waterRows=isWC?specRow('Input Water Flow',e.waterFlow)+specRow('Water Pressure',e.waterPres):'';return specRow('TPL',e.tpl)+specRow('Air Quality',e.airQuality)+specRow('Cooling Type',e.wcac)+specRow('Power',[e.kw?e.kw+' kW':'',e.hp?e.hp+' hp':''].filter(Boolean).join(' / '))+specRow('Loading Pressure',e.loadP)+specRow('Unload Pressure',e.unloadP)+flowRows+specRow('IE Rating',e.ieRating)+specRow('Motor Type',e.motorType)+specRow('Dimension',e.dimension)+specRow('Outlet Size',e.outletSize)+specRow('Weight',e.weight)+specRow('Noise Level',e.noise)+specRow('Power Supply',e.power)+specRow('Outlet Air Temperature',e.outletTemp)+specRow('Starter Type',e.starter)+waterRows+(showOilCarryOver?specRow('Oil Carry Over',e.oilCarry):'');}
+function buildSpecDryer(e){return specRow('TPL',e.tpl)+specRow('Type',e.type)+specRow('Highest Working Pressure',e.unloadP)+specRow('Flow (m³/min)',e.maxM3)+specRow('Flow (CFM)',e.maxCFM)+specRow('Dimension (mm)',e.dimension)+specRow('Outlet Size',e.outletSize)+specRow('Weight (KG)',e.weight)+specRow('Noise Level (dB)',e.noise)+specRow('Power Supply',e.power)+specRow('Pressure Drop (bar)',e.presDrop)+specRow('Refrigerant',e.refrigerant);}
+function buildSpecAF(e){return specRow('TPL',e.tpl)+specRow('Type',e.type)+specRow('Filter (m³/min)',e.filterM3)+specRow('Filter (CFM)',e.filterCFM)+specRow('Oil Carry Over',e.filterOil)+specRow('Particle Removal',e.filterPart)+specRow('Dimension',e.filterDim)+specRow('Outlet',e.filterOutlet)+specRow('Weight',e.filterWeight);}
+function buildSpecAT(e){return specRow('TPL',e.tpl)+specRow('Type',e.type)+specRow('Tank Volume',e.tankVolume)+specRow('Air Tank Material',e.tankMat)+specRow('Working Pressure',e.tankPres)+specRow('Dimension (mm)',e.tankDim)+specRow('Outlet',e.tankOutlet);}
+function buildSpecRows(e){const st=seriesType(e.series);if(st==='dryer')return buildSpecDryer(e);if(st==='af')return buildSpecAF(e);if(st==='at')return buildSpecAT(e);return buildSpecCompressor(e);}
+function equipTypeLabel(e){const st=seriesType(e.series);if(st==='dryer')return e.type||'Refrigerant Dryer';if(st==='af')return e.type||'Filter';if(st==='at')return e.type||'Air Tank';return e.type||'';}
+function buildLeadTimeBlock(){
+  const items=lineItems.filter(i=>equipmentLib[i.equipIdx]&&(i.ltMin||i.ltMax));
+  if(!items.length)return'';
+  // Pick item with highest ltMax; use ltMin as tiebreaker
+  let best=items[0];
+  items.forEach(item=>{
+    const curMax=item.ltMax||0, curMin=item.ltMin||0;
+    const prevMax=best.ltMax||0, prevMin=best.ltMin||0;
+    if(curMax>prevMax||(curMax===prevMax&&curMin>prevMin))best=item;
+  });
+  const e=equipmentLib[best.equipIdx];
+  const lt=best.ltMin&&best.ltMax?`${best.ltMin} – ${best.ltMax} weeks`:best.ltMax?`${best.ltMax} weeks`:`${best.ltMin} weeks`;
+  return`<div style="margin-bottom:16px;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;display:flex;align-items:center;justify-content:space-between"><div><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:3px">Overall Delivery Lead Time</p><p style="font-size:11px;color:#475569">Based on <span style="font-weight:600">${e.model}</span></p></div><p style="font-size:14px;font-weight:700;color:#0f172a">${lt}</p></div>`;
+}
+
+function changePage(dir){const tp=totalPages();currentPage=Math.max(0,Math.min(tp-1,currentPage+dir));showPage();}
+function showPage(){
+  const tp=totalPages();
+  document.querySelectorAll('#pagesWrapper .a4-page').forEach((pg,i)=>pg.style.display=i===currentPage?'block':'none');
+  document.getElementById('pageIndicator').textContent=`Page ${currentPage+1} of ${tp}`;
+  document.getElementById('btnPrev').disabled=currentPage===0;
+  document.getElementById('btnNext').disabled=currentPage===tp-1;
+  document.getElementById('pagesWrapper').scrollTo({top:0,behavior:'smooth'});
+}
+
+function buildCoverPage(){
+  const g=id=>document.getElementById(id).value;
+  const awTitle=g('awTitle')||'Additional Works';
+  const t=getTheme();
+  let allRows='',rowNo=0,grandTotal=0;
+  const hasEquip=lineItems.some(i=>equipmentLib[i.equipIdx]),hasAW=awItems.length>0;
+  const anyDiscount=lineItems.some(item=>{const{modType,modPct}=getModifier(item);return(modType==='discount'||modType==='smartmarkup')&&modPct>0;});
+  lineItems.forEach((item,i)=>{const e=equipmentLib[item.equipIdx];if(!e)return;rowNo++;const origUnit=e.rmUnit,{modType,modPct}=getModifier(item),du=calcUnitPrice(item),lt=calcLine(item);grandTotal+=lt;const hasDiscount=modType==='discount'&&modPct>0;const isSmart=modType==='smartmarkup';
+    let unitCell,discCell='';
+    if(isSmart){const listedPrice=calcSmartInflatedPrice(item);const discBack=((listedPrice-du)/listedPrice*100).toFixed(1);unitCell=`<span style="text-decoration:line-through;color:#374151;font-size:12px;font-weight:600">RM ${fmt(listedPrice)}</span><br/><span style="color:#15803d;font-weight:700">RM ${fmt(du)}</span>`;if(anyDiscount)discCell=`<span style="color:#16a34a;font-weight:600">−${discBack}%</span>`;}
+    else if(hasDiscount){unitCell=`<span style="text-decoration:line-through;color:#94a3b8;font-size:11px">RM ${fmt(origUnit)}</span><br/><span style="color:#059669;font-weight:600">RM ${fmt(du)}</span>`;if(anyDiscount)discCell=`<span style="color:#059669;font-weight:600">−${modPct}%</span>`;}
+    else{unitCell=`<span style="color:#334155">RM ${fmt(du)}</span>`;if(anyDiscount)discCell=`<span style="color:#cbd5e1">—</span>`;}
+    allRows+=`<tr style="background:${i%2===0?'#fff':'#f8fafc'}"><td style="padding:8px 10px;font-size:12px;color:#94a3b8">${rowNo}</td><td style="padding:8px 10px"><p style="font-size:12px;font-weight:600;color:#1e293b;margin:0">${e.model}</p>${equipTypeLabel(e)?`<p style="font-size:11px;color:#94a3b8;margin:1px 0 0">${equipTypeLabel(e)}</p>`:''}</td><td style="padding:8px 10px;text-align:right;vertical-align:middle">${unitCell}</td>${anyDiscount?`<td style="padding:8px 10px;font-size:12px;text-align:center">${discCell}</td>`:''}<td style="padding:8px 10px;font-size:12px;color:#334155;text-align:right">${item.qty}</td><td style="padding:8px 10px;font-size:12px;font-weight:600;color:#1e293b;text-align:right">RM ${fmt(lt)}</td></tr>`;});
+  awItems.forEach((item,i)=>{rowNo++;const lt=awLineTotal(item);grandTotal+=lt;const ri=lineItems.filter(x=>equipmentLib[x.equipIdx]).length+i;allRows+=`<tr style="background:${ri%2===0?'#fff':'#f8fafc'}"><td style="padding:8px 10px;font-size:12px;color:#94a3b8">${rowNo}</td><td style="padding:8px 10px"><p style="font-size:12px;font-weight:600;color:#1e293b;margin:0">${awTitle}</p>${item.jobScope?`<p style="font-size:11px;color:#94a3b8;margin:1px 0 0;white-space:pre-wrap">${item.jobScope}</p>`:''}</td><td style="padding:8px 10px;font-size:12px;color:#334155;text-align:right;vertical-align:middle">RM ${fmt(item.unitPrice)}</td>${anyDiscount?`<td style="padding:8px 10px;font-size:12px;text-align:center;color:#cbd5e1">—</td>`:''}<td style="padding:8px 10px;font-size:12px;color:#334155;text-align:right">${item.qty}</td><td style="padding:8px 10px;font-size:12px;font-weight:600;color:#1e293b;text-align:right">RM ${fmt(lt)}</td></tr>`;});
+  const notes=g('quoteNotes').trim(),payment=g('quotePayment').trim(),terms=g('quoteTerms').trim();
+  const logo=logoHTML();
+  return`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px"><div>${logo?`<div style="margin-bottom:10px">${logo}</div>`:''}<h1 style="font-size:26px;font-weight:700;color:${t.primary};letter-spacing:-.5px;margin:0">${g('companyName')||'Your Company'}</h1>${g('companyTagline')?`<p style="font-size:12px;color:#94a3b8;margin-top:2px">${g('companyTagline')}</p>`:''}${g('companyAddress')?`<p style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.5">${g('companyAddress')}</p>`:''}${g('companyPhone')?`<p style="font-size:11px;color:#64748b">${g('companyPhone')}</p>`:''}</div><div style="text-align:right">${(g('salesName')||g('salesPhone')||g('salesEmail'))?`<div style="margin-bottom:14px"><p style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Prepared By</p>${g('salesName')?`<p style="font-size:13px;font-weight:600;color:#1e293b">${g('salesName')}</p>`:''  }${g('salesPhone')?`<p style="font-size:11px;color:#64748b;margin-top:3px">${g('salesPhone')}</p>`:''  }${g('salesEmail')?`<p style="font-size:11px;color:#64748b;margin-top:2px">${g('salesEmail')}</p>`:''  }</div>`:''}<div style="margin-top:4px"><p style="font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:${t.primary};opacity:.6;margin-bottom:4px">Quotation</p><p style="font-size:32px;font-weight:800;color:${t.primary};letter-spacing:-.5px;line-height:1;margin:0">${g('quoteNumber')||'—'}</p>${g('quoteDate')?`<p style="font-size:11px;color:#64748b;margin-top:8px">Date: ${new Date(g('quoteDate')).toLocaleDateString('en-MY',{day:'numeric',month:'long',year:'numeric'})}</p>`:''}${computeValidTill()?`<p style="font-size:11px;color:#94a3b8;margin-top:2px">Valid Till: ${computeValidTill()}</p>`:g('quoteValidity')?`<p style="font-size:11px;color:#94a3b8;margin-top:2px">Valid for: ${g('quoteValidity')} days</p>`:''}</div></div></div><div style="border-top:2px solid ${t.primary};margin-bottom:14px"></div><div style="margin-bottom:20px;padding:14px 16px;background:${t.accentLight};border-left:3px solid ${t.primary};border-radius:0 8px 8px 0"><p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${t.primary};margin-bottom:8px">Bill To</p><p style="font-size:14px;font-weight:600;color:#1e293b;margin:0">${g('custName')}</p><p style="font-size:12px;color:#475569;margin-top:1px">${g('custCompany')}</p>${g('custPhone')?`<p style="font-size:11px;color:#64748b;margin-top:3px">${g('custPhone')}</p>`:''}${g('custEmail')?`<p style="font-size:11px;color:#64748b">${g('custEmail')}</p>`:''}${g('custAddress')?`<p style="font-size:11px;color:#64748b;margin-top:3px;line-height:1.5">${g('custAddress')}</p>`:''}</div><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:8px">Quotation Summary</p>${(hasEquip||hasAW)?`<table style="width:100%;border-collapse:collapse;margin-bottom:6px"><thead><tr style="background:${t.tableHead}"><th style="padding:8px 10px;text-align:left;color:#fff;font-size:11px;font-weight:600;width:28px">#</th><th style="padding:8px 10px;text-align:left;color:#fff;font-size:11px;font-weight:600">Description</th><th style="padding:8px 10px;text-align:right;color:#fff;font-size:11px;font-weight:600">Unit Price</th>${anyDiscount?`<th style="padding:8px 10px;text-align:center;color:#fff;font-size:11px;font-weight:600;width:72px">Discount</th>`:''}<th style="padding:8px 10px;text-align:right;color:#fff;font-size:11px;font-weight:600;width:40px">Qty</th><th style="padding:8px 10px;text-align:right;color:#fff;font-size:11px;font-weight:600">Total</th></tr></thead><tbody>${allRows}</tbody></table><div style="display:flex;justify-content:flex-end;margin-top:4px;margin-bottom:20px"><div style="width:270px;border-top:2px solid ${t.totalBorder};padding-top:8px"><div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;color:${t.totalText}"><span>Grand Total</span><span>RM ${fmt(grandTotal)}</span></div></div></div>`:`<p style="font-size:11px;color:#cbd5e1;text-align:center;padding:24px 0">No items added.</p>`}${buildLeadTimeBlock()}${notes?`<div style="margin-bottom:14px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:5px">Notes</p><p style="font-size:11px;color:#475569;line-height:1.7">${notes}</p></div>`:''}${payment?`<div style="margin-bottom:14px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:5px">Payment Terms</p><p style="font-size:11px;color:#475569;line-height:1.7;white-space:pre-line">${payment}</p></div>`:''}${terms?`<div style="margin-bottom:14px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:5px">Terms &amp; Conditions</p><p style="font-size:11px;color:#64748b;line-height:1.7;white-space:pre-line">${terms}</p></div>`:''}<div style="position:absolute;bottom:40px;left:64px;right:64px;border-top:1px solid #f1f5f9;padding-top:16px;text-align:center"><p style="font-size:10px;color:#cbd5e1">${g('quoteFooter')||'Thank you for considering '+(g('companyName')||'us')+'.'}</p></div>`;
+}
+function buildEquipPage(item,pageNum,totalPgs){
+  const e=equipmentLib[item.equipIdx];if(!e)return'';
+  const t=getTheme();
+  const hFont=t.headingFont||'';
+  const origUnit=e.rmUnit,du=calcUnitPrice(item),line=calcLine(item);
+  const{modType,modPct}=getModifier(item);const hasDiscount=modType==='discount'&&modPct>0;const isSmart=modType==='smartmarkup';
+  const specHTML=buildSpecRows(e),st=seriesType(e.series);
+  const bc=st==='dryer'?'#1e40af':st==='af'?'#065f46':st==='at'?'#92400e':t.primary;
+  let upd;
+  if(isSmart){const listedPrice=calcSmartInflatedPrice(item);const discBack=((listedPrice-du)/listedPrice*100).toFixed(1);upd=`<p style="font-size:12px;font-weight:600;color:#374151;text-decoration:line-through">RM ${fmt(listedPrice)}</p><p style="font-size:11px;color:#6B7280;margin-top:1px">Pays: <span style="font-weight:700;color:#15803d">RM ${fmt(du)}</span> <span style="color:#16a34a">(−${discBack}%)</span></p>`;}
+  else if(hasDiscount){upd=`<p style="font-size:11px;color:#64748b">Orig: <span style="text-decoration:line-through">RM ${fmt(origUnit)}</span></p><p style="font-size:11px;color:#64748b">Unit: <span style="font-weight:600;color:#059669">RM ${fmt(du)}</span> <span style="color:#059669">(−${modPct}%)</span></p>`;}
+  else{upd=`<p style="font-size:11px;color:#64748b">Unit: <span style="font-weight:600;color:#334155">RM ${fmt(du)}</span></p>`;}
+  const ltStr=item.ltMin&&item.ltMax?`${item.ltMin} – ${item.ltMax} weeks`:item.ltMax?`${item.ltMax} weeks`:item.ltMin?`${item.ltMin} weeks`:'';
+  const logo=logoHTML();
+  const headerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px"><div>${logo?`<div style="margin-bottom:10px">${logo}</div>`:''}<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7280;margin-bottom:4px">Equipment Detail</p><h2 style="font-size:22px;font-weight:700;color:${t.primary};${hFont}">${e.model}</h2>${e.type?`<p style="font-size:12px;color:#6B7280;margin-top:2px">${e.type}</p>`:''}${e.series?`<span style="display:inline-block;margin-top:8px;background:${bc};color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;padding:4px 14px;border-radius:999px">${e.series}</span>`:''}</div><div style="text-align:right;padding-top:${logo?'72px':'0'}"><span style="display:inline-block;background:${t.tagBg};color:${t.tagText};font-size:10px;font-weight:700;padding:4px 12px;border-radius:999px">Item ${pageNum-1}</span><p style="font-size:11px;color:#6B7280;margin-top:8px">Qty: <span style="font-weight:600;color:#334155">${item.qty}</span></p>${upd}<p style="font-size:14px;font-weight:700;color:${t.primary};margin-top:4px">RM ${fmt(line)}</p>${ltStr?`<div style="margin-top:8px;padding:6px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;text-align:right"><p style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7280;margin-bottom:2px">Est. Delivery</p><p style="font-size:13px;font-weight:700;color:${t.primary}">${ltStr}</p></div>`:''}</div></div>`;
+  const dividerHTML=`<div style="border-top:2px solid ${t.primary};margin-bottom:24px"></div>`;
+  const specLabelHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${t.primary};white-space:nowrap">Specifications</p><div style="flex:1;height:1px;background:${t.primary};opacity:.15"></div></div>`;
+  const specTableHTML=specHTML?`<table class="spec-table"><tbody>${specHTML}</tbody></table>`:`<p style="font-size:11px;color:#cbd5e1">No specification data.</p>`;
+  const footerHTML=`<div style="border-top:1px solid #f1f5f9;padding-top:14px;display:flex;justify-content:space-between;margin-top:auto"><p style="font-size:10px;color:#a0aec0">${document.getElementById('companyName').value||'Your Company'} · ${document.getElementById('quoteNumber').value||''}</p><p style="font-size:10px;color:#a0aec0">Page ${pageNum} of ${totalPgs}</p></div>`;
+  return`<div style="display:flex;flex-direction:column;height:100%;min-height:1011px">${headerHTML}${dividerHTML}${specLabelHTML}${specTableHTML}${footerHTML}</div>`;
+}
+
+function buildEquipPicturePage(item,pageNum,totalPgs){
+  const e=equipmentLib[item.equipIdx];if(!e)return'';
+  const t=getTheme();
+  const hFont=t.headingFont||'';
+  const pics=(equipmentPictures[item.id]||[]).filter(Boolean);
+  if(!pics.length)return'';
+  const compName=document.getElementById('companyName').value||'Your Company';
+  const quoteNum=document.getElementById('quoteNumber').value||'';
+
+  // Two photos stacked vertically — each gets half the content area (~440px each)
+  const photoSlots=pics.map(url=>
+    `<div style="flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:8px 0">
+      <img src="${url}" style="max-width:100%;max-height:420px;object-fit:contain;display:block;border-radius:6px"/>
+    </div>`
+  ).join(`<div style="height:1px;background:#f1f5f9;flex-shrink:0"></div>`);
+
+  return`<div style="display:flex;flex-direction:column;height:100%;min-height:1011px;padding:0">
+    <!-- Title block -->
+    <div style="padding:48px 64px 24px">
+      <p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6B7280;margin-bottom:6px">Equipment Picture</p>
+      <h2 style="font-size:28px;font-weight:700;color:${t.primary};${hFont};margin:0;line-height:1.1">${e.model}</h2>
+      ${e.series?`<span style="display:inline-block;margin-top:10px;background:${t.primary};color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;padding:4px 16px;border-radius:999px">${e.series}</span>`:''}
+      <div style="border-top:2px solid ${t.primary};margin-top:20px"></div>
+    </div>
+    <!-- Photos stacked -->
+    <div style="flex:1;display:flex;flex-direction:column;padding:0 64px;min-height:0">
+      ${photoSlots}
+    </div>
+    <!-- Minimal footer -->
+    <div style="padding:14px 64px 40px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;margin-top:8px">
+      <p style="font-size:10px;color:#a0aec0">${compName} · ${quoteNum}</p>
+      <p style="font-size:10px;color:#a0aec0">Page ${pageNum} of ${totalPgs}</p>
+    </div>
+  </div>`;
+}
+
+function totalPages(){
+  const equipCount=lineItems.filter(i=>equipmentLib[i.equipIdx]).length;
+  const picPageCount=lineItems.filter(i=>equipmentLib[i.equipIdx]&&(equipmentPictures[i.id]||[]).filter(Boolean).length>0).length;
+  return 1+equipCount+picPageCount+(awItems.length>0?1:0);
+}
+
+function updatePreview(){
+  const wrapper=document.getElementById('pagesWrapper'),tp=totalPages(),pages=[];
+  const cover=document.createElement('div');cover.className='a4-page';cover.innerHTML=buildCoverPage();pages.push(cover);
+  // Tech detail pages
+  lineItems.forEach((item,i)=>{if(!equipmentLib[item.equipIdx])return;const pg=document.createElement('div');pg.className='a4-page';pg.innerHTML=buildEquipPage(item,i+2,tp);pages.push(pg);});
+  // Equipment picture pages — after all tech pages
+  let picPageOffset=1+lineItems.filter(i=>equipmentLib[i.equipIdx]).length;
+  lineItems.forEach(item=>{
+    if(!equipmentLib[item.equipIdx])return;
+    const pics=(equipmentPictures[item.id]||[]).filter(Boolean);
+    if(!pics.length)return;
+    picPageOffset++;
+    const pg=document.createElement('div');pg.className='a4-page';
+    pg.innerHTML=buildEquipPicturePage(item,picPageOffset,tp);
+    pages.push(pg);
+  });
+  // AW page last
+  if(awItems.length>0){const awPg=document.createElement('div');awPg.className='a4-page';awPg.innerHTML=buildAWPage(pages.length+1,tp);pages.push(awPg);}
+  wrapper.innerHTML='';pages.forEach(pg=>wrapper.appendChild(pg));
+  currentPage=Math.min(currentPage,tp-1);
+  mobCurrentPage=Math.min(mobCurrentPage,tp-1);
+  showPage();
+  if(equipPicBlockOpen)renderEquipPicBlock();
+  if(isMobile()&&document.getElementById('tab-preview').classList.contains('active'))renderMobilePreview();
+}
+function buildAWPage(pageNum,totalPgs){
+  const awTitle=document.getElementById('awTitle').value||'Additional Works';
+  const compName=document.getElementById('companyName').value||'Your Company';
+  const quoteNum=document.getElementById('quoteNumber').value||'';
+  const t=getTheme();
+  const logo=logoHTML();
+  let rows='',total=0;
+  awItems.forEach((item,i)=>{const lt=awLineTotal(item);total+=lt;rows+=`<tr><td style="padding:10px;font-size:12px;color:#94a3b8;vertical-align:top;border-bottom:1px solid #f1f5f9;width:32px">${i+1}</td><td style="padding:10px;font-size:12px;color:#334155;vertical-align:top;border-bottom:1px solid #f1f5f9;line-height:1.6;white-space:pre-wrap">${item.jobScope||'—'}</td><td style="padding:10px;font-size:12px;color:#334155;text-align:right;vertical-align:top;border-bottom:1px solid #f1f5f9;white-space:nowrap">RM ${fmt(item.unitPrice)}</td><td style="padding:10px;font-size:12px;color:#334155;text-align:right;vertical-align:top;border-bottom:1px solid #f1f5f9">${item.qty}</td><td style="padding:10px;font-size:12px;font-weight:600;color:${t.primary};text-align:right;vertical-align:top;border-bottom:1px solid #f1f5f9;white-space:nowrap">RM ${fmt(lt)}</td></tr>`;});
+  return`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px"><div><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px">Works Detail</p><h2 style="font-size:22px;font-weight:700;color:${t.primary}">${awTitle}</h2></div>${logo?`<div>${logo}</div>`:''}</div><div style="border-top:2px solid ${t.primary};margin-bottom:24px"></div><table style="width:100%;border-collapse:collapse"><thead><tr style="background:${t.awHead}"><th style="padding:9px 10px;text-align:left;color:#fff;font-size:11px;font-weight:600;width:32px">#</th><th style="padding:9px 10px;text-align:left;color:#fff;font-size:11px;font-weight:600">Job Scope</th><th style="padding:9px 10px;text-align:right;color:#fff;font-size:11px;font-weight:600;white-space:nowrap">Unit Price</th><th style="padding:9px 10px;text-align:right;color:#fff;font-size:11px;font-weight:600;width:48px">Qty</th><th style="padding:9px 10px;text-align:right;color:#fff;font-size:11px;font-weight:600;white-space:nowrap">Total</th></tr></thead><tbody>${rows}</tbody></table><div style="display:flex;justify-content:flex-end;margin-top:8px"><div style="width:260px;border-top:2px solid ${t.awTotalBorder};padding-top:8px"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:${t.primary}"><span>${awTitle} Total</span><span>RM ${fmt(total)}</span></div></div></div><div style="position:absolute;bottom:40px;left:64px;right:64px;border-top:1px solid #f1f5f9;padding-top:14px;display:flex;justify-content:space-between"><p style="font-size:10px;color:#cbd5e1">${compName} · ${quoteNum}</p><p style="font-size:10px;color:#cbd5e1">Page ${pageNum} of ${totalPgs}</p></div>`;
+}
+
+// Email
+function openEmailDraft(){
+  const todayDay=new Date().getDay()||1; // 0=Sun→1, 1=Mon…5=Fri, 6=Sat→5
+  const defaultDay=todayDay===0||todayDay===6?1:todayDay;
+  buildEmailDraft(defaultDay);
+  document.getElementById('emailModal').classList.add('on');
+  // Highlight correct tone btn
+  document.querySelectorAll('.tone-btn').forEach(b=>{
+    b.classList.toggle('active',parseInt(b.dataset.day)===defaultDay);
+  });
+}
+function closeEmailModal(){document.getElementById('emailModal').classList.remove('on');}
+
+function selectTone(day,btn){
+  document.querySelectorAll('.tone-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildEmailDraft(day);
+}
+
+function buildEmailDraft(day){
+  const g=id=>document.getElementById(id).value.trim();
+  const custName=g('custName')||'Sir/Madam';
+  const custCo=g('custCompany');
+  const fromCo=g('companyName')||'Our Company';
+  const qn=g('quoteNumber')||'—';
+  const validTill=computeValidTill();
+  const validLine=validTill?`This quotation is valid till ${validTill}.`
+    :validityDays?`This quotation is valid for ${validityDays} days.`:'';
+  const salutation=custCo?`Dear ${custName} ,`:`Dear ${custName},`;
+
+  // Subject: YourCompany | Quotation QTxxx | CustomerCompany
+  const subjParts=[fromCo,'Quotation'+(qn!=='—'?' '+qn:''),custCo].filter(Boolean);
+  document.getElementById('emailSubject').value=subjParts.join(' | ');
+
+  const templates={
+    1:`${salutation}
+
+We wish to present our formal quotation ${qn} for your consideration.
+
+${validLine}
+
+Kindly review the attached document at your earliest convenience. Should you require any clarification or wish to proceed, please do not hesitate to contact us.`,
+    2:`${salutation}
+
+Please find attached our quotation ${qn} prepared for your requirements.
+
+${validLine}
+
+We would welcome the opportunity to discuss this further at your convenience.`,
+    3:`${salutation}
+
+Hope you are doing well. Please refer to the attached quotation ${qn} for your review.
+
+${validLine}
+
+Feel free to reach out if you have any questions — we are happy to assist.`,
+    4:`${salutation}
+
+Thank you for the opportunity. Attached is our quotation ${qn} as discussed.
+
+${validLine}
+
+Looking forward to hearing from you — do let us know if anything needs adjusting.`,
+    5:`${salutation}
+
+Hope your week has gone well! Please find attached quotation ${qn} for your review.
+
+${validLine}
+
+Have a great weekend — and feel free to drop us a message anytime if you'd like to chat further.`
+  };
+  document.getElementById('emailBody').value=templates[day]||templates[1];
+}
+
+function copyEmailBody(){
+  const body=document.getElementById('emailBody');
+  navigator.clipboard.writeText(body.value).then(()=>{
+    const btn=event.target;btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Body',1800);
+  }).catch(()=>{body.select();document.execCommand('copy');});
+}
+
+function openInMail(){
+  const to=document.getElementById('custEmail').value.trim();
+  const subject=document.getElementById('emailSubject').value;
+  const body=document.getElementById('emailBody').value;
+  window.location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+// PDF
+async function downloadPDF(){
+  const btn=document.getElementById('pdfBtn');
+  btn.disabled=true;btn.textContent='Generating PDF…';
+  try{
+    const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const tp=totalPages();
+    const htmlPages=[];
+    htmlPages.push(buildCoverPage());
+    // Tech detail pages
+    lineItems.forEach((item,i)=>{if(!equipmentLib[item.equipIdx])return;htmlPages.push(buildEquipPage(item,i+2,tp));});
+    // Equipment picture pages after all tech pages
+    let picOff=1+lineItems.filter(i=>equipmentLib[i.equipIdx]).length;
+    lineItems.forEach(item=>{
+      if(!equipmentLib[item.equipIdx])return;
+      const pics=(equipmentPictures[item.id]||[]).filter(Boolean);
+      if(!pics.length)return;
+      picOff++;
+      htmlPages.push(buildEquipPicturePage(item,picOff,tp));
+    });
+    if(awItems.length>0)htmlPages.push(buildAWPage(htmlPages.length+1,tp));
+
+    // Render pages using the live DOM nodes (already built in pagesWrapper)
+    const domPages=[...document.querySelectorAll('#pagesWrapper .a4-page')];
+    domPages.forEach(pg=>pg.style.display='block');
+
+    for(let i=0;i<domPages.length;i++){
+      const canvas=await html2canvas(domPages[i],{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false,width:794,height:1123,windowWidth:794});
+      if(i>0)pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,210,297);
+    }
+    // Append attachment images as extra A4 pages
+    for(let i=0;i<attachments.length;i++){
+      pdf.addPage();
+      const img=new Image();
+      img.src=attachments[i].dataUrl;
+      await new Promise(res=>{img.onload=res;img.onerror=res;});
+      const iw=img.naturalWidth,ih=img.naturalHeight;
+      const pw=210,ph=297;
+      const scale=Math.min(pw/iw*96/25.4, ph/ih*96/25.4, 1);
+      const dw=(iw*scale*25.4/96), dh=(ih*scale*25.4/96);
+      const ox=(pw-dw)/2, oy=(ph-dh)/2;
+      pdf.addImage(attachments[i].dataUrl,'JPEG',ox,oy,dw,dh);
+    }
+    const qn=document.getElementById('quoteNumber').value||'quotation';
+    pdf.save(`${qn}.pdf`);
+  }catch(err){console.error(err);alert('PDF generation failed: '+err.message);}
+  finally{
+    showPage();
+    btn.disabled=false;
+    btn.innerHTML=`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download PDF`;
+  }
+}
+
+// ── Validity selector ───────────────────────────────────────────────────────
+let validityDays = 0;
+
+function setValidity(days, btn){
+  validityDays = days;
+  document.getElementById('quoteValidity').value = days > 0 ? days : '';
+  document.querySelectorAll('.validity-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  updatePreview();
+  save();
+}
+
+function computeValidTill(){
+  const dateVal = document.getElementById('quoteDate').value;
+  if(!dateVal || !validityDays) return '';
+  const d = new Date(dateVal);
+  d.setDate(d.getDate() + validityDays);
+  return d.toLocaleDateString('en-MY', {day:'numeric', month:'long', year:'numeric'});
+}
+
+function restoreValidityBtn(){
+  const val = document.getElementById('quoteValidity').value;
+  const days = parseInt(val) || 0;
+  validityDays = days;
+  document.querySelectorAll('.validity-btn').forEach(b => {
+    const bDays = parseInt(b.textContent) || 0;
+    b.classList.toggle('active', days > 0 && bDays === days);
+    if(days === 0 && b.textContent === 'None') b.classList.add('active');
+  });
+}
+
+// ── Oil Carry Over toggle ────────────────────────────────────────────────────
+let showOilCarryOver = false;
+function setOilCarryOver(val){
+  showOilCarryOver = val;
+  document.getElementById('oilToggleOn').classList.toggle('active', val);
+  document.getElementById('oilToggleOff').classList.toggle('active', !val);
+  updatePreview();
+}
+
+// ── Attachments ──────────────────────────────────────────────────────────────
+let attachments = []; // [{name, dataUrl}]
+
+function addAttachments(input){
+  const files = Array.from(input.files);
+  const readers = files.map(file => new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => res({name: file.name, dataUrl: e.target.result});
+    r.readAsDataURL(file);
+  }));
+  Promise.all(readers).then(results => {
+    attachments.push(...results);
+    renderAttachmentList();
+    input.value = '';
+  });
+}
+
+function removeAttachment(idx){
+  attachments.splice(idx, 1);
+  renderAttachmentList();
+}
+
+function renderAttachmentList(){
+  const list = document.getElementById('attachmentList');
+  const empty = document.getElementById('attachmentEmpty');
+  empty.style.display = attachments.length ? 'none' : '';
+  list.innerHTML = attachments.map((a, i) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f1f5f9">
+      <img src="${a.dataUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;flex-shrink:0"/>
+      <span style="flex:1;font-size:11px;font-weight:500;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</span>
+      <button class="btn-xred" onclick="removeAttachment(${i})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>`).join('');
+}
+
+// Event listeners
+document.getElementById('leftPanel').addEventListener('input',e=>{const tag=e.target.tagName.toLowerCase();if(tag==='input'||tag==='textarea'){updatePreview();save();}});
+['custModal','modal','termsModal','payModal','emailModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
+
+// Resizer (desktop only)
+(function(){const resizer=document.getElementById('resizer'),left=document.getElementById('leftPanel');let d=false,sx=0,sw=0;resizer.addEventListener('mousedown',e=>{d=true;sx=e.clientX;sw=left.offsetWidth;resizer.classList.add('dragging');document.body.style.cursor='col-resize';document.body.style.userSelect='none';});document.addEventListener('mousemove',e=>{if(!d)return;left.style.width=Math.min(680,Math.max(280,sw+(e.clientX-sx)))+'px';});document.addEventListener('mouseup',()=>{if(!d)return;d=false;resizer.classList.remove('dragging');document.body.style.cursor='';document.body.style.userSelect='';});})();
+
+// Re-render mobile preview on resize
+window.addEventListener('resize',()=>{
+  if(isMobile()&&document.getElementById('tab-preview').classList.contains('active'))renderMobilePreview();
+});
+
+load();
+if(!document.getElementById('quoteDate').value)document.getElementById('quoteDate').value=today();
+restoreValidityBtn();
+updatePreview();
+</script>
+
+</div><!-- end appWrapper -->
+</body>
+</html>
