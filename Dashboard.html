@@ -280,17 +280,17 @@ tr:hover td{background:#faf9f7;cursor:pointer}
 
 <script>
 // Defer init until all scripts are loaded
-let auth, db, currentUser = null;
+// ── Firebase init (sync — SDKs are loaded above) ──────────────────────────
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+let currentUser = null;
 let allQuotes = [], filtered = [];
 let sortField = 'quoteDate', sortDir = -1;
 
-window.addEventListener('load', () => {
-  firebase.initializeApp(FIREBASE_CONFIG);
-  auth = firebase.auth();
-  db   = firebase.firestore();
-
-  // ── Auth guard ──────────────────────────────────────────────────────────
-  auth.onAuthStateChanged(async user => {
+// ── Auth guard ──────────────────────────────────────────────────────────────
+auth.onAuthStateChanged(async user => {
   if(!user){ window.location.href='index.html'; return; }
   currentUser = user;
   // Get display name
@@ -300,8 +300,7 @@ window.addEventListener('load', () => {
     document.getElementById('userChip').textContent = name;
   } catch(e){ document.getElementById('userChip').textContent = user.email; }
     loadDashboard();
-  }); // end auth.onAuthStateChanged
-}); // end window.addEventListener('load')
+}); // end auth.onAuthStateChanged
 
 function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
 
@@ -542,9 +541,7 @@ async function manualBackup(){
   } catch(e){ statusEl.textContent='Backup failed.'; showToast('Backup failed.','err'); console.error(e); }
 }
 
-}); // end window.addEventListener('load')
-
-// ── Toast (outside load wrapper so it's always available) ─────────────────
+// ── Toast ─────────────────────────────────────────────────────────────────
 let _tt;
 function showToast(msg,type=''){
   const t=document.getElementById('toast');
