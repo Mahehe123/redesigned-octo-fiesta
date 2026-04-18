@@ -572,9 +572,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 // FIREBASE INIT + AUTH GUARD
 // ═══════════════════════════════════════════════════════════════════════════
 // ── Firebase init (sync — SDKs are loaded above) ──────────────────────────
-firebase.initializeApp(FIREBASE_CONFIG);
-const auth = firebase.auth();
-const db   = firebase.firestore();
+if (!firebase.apps.length) {
+  firebase.initializeApp(FIREBASE_CONFIG);
+}
+auth = firebase.auth();
+db   = firebase.firestore();
 
 let currentUser = null;
 let currentUserName = '';
