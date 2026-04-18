@@ -281,9 +281,11 @@ tr:hover td{background:#faf9f7;cursor:pointer}
 <script>
 // Defer init until all scripts are loaded
 // ── Firebase init (sync — SDKs are loaded above) ──────────────────────────
-firebase.initializeApp(FIREBASE_CONFIG);
-const auth = firebase.auth();
-const db   = firebase.firestore();
+if (!firebase.apps.length) {
+  firebase.initializeApp(FIREBASE_CONFIG);
+}
+auth = firebase.auth();
+db   = firebase.firestore();
 
 let currentUser = null;
 let allQuotes = [], filtered = [];
@@ -302,7 +304,7 @@ auth.onAuthStateChanged(async user => {
     loadDashboard();
 }); // end auth.onAuthStateChanged
 
-function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
+
 
 // ── Load all data ─────────────────────────────────────────────────────────
 async function loadDashboard(){
@@ -541,6 +543,8 @@ async function manualBackup(){
   } catch(e){ statusEl.textContent='Backup failed.'; showToast('Backup failed.','err'); console.error(e); }
 }
 
+function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
+  
 // ── Toast ─────────────────────────────────────────────────────────────────
 let _tt;
 function showToast(msg,type=''){
