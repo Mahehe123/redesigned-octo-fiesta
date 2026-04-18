@@ -157,18 +157,15 @@ body::before{
 <script src="firebase-config.js"></script>
 <script>
 // ── Init Firebase ─────────────────────────────────────────────────────────────
-let auth, db;
+// ── Firebase init (sync — SDKs are loaded above) ──────────────────────────
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db   = firebase.firestore();
 
-window.addEventListener('load', () => {
-  firebase.initializeApp(FIREBASE_CONFIG);
-  auth = firebase.auth();
-  db   = firebase.firestore();
-
-  // ── Auth state: redirect if already logged in ──────────────────────────
-  auth.onAuthStateChanged(user => {
-    if(user) window.location.href = 'dashboard.html';
-  });
-}); // end window.addEventListener('load')
+// ── Auth state: redirect if already logged in ──────────────────────────────
+auth.onAuthStateChanged(user => {
+  if(user) window.location.href = 'dashboard.html';
+});
 
 // ── Login handler — must be global for onclick ─────────────────────────────
 async function doLogin(){
