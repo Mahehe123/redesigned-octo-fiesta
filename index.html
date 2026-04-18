@@ -157,28 +157,34 @@ body::before{
 <script src="firebase-config.js"></script>
 <script>
 // ── Init Firebase ─────────────────────────────────────────────────────────────
-// ── Firebase init (sync — SDKs are loaded above) ──────────────────────────
-firebase.initializeApp(FIREBASE_CONFIG);
-const auth = firebase.auth();
-const db   = firebase.firestore();
+let auth, db;
 
-// ── Auth state: redirect if already logged in ──────────────────────────────
-auth.onAuthStateChanged(user => {
-  if(user) window.location.href = 'dashboard.html';
+window.addEventListener('load', () => {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  auth = firebase.auth();
+  db   = firebase.firestore();
+
+  // ── Auth state: redirect if already logged in ───────────────────────────────
+  auth.onAuthStateChanged(user => {
+    if(user) window.location.href = 'dashboard.html';
+  });
 });
 
-// ── Login handler — must be global for onclick ─────────────────────────────
+// ── Login handler (global so onclick= can reach it) ───────────────────────────
 async function doLogin(){
   const raw  = document.getElementById('inpUser').value.trim().toLowerCase();
   const pass = document.getElementById('inpPass').value;
+  const err  = document.getElementById('errBox');
   const btn  = document.getElementById('btnLogin');
   const spin = document.getElementById('spinner');
   const lbl  = document.getElementById('btnLabel');
 
+  err.classList.remove('on');
   if(!raw){ showErr('Please enter your username.'); return; }
   if(!pass){ showErr('Please enter your password.'); return; }
 
-  const email = raw.includes('@') ? raw : raw + '@mitsumori.app';
+  // Username → email convention (same as Mitsumori)
+  const email = raw.includes('@') ? raw : `${raw}@mitsumori.app`;
 
   btn.disabled = true;
   spin.classList.add('on');
@@ -186,13 +192,13 @@ async function doLogin(){
 
   try {
     await auth.signInWithEmailAndPassword(email, pass);
-    // onAuthStateChanged handles redirect
+    // onAuthStateChanged will redirect
   } catch(e) {
-    const msg = (e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential')
+    const msg = e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found'
       ? 'Incorrect username or password.'
       : e.code === 'auth/too-many-requests'
       ? 'Too many attempts. Please wait a moment and try again.'
-      : 'Sign-in failed: ' + e.message;
+      : 'Sign-in failed. Please try again.';
     showErr(msg);
     btn.disabled = false;
     spin.classList.remove('on');
