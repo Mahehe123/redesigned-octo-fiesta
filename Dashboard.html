@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mitsumori · Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+body{background:#F5F4F1;color:#1e293b;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:#f1f5f9}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+
+/* ── Topbar ──────────────────────────────────────────────────────────────── */
+.topbar{background:#fff;border-bottom:1px solid #e8e6e1;padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:32px;height:32px;background:linear-gradient(135deg,#2C2C2C,#4a4a4a);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.brand-icon svg{width:16px;height:16px;color:#F5F0E8}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#2C2C2C;letter-spacing:.01em}
+.brand-sep{width:1px;height:16px;background:#e2e8f0;margin:0 2px}
+.brand-page{font-size:12px;font-weight:600;color:#8B8176;letter-spacing:.04em;text-transform:uppercase}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.tb-btn{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#374151;background:#f8fafc;border:1px solid #e2e8f0;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit}
+.tb-btn:hover{background:#f1f5f9;border-color:#cbd5e1}
+.tb-btn svg{width:14px;height:14px}
+.tb-btn.primary{background:#2C2C2C;color:#F5F0E8;border-color:#2C2C2C}.tb-btn.primary:hover{background:#1a1a1a}
+.tb-btn.danger{background:#fef2f2;color:#dc2626;border-color:#fecaca}.tb-btn.danger:hover{background:#fee2e2}
+.user-chip{font-size:11px;font-weight:600;color:#64748b;background:#f1f5f9;border-radius:999px;padding:4px 12px}
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.main{padding:24px 28px;max-width:1400px;margin:0 auto}
+
+/* ── KPI Strip ───────────────────────────────────────────────────────────── */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:18px 20px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+.kpi.all::before{background:linear-gradient(90deg,#2C2C2C,#8B8176)}
+.kpi.delivered::before{background:#3b82f6}
+.kpi.negotiation::before{background:#f97316}
+.kpi.win::before{background:#22c55e}
+.kpi.loss::before{background:#ef4444}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px}
+.kpi-val{font-size:26px;font-weight:700;color:#1e293b;line-height:1}
+.kpi-sub{font-size:11px;color:#94a3b8;margin-top:4px;font-weight:500}
+
+/* ── Pipeline bar ────────────────────────────────────────────────────────── */
+.pipeline{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 24px;margin-bottom:24px}
+.pipeline-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px}
+.pipeline-track{height:12px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;margin-bottom:10px}
+.pipeline-seg{height:100%;transition:width .4s ease;border-radius:0}
+.pipeline-seg:first-child{border-radius:999px 0 0 999px}
+.pipeline-seg:last-child{border-radius:0 999px 999px 0}
+.pipeline-legend{display:flex;gap:16px;flex-wrap:wrap}
+.pipeline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:#374151}
+
+/* ── Filters ─────────────────────────────────────────────────────────────── */
+.filters{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.filter-inp{border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:13px;color:#374151;outline:none;font-family:inherit;background:#fff;min-width:180px}
+.filter-inp:focus{border-color:#8B8176;box-shadow:0 0 0 2px rgba(139,129,118,.12)}
+.filter-select{border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:13px;color:#374151;outline:none;font-family:inherit;background:#fff;cursor:pointer}
+.filter-select:focus{border-color:#8B8176}
+.filter-clear{font-size:12px;font-weight:600;color:#8B8176;cursor:pointer;padding:4px 8px;border-radius:6px;border:none;background:transparent;font-family:inherit}
+.filter-clear:hover{background:#f5f4f1}
+.filter-count{font-size:11px;font-weight:600;color:#94a3b8;margin-left:auto}
+
+/* ── Table ───────────────────────────────────────────────────────────────── */
+.table-wrap{background:#fff;border:1px solid #e8e6e1;border-radius:14px;overflow:hidden;margin-bottom:24px}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f1f5f9}
+.table-title{font-size:13px;font-weight:700;color:#1e293b}
+table{width:100%;border-collapse:collapse}
+thead tr{background:#faf9f7}
+th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;white-space:nowrap;cursor:pointer;user-select:none;border-bottom:1px solid #f1f5f9}
+th:hover{color:#374151}
+th.sorted{color:#2C2C2C}
+td{padding:11px 16px;font-size:13px;border-bottom:1px solid #faf9f7;color:#374151;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#faf9f7;cursor:pointer}
+.td-bold{font-weight:600;color:#1e293b}
+.td-mono{font-family:'SF Mono',monospace;font-size:12px;font-weight:600;color:#2C2C2C}
+
+/* Status badges */
+.badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.badge.draft{background:#f1f5f9;color:#94a3b8}
+.badge.delivered{background:#eff6ff;color:#1d4ed8}
+.badge.negotiation{background:#fff7ed;color:#c2410c}
+.badge.win{background:#f0fdf4;color:#15803d}
+.badge.loss{background:#fef2f2;color:#dc2626}
+
+.rev-pill{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;font-size:9px;font-weight:700;background:#f1f5f9;color:#64748b;margin-left:4px}
+
+/* ── Loss Analysis ───────────────────────────────────────────────────────── */
+.analysis{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.analysis-card{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 22px}
+.analysis-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:16px}
+.loss-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.loss-bar-label{font-size:12px;font-weight:500;color:#374151;min-width:90px}
+.loss-bar-track{flex:1;height:8px;background:#fef2f2;border-radius:999px;overflow:hidden}
+.loss-bar-fill{height:100%;background:#ef4444;border-radius:999px;transition:width .4s ease}
+.loss-bar-count{font-size:11px;font-weight:600;color:#94a3b8;min-width:28px;text-align:right}
+.comp-item{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:12px}
+.comp-item:last-child{border-bottom:none}
+.comp-name{font-weight:600;color:#374151}
+.comp-count{font-size:11px;color:#94a3b8;font-weight:500}
+.empty-state{text-align:center;padding:32px;font-size:12px;color:#94a3b8}
+
+/* ── Admin panel ─────────────────────────────────────────────────────────── */
+.admin{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 22px;margin-bottom:24px}
+.admin-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px}
+.admin-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:999;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;background:#1e293b;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none}
+#toast.on{transform:translateY(0);opacity:1}
+#toast.ok{background:#15803d}
+#toast.err{background:#dc2626}
+
+/* ── Loading overlay ─────────────────────────────────────────────────────── */
+#loadingOverlay{position:fixed;inset:0;background:rgba(245,244,241,.8);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.spinner{width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#2C2C2C;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;font-weight:600;color:#64748b}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading dashboard…</div>
+</div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    </div>
+    <div class="brand-name">Mitsumori</div>
+    <div class="brand-sep"></div>
+    <div class="brand-page">Dashboard</div>
+  </div>
+  <div class="topbar-right">
+    <span class="user-chip" id="userChip">Loading…</span>
+    <button class="tb-btn primary" onclick="window.location.href='app.html'">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      New Quote
+    </button>
+    <button class="tb-btn" onclick="loadDashboard()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      Refresh
+    </button>
+    <button class="tb-btn danger" onclick="doLogout()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      Sign Out
+    </button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- KPI Strip -->
+  <div class="kpi-strip">
+    <div class="kpi all">
+      <div class="kpi-label">Total Quotes</div>
+      <div class="kpi-val" id="kpiTotal">—</div>
+      <div class="kpi-sub" id="kpiTotalVal">RM —</div>
+    </div>
+    <div class="kpi delivered">
+      <div class="kpi-label">Delivered</div>
+      <div class="kpi-val" id="kpiDelivered">—</div>
+      <div class="kpi-sub" id="kpiDeliveredVal">RM —</div>
+    </div>
+    <div class="kpi negotiation">
+      <div class="kpi-label">Negotiation</div>
+      <div class="kpi-val" id="kpiNego">—</div>
+      <div class="kpi-sub" id="kpiNegoVal">RM —</div>
+    </div>
+    <div class="kpi win">
+      <div class="kpi-label">Win</div>
+      <div class="kpi-val" id="kpiWin">—</div>
+      <div class="kpi-sub" id="kpiWinVal">RM —</div>
+    </div>
+    <div class="kpi loss">
+      <div class="kpi-label">Loss</div>
+      <div class="kpi-val" id="kpiLoss">—</div>
+      <div class="kpi-sub" id="kpiLossVal">RM —</div>
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="pipeline">
+    <div class="pipeline-title">Pipeline Overview</div>
+    <div class="pipeline-track" id="pipelineTrack"></div>
+    <div class="pipeline-legend" id="pipelineLegend"></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input class="filter-inp" id="filterSearch" placeholder="Search quote no., customer, company…" oninput="applyFilters()"/>
+    <select class="filter-select" id="filterStatus" onchange="applyFilters()">
+      <option value="">All Statuses</option>
+      <option value="draft">Draft</option>
+      <option value="delivered">Delivered</option>
+      <option value="negotiation">Negotiation</option>
+      <option value="win">Win</option>
+      <option value="loss">Loss</option>
+    </select>
+    <select class="filter-select" id="filterUser" onchange="applyFilters()">
+      <option value="">All Salespeople</option>
+    </select>
+    <select class="filter-select" id="filterYear" onchange="applyFilters()">
+      <option value="">All Years</option>
+    </select>
+    <button class="filter-clear" onclick="clearFilters()">Clear</button>
+    <span class="filter-count" id="filterCount"></span>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-title">All Quotations</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('displayQuoteNo')" id="th-displayQuoteNo">Quote No. ↕</th>
+            <th onclick="sortBy('customer.company')" id="th-customer.company">Customer ↕</th>
+            <th onclick="sortBy('quoteDate')" id="th-quoteDate">Date ↕</th>
+            <th onclick="sortBy('status')" id="th-status">Status ↕</th>
+            <th onclick="sortBy('totals.grandTotal')" id="th-totals.grandTotal" style="text-align:right">Value ↕</th>
+            <th onclick="sortBy('createdByName')" id="th-createdByName">Salesperson ↕</th>
+            <th>Loss Reason</th>
+          </tr>
+        </thead>
+        <tbody id="quoteTableBody"></tbody>
+      </table>
+    </div>
+    <div id="tableEmpty" class="empty-state" style="display:none">No quotations found matching your filters.</div>
+  </div>
+
+  <!-- Loss Analysis -->
+  <div class="analysis">
+    <div class="analysis-card">
+      <div class="analysis-title">Loss by Reason</div>
+      <div id="lossReasonChart"><div class="empty-state">No loss data yet.</div></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-title">Lost to Competitor</div>
+      <div id="competitorList"><div class="empty-state">No competitor data yet.</div></div>
+    </div>
+  </div>
+
+  <!-- Admin -->
+  <div class="admin">
+    <div class="admin-title">Admin Tools</div>
+    <div class="admin-row">
+      <button class="tb-btn" onclick="exportFullDB()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Export Full Database (JSON)
+      </button>
+      <button class="tb-btn" onclick="manualBackup()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+        Manual Backup Now
+      </button>
+      <span id="backupStatus" style="font-size:11px;color:#94a3b8;font-weight:500"></span>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<div id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<script>
+// Defer init until all scripts are loaded
+let auth, db, currentUser = null;
+let allQuotes = [], filtered = [];
+let sortField = 'quoteDate', sortDir = -1;
+
+window.addEventListener('load', () => {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  auth = firebase.auth();
+  db   = firebase.firestore();
+
+// ── Auth guard ────────────────────────────────────────────────────────────
+auth.onAuthStateChanged(async user => {
+  if(!user){ window.location.href='index.html'; return; }
+  currentUser = user;
+  // Get display name
+  try{
+    const uDoc = await db.collection(COL.USERS).doc(user.uid).get();
+    const name = uDoc.exists ? (uDoc.data().displayName || user.email) : user.email;
+    document.getElementById('userChip').textContent = name;
+  } catch(e){ document.getElementById('userChip').textContent = user.email; }
+  loadDashboard();
+});
+
+function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
+
+// ── Load all data ─────────────────────────────────────────────────────────
+async function loadDashboard(){
+  document.getElementById('loadingOverlay').style.display='flex';
+  try{
+    const snap = await db.collection(COL.QUOTATIONS).orderBy('updatedAt','desc').get();
+    allQuotes = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+    buildFilterOptions();
+    applyFilters();
+    renderKPIs();
+    renderPipeline();
+    renderLossAnalysis();
+  } catch(e){
+    showToast('Failed to load data. Check connection.','err');
+    console.error(e);
+  }
+  document.getElementById('loadingOverlay').style.display='none';
+}
+
+// ── KPIs ──────────────────────────────────────────────────────────────────
+function renderKPIs(){
+  const fmt = n => 'RM ' + Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:0,maximumFractionDigits:0});
+  const sum = (arr) => arr.reduce((a,q)=>a+(q.totals?.grandTotal||0),0);
+  const byStatus = s => allQuotes.filter(q=>q.status===s);
+
+  document.getElementById('kpiTotal').textContent = allQuotes.length;
+  document.getElementById('kpiTotalVal').textContent = fmt(sum(allQuotes));
+
+  [['Delivered','delivered'],['Nego','negotiation'],['Win','win'],['Loss','loss']].forEach(([k,s])=>{
+    const arr = byStatus(s);
+    document.getElementById('kpi'+k).textContent = arr.length;
+    document.getElementById('kpi'+k+'Val').textContent = fmt(sum(arr));
+  });
+}
+
+// ── Pipeline bar ──────────────────────────────────────────────────────────
+function renderPipeline(){
+  const total = allQuotes.length || 1;
+  const segs = [
+    { status:'delivered', label:'Delivered', color:'#3b82f6' },
+    { status:'negotiation', label:'Negotiation', color:'#f97316' },
+    { status:'win', label:'Win', color:'#22c55e' },
+    { status:'loss', label:'Loss', color:'#ef4444' },
+    { status:'draft', label:'Draft', color:'#cbd5e1' },
+  ];
+  const track = document.getElementById('pipelineTrack');
+  const legend = document.getElementById('pipelineLegend');
+  track.innerHTML=''; legend.innerHTML='';
+  segs.forEach(seg=>{
+    const count = allQuotes.filter(q=>(q.status||'draft')===seg.status).length;
+    const pct = (count/total*100).toFixed(1);
+    if(count>0){
+      const el=document.createElement('div');
+      el.className='pipeline-seg';
+      el.style.cssText=`width:${pct}%;background:${seg.color}`;
+      el.title=`${seg.label}: ${count}`;
+      track.appendChild(el);
+    }
+    const li=document.createElement('div');li.className='legend-item';
+    li.innerHTML=`<div class="pipeline-dot" style="background:${seg.color}"></div><span>${seg.label} (${count})</span>`;
+    legend.appendChild(li);
+  });
+}
+
+// ── Filter options ────────────────────────────────────────────────────────
+function buildFilterOptions(){
+  // Users
+  const users = [...new Set(allQuotes.map(q=>q.createdByName).filter(Boolean))].sort();
+  const userSel = document.getElementById('filterUser');
+  userSel.innerHTML='<option value="">All Salespeople</option>';
+  users.forEach(u=>{ const o=document.createElement('option');o.value=u;o.textContent=u;userSel.appendChild(o);});
+
+  // Years
+  const years = [...new Set(allQuotes.map(q=>q.quoteDate?.slice(0,4)).filter(Boolean))].sort().reverse();
+  const yearSel = document.getElementById('filterYear');
+  yearSel.innerHTML='<option value="">All Years</option>';
+  years.forEach(y=>{ const o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o);});
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────
+function applyFilters(){
+  const q = document.getElementById('filterSearch').value.toLowerCase();
+  const status = document.getElementById('filterStatus').value;
+  const user = document.getElementById('filterUser').value;
+  const year = document.getElementById('filterYear').value;
+
+  filtered = allQuotes.filter(d=>{
+    if(status && (d.status||'draft')!==status) return false;
+    if(user && d.createdByName!==user) return false;
+    if(year && !d.quoteDate?.startsWith(year)) return false;
+    if(q){
+      const haystack = [d.displayQuoteNo,d.quoteNo,d.customer?.company,d.customer?.name,d.createdByName].join(' ').toLowerCase();
+      if(!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  filtered.sort((a,b)=>{
+    const va = getNestedVal(a,sortField);
+    const vb = getNestedVal(b,sortField);
+    if(va===vb)return 0;
+    return (va>vb?1:-1)*sortDir;
+  });
+
+  document.getElementById('filterCount').textContent = `${filtered.length} of ${allQuotes.length} quotes`;
+  renderTable();
+}
+
+function getNestedVal(obj,path){
+  return path.split('.').reduce((o,k)=>o?.[k],obj)||'';
+}
+
+function clearFilters(){
+  document.getElementById('filterSearch').value='';
+  document.getElementById('filterStatus').value='';
+  document.getElementById('filterUser').value='';
+  document.getElementById('filterYear').value='';
+  applyFilters();
+}
+
+// ── Sort ──────────────────────────────────────────────────────────────────
+function sortBy(field){
+  if(sortField===field) sortDir*=-1;
+  else { sortField=field; sortDir=-1; }
+  // Update header indicators
+  document.querySelectorAll('th').forEach(th=>th.classList.remove('sorted'));
+  const thEl = document.getElementById('th-'+field);
+  if(thEl) thEl.classList.add('sorted');
+  applyFilters();
+}
+
+// ── Table render ──────────────────────────────────────────────────────────
+function renderTable(){
+  const tbody = document.getElementById('quoteTableBody');
+  const empty = document.getElementById('tableEmpty');
+
+  if(!filtered.length){ tbody.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+
+  tbody.innerHTML = filtered.map(d=>{
+    const revPill = d.revision > 0 ? `<span class="rev-pill">Rev.${d.revision}</span>` : '';
+    const status = d.status || 'draft';
+    const total = (d.totals?.grandTotal||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const lossReason = status==='loss' && d.lossDetails?.reason ? d.lossDetails.reason : '—';
+    const lossStyle = status==='loss' ? 'color:#dc2626;font-weight:500' : 'color:#94a3b8';
+    return `<tr onclick="openQuote('${d.quoteNo}','${d._id}')">
+      <td><span class="td-mono">${d.displayQuoteNo||d.quoteNo||'—'}</span>${revPill}</td>
+      <td><span class="td-bold">${d.customer?.company||d.customer?.name||'—'}</span>${d.customer?.company&&d.customer?.name?`<br/><span style="font-size:11px;color:#94a3b8">${d.customer.name}</span>`:''}</td>
+      <td>${d.quoteDate||'—'}</td>
+      <td><span class="badge ${status}">${status}</span></td>
+      <td style="text-align:right"><span class="td-bold">RM ${total}</span></td>
+      <td>${d.createdByName||'—'}</td>
+      <td style="${lossStyle}">${lossReason}</td>
+    </tr>`;
+  }).join('');
+}
+
+function openQuote(quoteNo, docId){
+  window.location.href = `app.html?id=${encodeURIComponent(quoteNo)}`;
+}
+
+// ── Loss Analysis ─────────────────────────────────────────────────────────
+function renderLossAnalysis(){
+  const losses = allQuotes.filter(q=>q.status==='loss');
+
+  // By reason
+  const reasonEl = document.getElementById('lossReasonChart');
+  if(!losses.length){ reasonEl.innerHTML='<div class="empty-state">No loss data yet.</div>'; }
+  else{
+    const reasons = {};
+    losses.forEach(q=>{ const r=q.lossDetails?.reason||'Unknown'; reasons[r]=(reasons[r]||0)+1; });
+    const max = Math.max(...Object.values(reasons));
+    reasonEl.innerHTML = Object.entries(reasons).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`
+      <div class="loss-bar-row">
+        <span class="loss-bar-label">${r}</span>
+        <div class="loss-bar-track"><div class="loss-bar-fill" style="width:${(n/max*100).toFixed(0)}%"></div></div>
+        <span class="loss-bar-count">${n}</span>
+      </div>`).join('');
+  }
+
+  // Competitors
+  const compEl = document.getElementById('competitorList');
+  const comps = {};
+  losses.forEach(q=>{ const c=(q.lossDetails?.competitor||'').trim(); if(c){ comps[c]=(comps[c]||0)+1; } });
+  if(!Object.keys(comps).length){ compEl.innerHTML='<div class="empty-state">No competitor data recorded yet.</div>'; }
+  else{
+    compEl.innerHTML = Object.entries(comps).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`
+      <div class="comp-item">
+        <span class="comp-name">${c}</span>
+        <span class="comp-count">${n} time${n>1?'s':''}</span>
+      </div>`).join('');
+  }
+}
+
+// ── Admin: Export full DB ──────────────────────────────────────────────────
+async function exportFullDB(){
+  showToast('Preparing export…');
+  try{
+    const snap = await db.collection(COL.QUOTATIONS).get();
+    const data = snap.docs.map(d=>({_id:d.id,...d.data()}));
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json],{type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0,10);
+    a.href=url; a.download=`Mitsumori_Export_${dateStr}.json`; a.click();
+    URL.revokeObjectURL(url);
+    showToast(`Exported ${data.length} quotes`,'ok');
+  } catch(e){ showToast('Export failed.','err'); console.error(e); }
+}
+
+// ── Admin: Manual backup ──────────────────────────────────────────────────
+async function manualBackup(){
+  const statusEl = document.getElementById('backupStatus');
+  statusEl.textContent = 'Running backup…';
+  try{
+    const snap = await db.collection(COL.QUOTATIONS).get();
+    const allData = snap.docs.map(d=>({_id:d.id,...d.data()}));
+    const todayKey = new Date().toISOString().slice(0,10);
+    await db.collection(COL.BACKUPS).doc(todayKey).set({
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      recordCount: allData.length,
+      data: JSON.stringify(allData),
+    });
+    // Prune old
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate()-BACKUP_RETAIN);
+    const cutoffKey = cutoff.toISOString().slice(0,10);
+    const old = await db.collection(COL.BACKUPS).where(firebase.firestore.FieldPath.documentId(),'<',cutoffKey).get();
+    const batch = db.batch();
+    old.docs.forEach(d=>batch.delete(d.ref));
+    if(!old.empty) await batch.commit();
+    statusEl.textContent = `✓ Backup complete — ${allData.length} records, ${old.size} old snapshots pruned`;
+    showToast('Backup complete','ok');
+  } catch(e){ statusEl.textContent='Backup failed.'; showToast('Backup failed.','err'); console.error(e); }
+}
+
+}); // end window.addEventListener('load')
+
+// ── Toast (outside load wrapper so it's always available) ─────────────────
+let _tt;
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='on '+(type||'');
+  clearTimeout(_tt); _tt=setTimeout(()=>t.className='',3000);
+}
+</script>
+</body>
+</html>

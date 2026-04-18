@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mitsumori · Quotation Creator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
+*{font-family:'Inter',sans-serif;box-sizing:border-box;margin:0;padding:0}
+body{background:#f8fafc;color:#1e293b;overflow:hidden}
+body.theme-japandi .brand-title,.brand-sub-j,body.theme-japandi .sec-title,body.theme-japandi .lcard-model,body.theme-japandi .modal h3{font-family:'Cormorant Garamond',serif;letter-spacing:.01em}
+:root{--theme-primary:#0f172a;--theme-primary-hover:#1e293b;--theme-accent:#0f172a;--theme-accent-light:#f1f5f9;--theme-badge-bg:#0f172a;--theme-badge-text:#ffffff;--theme-table-head:#0f172a;--theme-aw-head:#334155;--theme-series-default:#1e293b;--theme-tag-bg:#f1f5f9;--theme-tag-text:#475569;--theme-total-border:#0f172a;--theme-total-text:#0f172a;--theme-aw-total-border:#334155}
+body.theme-industrial{--theme-primary:#1B365D;--theme-primary-hover:#142848;--theme-accent:#708090;--theme-accent-light:#E6F0FA;--theme-badge-bg:#1B365D;--theme-badge-text:#fff;--theme-table-head:#1B365D;--theme-aw-head:#708090;--theme-series-default:#1B365D;--theme-tag-bg:#E6F0FA;--theme-tag-text:#1B365D;--theme-total-border:#1B365D;--theme-total-text:#1B365D;--theme-aw-total-border:#708090}
+body.theme-japandi{--theme-primary:#2C2C2C;--theme-primary-hover:#1a1a1a;--theme-accent:#8B8176;--theme-accent-light:#F2EDE6;--theme-badge-bg:#2C2C2C;--theme-badge-text:#F5F0E8;--theme-table-head:#2C2C2C;--theme-aw-head:#8B8176;--theme-series-default:#2C2C2C;--theme-tag-bg:#EDE8E0;--theme-tag-text:#2C2C2C;--theme-total-border:#2C2C2C;--theme-total-text:#2C2C2C;--theme-aw-total-border:#8B8176;background:#FAF7F2}
+.btn-dark,.btn-icon{background:var(--theme-primary)!important}.btn-dark:hover,.btn-icon:hover{background:var(--theme-primary-hover)!important}
+.tab-btn.active::after{background:var(--theme-primary)!important}.tab-btn.active{color:var(--theme-primary)!important}
+.toggle-pill button.active{background:var(--theme-primary)!important}.mob-nav-btn{background:var(--theme-primary)!important}
+.pdf-btn{background:linear-gradient(135deg,var(--theme-primary),var(--theme-primary-hover))!important}
+.theme-swatches{display:flex;gap:8px;flex-wrap:wrap}.theme-swatch{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative;flex-shrink:0}
+.theme-swatch.active{border-color:#1e293b;box-shadow:0 0 0 2px #fff,0 0 0 4px #1e293b}.theme-swatch:hover{transform:scale(1.12)}
+.theme-swatch-label{font-size:10px;color:#94a3b8;text-align:center;margin-top:4px}.theme-option{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.logo-upload-area{border:1.5px dashed #cbd5e1;border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;text-align:center}.logo-upload-area:hover{border-color:#94a3b8;background:#f8fafc}
+.logo-preview-wrap{display:flex;align-items:center;gap:12px}.logo-preview-img{max-height:60px;max-width:160px;object-fit:contain;border-radius:6px;border:1px solid #e2e8f0}
+.logo-remove-btn{background:none;border:1px solid #fca5a5;color:#ef4444;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}.logo-remove-btn:hover{background:#fef2f2}
+.tone-btn{padding:5px 11px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}.tone-btn:hover{border-color:#94a3b8;color:#334155}.tone-btn.active{background:var(--theme-primary);border-color:var(--theme-primary);color:#fff}
+.validity-btn{padding:5px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}.validity-btn:hover{border-color:#94a3b8;color:#334155}.validity-btn.active{background:var(--theme-primary);border-color:var(--theme-primary);color:#fff}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#f8f8f8}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+.app{display:flex;height:100vh}
+#leftPanel{height:100vh;display:flex;flex-direction:column;min-width:280px;max-width:680px;width:380px;flex-shrink:0;background:#fff;border-right:1px solid #f1f5f9}
+#rightPanel{height:100vh;overflow-y:auto;background:#d1d5db;flex:1;min-width:300px;display:flex;flex-direction:column;align-items:center}
+#resizer{width:5px;cursor:col-resize;background:#e2e8f0;flex-shrink:0;transition:background .15s;position:relative;z-index:10}
+#resizer:hover,#resizer.dragging{background:#94a3b8}
+#resizer::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);height:32px;width:3px;border-left:1px solid #94a3b8;border-right:1px solid #94a3b8;opacity:.5}
+#topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;border-bottom:1px solid #f1f5f9;flex-shrink:0;gap:6px}
+.brand-sub{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#6B7280;line-height:1;margin-bottom:2px}
+.brand-title{font-size:14px;font-weight:700;color:#0f172a;line-height:1}
+.topbar-actions{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.tb-btn{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#374151;background:#f1f5f9;border:none;padding:5px 8px;border-radius:8px;cursor:pointer;transition:background .15s;font-family:inherit;white-space:nowrap}
+.tb-btn:hover{background:#e2e8f0}.tb-btn svg{width:13px;height:13px}
+.tb-btn.cloud{background:#eff6ff;color:#1d4ed8}.tb-btn.cloud:hover{background:#dbeafe}
+.tb-btn.danger{background:#fef2f2;color:#dc2626}.tb-btn.danger:hover{background:#fee2e2}
+
+/* Status bar */
+#statusBar{display:flex;align-items:center;gap:8px;padding:6px 14px;background:#f8fafc;border-bottom:1px solid #f1f5f9;flex-shrink:0;font-size:11px}
+.status-badge{padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.status-badge.delivered{background:#eff6ff;color:#1d4ed8}
+.status-badge.negotiation{background:#fff7ed;color:#c2410c}
+.status-badge.win{background:#f0fdf4;color:#15803d}
+.status-badge.loss{background:#fef2f2;color:#dc2626}
+.status-badge.draft{background:#f8fafc;color:#94a3b8;border:1px solid #e2e8f0}
+.rev-tag{font-size:10px;color:#64748b;font-weight:600}
+.status-lock{font-size:10px;color:#ef4444;font-weight:600;display:flex;align-items:center;gap:3px}
+
+.tab-bar{display:flex;border-bottom:1px solid #f1f5f9;background:#fff;flex-shrink:0}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 4px 8px;cursor:pointer;border:none;background:transparent;color:#6B7280;transition:color .15s;position:relative;font-size:9px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;font-family:inherit}
+.tab-btn svg{width:20px;height:20px;flex-shrink:0}.tab-btn.active{color:#0f172a}
+.tab-btn.active::after{content:'';position:absolute;bottom:0;left:12px;right:12px;height:2px;background:#0f172a;border-radius:2px 2px 0 0}
+.tab-panel{display:none;flex:1;overflow-y:auto;padding:20px 20px 24px}.tab-panel.active{display:block}
+.inp{width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:6px 12px;font-size:14px;outline:none;background:#fff;color:#1e293b;font-family:inherit}.inp:focus{box-shadow:0 0 0 2px #cbd5e1}
+textarea.inp{resize:none}
+.sec{margin-bottom:20px}.sec-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:10px}
+.vy2>*+*{margin-top:8px}.vy3>*+*{margin-top:12px}.lbl{font-size:11px;color:#4B5563;display:block;margin-bottom:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row{display:flex;align-items:center;gap:8px}.f1{flex:1}
+.btn-dark{width:100%;border-radius:10px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;padding:10px;border:none;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}.btn-dark:hover{background:#1e293b}
+.btn-icon{width:32px;height:32px;border-radius:8px;background:#0f172a;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}.btn-icon:hover{background:#334155}.btn-icon svg{width:16px;height:16px}
+.btn-outline{border-radius:10px;border:1px solid #e2e8f0;color:#64748b;font-size:13px;font-weight:600;padding:10px 16px;background:#fff;cursor:pointer;transition:background .15s;font-family:inherit}.btn-outline:hover{background:#f8fafc}
+.btn-dashed{width:100%;border-radius:8px;border:1px dashed #cbd5e1;color:#64748b;font-size:11px;font-weight:600;padding:8px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;font-family:inherit}.btn-dashed:hover{border-color:#64748b;color:#334155}
+.btn-dashed svg,.btn-dark svg{width:16px;height:16px}
+.btn-xred{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:2px;transition:color .15s}.btn-xred:hover{color:#f87171}
+.btn-xblue{background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;transition:color .15s}.btn-xblue:hover{color:#3b82f6}
+.btn-xred svg,.btn-xblue svg{width:14px;height:14px}
+.card{background:#f8fafc;border:1px solid #f1f5f9;border-radius:12px;padding:12px}
+.card-dash{border-radius:12px;border:1px dashed #e2e8f0;padding:12px;transition:border-color .15s}.card-dash:hover{border-color:#94a3b8}
+.card-hint{font-size:11px;color:#4B5563;margin-bottom:8px}
+.file-lbl{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:11px;font-weight:500;color:#374151;background:#f8fafc;border-radius:8px;padding:7px 12px;transition:background .15s;font-family:inherit}.file-lbl:hover{background:#f1f5f9}.file-lbl svg{width:16px;height:16px;flex-shrink:0}
+.st-ok{font-size:11px;color:#16a34a;font-weight:500;margin-top:4px;display:none}.st-ok.on{display:block}
+.toggle-pill{display:flex;background:#f1f5f9;border-radius:9999px;padding:3px;gap:2px}
+.toggle-pill button{flex:1;padding:4px 10px;border-radius:9999px;font-size:11px;font-weight:600;transition:all .2s;color:#4B5563;border:none;cursor:pointer;background:transparent;font-family:inherit}
+.toggle-pill button.active{background:#1e293b;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:#e2e8f0;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#1e293b;cursor:pointer}
+.a4-page{background:#fff;width:794px;min-height:1123px;flex-shrink:0;padding:56px 64px;box-shadow:0 4px 24px rgba(0,0,0,.13);position:relative;display:flex;flex-direction:column}
+.spec-table{width:100%;border-collapse:collapse}
+.spec-table td{padding:5px 10px;vertical-align:top;border-bottom:1px solid #eef0f3}
+.spec-table tr:nth-child(even) td{background:#f4f6f9}
+.spec-table tr:last-child td{border-bottom:none}
+.spec-table td:first-child{color:#64748b;width:46%;white-space:nowrap;font-size:11px}
+.spec-table td:last-child{color:#1e293b;font-weight:600}
+#pagesWrapper{width:100%;flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:32px 16px;gap:32px}
+#pageNav{position:sticky;bottom:0;background:rgba(184,190,199,.8);backdrop-filter:blur(6px);width:100%;display:flex;align-items:center;justify-content:center;gap:16px;padding:10px;z-index:20}
+.nav-btn{display:flex;align-items:center;gap:4px;padding:6px 16px;border-radius:8px;background:rgba(255,255,255,.8);color:#334155;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:background .15s;font-family:inherit}.nav-btn:hover{background:#fff}.nav-btn:disabled{opacity:.3;cursor:not-allowed}.nav-btn svg{width:16px;height:16px}
+#pageIndicator{font-size:13px;font-weight:600;color:#334155;min-width:90px;text-align:center}
+#mobilePreviewWrapper{display:none;flex-direction:column;gap:20px;align-items:center;padding:16px 0 24px}
+#mobilePageNav{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 0 4px}
+.mob-nav-btn{display:flex;align-items:center;gap:4px;padding:6px 14px;border-radius:8px;background:#0f172a;color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit}.mob-nav-btn:disabled{opacity:.3;cursor:not-allowed}.mob-nav-btn svg{width:14px;height:14px}
+#mobPageIndicator{font-size:12px;font-weight:600;color:#334155;min-width:80px;text-align:center}
+.page-scaler{transform-origin:top center;display:block}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100;align-items:center;justify-content:center}
+.modal-bg.on{display:flex}.modal{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);padding:28px}
+.modal h3{font-size:15px;font-weight:700;color:#0f172a}.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mx{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:2px;transition:color .15s}.mx:hover{color:#64748b}.mx svg{width:20px;height:20px}
+.m-actions{display:flex;gap:8px;margin-top:12px}.m-err{font-size:11px;color:#ef4444;margin-top:4px;display:none}.m-err.on{display:block}
+.saved-list{max-height:160px;overflow-y:auto;margin-bottom:4px}
+.saved-item{display:flex;align-items:center;gap:8px;border-radius:8px;border:1px solid #f1f5f9;background:#f8fafc;padding:8px 12px;margin-bottom:4px}
+.saved-item span{flex:1;font-size:11px;font-weight:500;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.edit-lbl{font-size:11px;font-weight:600;color:#3b82f6;margin-bottom:4px;display:none}.edit-lbl.on{display:block}
+.bdr-t{border-top:1px solid #f1f5f9;padding-top:12px;margin-top:4px}
+.lcard{background:#f8fafc;border:1px solid #f1f5f9;border-radius:12px;padding:12px}
+.lcard-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.lcard-model{font-size:13px;font-weight:600;color:#1e293b}.lcard-sub{font-size:11px;color:#6B7280;margin-top:1px}
+.lcard-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:4px}
+.lt-pair{display:flex;align-items:center;gap:4px}.lt-pair input{width:52px;text-align:center;font-size:11px}
+.lt-pair span{font-size:11px;color:#6B7280}.no-items{font-size:11px;color:#6B7280;text-align:center;padding:16px 0}
+.lcard[draggable]{cursor:default}.lcard.drag-over{border:1px solid #f1f5f9}.lcard.dragging{opacity:1}
+.move-btns{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.move-btn{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;border:1px solid #e2e8f0;background:#f8fafc;color:#6B7280;cursor:pointer;transition:all .15s;flex-shrink:0}
+.move-btn:hover:not(:disabled){background:#e2e8f0;color:#334155;border-color:#cbd5e1}.move-btn:disabled{opacity:.25;cursor:not-allowed}.move-btn svg{width:12px;height:12px}
+.smart-markup-box{margin-top:6px;padding:8px 10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px}
+.smart-markup-badge{display:inline-flex;align-items:center;gap:4px;background:#16a34a;color:#fff;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin-bottom:6px}
+.sm-preset-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.sm-preset-btn{padding:3px 9px;border-radius:999px;border:1px solid #bbf7d0;background:#fff;font-size:10px;font-weight:600;color:#16a34a;cursor:pointer;transition:all .15s;font-family:inherit}
+.sm-preset-btn:hover,.sm-preset-btn.active{background:#16a34a;color:#fff;border-color:#16a34a}
+.order-row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;border:1px solid #f1f5f9;background:#fff;margin-bottom:4px;transition:background .1s,box-shadow .1s;user-select:none}
+.order-row.drag-over-row{border-color:#94a3b8;background:#f8fafc}.order-row.dragging-row{opacity:.4}
+.order-row-num{font-size:10px;font-weight:700;color:#cbd5e1;width:16px;text-align:center;flex-shrink:0}
+.disc-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+
+/* ── Cloud status indicator ──────────────────────────────────────────────── */
+#cloudStatus{font-size:10px;font-weight:600;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px}
+#cloudStatus.saving{color:#0369a1;background:#eff6ff}
+#cloudStatus.saved{color:#15803d;background:#f0fdf4}
+#cloudStatus.error{color:#dc2626;background:#fef2f2}
+#cloudStatus.draft{color:#94a3b8;background:#f8fafc}
+
+/* ── Load Quote Modal ────────────────────────────────────────────────────── */
+#loadModal .modal{width:560px;max-width:95vw;max-height:85vh;display:flex;flex-direction:column}
+.load-search{display:flex;gap:8px;margin-bottom:14px}
+.load-search input{flex:1}
+.load-results{flex:1;overflow-y:auto;max-height:300px}
+.load-card{border:1px solid #f1f5f9;border-radius:10px;padding:10px 14px;margin-bottom:6px;cursor:pointer;transition:all .15s;background:#fff}
+.load-card:hover{border-color:#94a3b8;background:#f8fafc}
+.load-card-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.load-card-no{font-size:12px;font-weight:700;color:#1e293b}
+.load-card-rev{font-size:10px;background:#f1f5f9;color:#64748b;padding:1px 7px;border-radius:999px;font-weight:600}
+.load-card-status{font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px}
+.load-card-cust{font-size:12px;color:#374151;font-weight:500}
+.load-card-meta{font-size:11px;color:#94a3b8;margin-top:2px}
+
+/* Revision picker */
+.rev-list{margin-top:10px}
+.rev-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #f1f5f9;border-radius:9px;margin-bottom:5px;cursor:pointer;transition:all .15s;background:#fff}
+.rev-item:hover{border-color:#94a3b8;background:#f8fafc}
+.rev-item.selected{border-color:var(--theme-primary);background:var(--theme-accent-light)}
+.rev-num{font-size:12px;font-weight:700;color:#1e293b;min-width:52px}
+.rev-date{font-size:11px;color:#64748b;flex:1}
+.rev-total{font-size:12px;font-weight:700;color:#1e293b}
+.rev-latest{font-size:9px;background:#dcfce7;color:#16a34a;padding:1px 6px;border-radius:999px;font-weight:700}
+
+/* ── Status transition modal ─────────────────────────────────────────────── */
+#statusModal .modal{width:440px;max-width:95vw}
+.status-opt{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.status-opt-btn{flex:1;min-width:80px;padding:8px 10px;border-radius:10px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;text-align:center}
+.status-opt-btn:hover{border-color:#94a3b8}
+.status-opt-btn.sel-delivered{border-color:#1d4ed8;background:#eff6ff;color:#1d4ed8}
+.status-opt-btn.sel-negotiation{border-color:#c2410c;background:#fff7ed;color:#c2410c}
+.status-opt-btn.sel-win{border-color:#15803d;background:#f0fdf4;color:#15803d}
+.status-opt-btn.sel-loss{border-color:#dc2626;background:#fef2f2;color:#dc2626}
+.loss-fields{display:none;border:1px solid #fee2e2;border-radius:10px;padding:12px;margin-top:8px;background:#fef9f9}
+.loss-fields.on{display:block}
+
+/* ── Toast notification ──────────────────────────────────────────────────── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:999;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;background:#1e293b;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none}
+#toast.on{transform:translateY(0);opacity:1}
+#toast.ok{background:#15803d}
+#toast.err{background:#dc2626}
+</style>
+</head>
+<body>
+
+<div class="app" id="appWrapper">
+
+<!-- ── LEFT PANEL ─────────────────────────────────────────────────────────── -->
+<div id="leftPanel">
+
+  <!-- Topbar -->
+  <div id="topbar">
+    <div style="min-width:0">
+      <div class="brand-sub">Mitsumori</div>
+      <div class="brand-title">Quotation Creator</div>
+    </div>
+    <div class="topbar-actions">
+      <div id="cloudStatus" class="draft">● Draft</div>
+      <button class="tb-btn" onclick="openLoadModal()" title="Load existing quote">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        Load
+      </button>
+      <button class="tb-btn cloud" onclick="saveToCloud()" title="Save to Firebase" id="btnSaveCloud">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+        Save
+      </button>
+      <button class="tb-btn" onclick="openStatusModal()" title="Change quote status" id="btnStatus">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </button>
+      <button class="tb-btn" onclick="newQuote()" title="New quotation">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        New
+      </button>
+      <button class="tb-btn" onclick="goToDashboard()" title="Back to Dashboard">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </button>
+      <button class="tb-btn danger" onclick="doLogout()" title="Sign out">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div id="statusBar">
+    <span id="statusBadge" class="status-badge draft">Draft</span>
+    <span id="revTag" class="rev-tag" style="display:none"></span>
+    <span style="flex:1"></span>
+    <span id="userTag" style="font-size:10px;color:#94a3b8;font-weight:500"></span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="btn-tab-settings" onclick="switchTab('settings')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      Settings
+    </button>
+    <button class="tab-btn" id="btn-tab-info" onclick="switchTab('info')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Info
+    </button>
+    <button class="tab-btn" id="btn-tab-items" onclick="switchTab('items')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+      Items
+    </button>
+    <button class="tab-btn" id="btn-tab-preview" onclick="switchTab('preview')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+      Preview
+    </button>
+  </div>
+
+  <!-- ── Settings Tab ─────────────────────────────────────────────────────── -->
+  <div id="tab-settings" class="tab-panel active">
+    <div class="sec"><p class="sec-title">Theme</p>
+      <div class="theme-swatches">
+        <div class="theme-option" onclick="setTheme('default',this)">
+          <div class="theme-swatch active" style="background:linear-gradient(135deg,#0f172a,#334155)" data-theme="default"></div>
+          <div class="theme-swatch-label">Default</div>
+        </div>
+        <div class="theme-option" onclick="setTheme('industrial',this)">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#1B365D,#708090)" data-theme="industrial"></div>
+          <div class="theme-swatch-label">Navy</div>
+        </div>
+        <div class="theme-option" onclick="setTheme('japandi',this)">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#2C2C2C,#8B8176)" data-theme="japandi"></div>
+          <div class="theme-swatch-label">Japandi</div>
+        </div>
+      </div></div>
+    <div class="sec"><p class="sec-title">Company Logo</p>
+      <div id="logoUploadArea" class="logo-upload-area" onclick="document.getElementById('logoInput').click()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;color:#94a3b8;margin:0 auto 6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <p style="font-size:11px;color:#94a3b8">Click to upload logo</p>
+        <input id="logoInput" type="file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)"/>
+      </div></div>
+    <div class="sec"><p class="sec-title">Equipment Library</p>
+      <div class="card-dash"><p class="card-hint">CSV or XLSX — all series in one file</p>
+        <label class="file-lbl"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Choose File<input id="equipFile" type="file" accept=".csv,.xlsx,.xls" style="display:none" onchange="importEquipment(this)"/></label>
+        <p id="equipStatus" class="st-ok"></p></div></div>
+    <div class="sec"><p class="sec-title">Customer Library</p>
+      <div class="card-dash"><p class="card-hint">CSV/XLSX — Name, Company, Email, Country, State, Address, Postcode, Contact No</p>
+        <label class="file-lbl"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Choose File<input id="custFile" type="file" accept=".csv,.xlsx,.xls" style="display:none" onchange="importCustomers(this)"/></label>
+        <p id="custStatus" class="st-ok"></p></div></div>
+    <div class="sec"><p class="sec-title">Spec Font Size</p>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:#64748b">Size</span><span id="fontSizeLabel" style="font-size:11px;font-weight:700;color:#1e293b">11px</span></div>
+        <input type="range" id="specFontSize" min="8" max="16" step="1" value="11" oninput="updateFontSize(this.value)"/>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#cbd5e1;margin-top:4px"><span>8px</span><span>16px</span></div></div></div>
+  </div>
+
+  <!-- ── Info Tab ─────────────────────────────────────────────────────────── -->
+  <div id="tab-info" class="tab-panel">
+    <div class="sec"><p class="sec-title">Your Company</p>
+      <div class="vy2">
+        <input id="companyName" placeholder="Company Name" class="inp"/>
+        <input id="companyTagline" placeholder="Tagline / Slogan" class="inp"/>
+        <input id="companyAddress" placeholder="Address" class="inp"/>
+        <input id="companyPhone" placeholder="Phone / Email" class="inp"/>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input id="quoteNumber" placeholder="Quote No. (auto-generated)" class="inp" readonly style="background:#f8fafc;color:#64748b;cursor:default;flex:1"/>
+          <button class="btn-icon" onclick="generateQuoteNumber()" title="Generate new quote number" style="flex-shrink:0">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </button>
+        </div>
+        <input id="quoteDate" type="date" class="inp"/>
+        <div>
+          <label class="lbl">Validity Period</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="validity-btn" onclick="setValidity(0,this)">None</button>
+            <button class="validity-btn" onclick="setValidity(15,this)">15 days</button>
+            <button class="validity-btn" onclick="setValidity(30,this)">30 days</button>
+            <button class="validity-btn" onclick="setValidity(45,this)">45 days</button>
+            <button class="validity-btn" onclick="setValidity(60,this)">60 days</button>
+            <button class="validity-btn" onclick="setValidity(90,this)">90 days</button>
+          </div>
+          <input type="hidden" id="quoteValidity" value=""/>
+        </div>
+      </div></div>
+    <div class="sec"><p class="sec-title">Document Footer</p>
+      <input id="quoteFooter" placeholder="e.g. Thank you for considering us." class="inp"/>
+      <p style="font-size:10px;color:#94a3b8;margin-top:4px">Appears at the bottom of every page.</p></div>
+    <div class="sec"><p class="sec-title">Salesperson</p>
+      <div class="vy2">
+        <input id="salesName" placeholder="Salesperson Name" class="inp"/>
+        <input id="salesPhone" placeholder="Contact No." class="inp"/>
+        <input id="salesEmail" placeholder="Email" class="inp"/>
+      </div></div>
+    <div class="sec"><p class="sec-title">Customer</p>
+      <div class="vy2">
+        <div class="row"><select id="customerSelect" onchange="selectCustomer()" class="inp f1"></select><button onclick="openCustModal()" class="btn-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button></div>
+        <input id="custName" placeholder="Contact Name" class="inp"/>
+        <input id="custCompany" placeholder="Company" class="inp"/>
+        <input id="custPhone" placeholder="Contact Number" class="inp"/>
+        <input id="custEmail" placeholder="Email" class="inp"/>
+        <textarea id="custAddress" placeholder="Address" rows="2" class="inp"></textarea>
+      </div></div>
+    <div class="sec"><p class="sec-title">Notes</p><textarea id="quoteNotes" placeholder="Notes to customer…" rows="3" class="inp"></textarea></div>
+    <div class="sec"><p class="sec-title">Payment Terms</p>
+      <div class="vy2">
+        <div class="row"><select id="paySelect" onchange="applyPayTemplate()" class="inp f1" style="font-size:12px"></select><button onclick="openPayModal()" class="btn-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button></div>
+        <textarea id="quotePayment" placeholder="Payment terms…" rows="4" class="inp"></textarea>
+      </div></div>
+    <div class="sec"><p class="sec-title">Terms &amp; Conditions</p>
+      <div class="vy2">
+        <div class="row"><select id="termsSelect" onchange="applyTermsTemplate()" class="inp f1" style="font-size:12px"></select><button onclick="openTermsModal()" class="btn-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button></div>
+        <textarea id="quoteTerms" placeholder="Terms &amp; Conditions…" rows="4" class="inp"></textarea>
+      </div></div>
+  </div>
+
+  <!-- ── Items Tab ────────────────────────────────────────────────────────── -->
+  <div id="tab-items" class="tab-panel">
+    <div class="sec">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <p class="sec-title" style="margin-bottom:0">Add Equipment</p>
+      </div>
+      <div class="vy2" id="addEquipSection">
+        <div><label class="lbl" id="lbl-series">① Series</label><select id="seriesSelect" onchange="onSeriesChange()" class="inp"></select></div>
+        <div><label class="lbl" id="lbl-starter">② Starter Type</label><select id="starterSelect" onchange="onStarterChange()" class="inp"></select></div>
+        <div><label class="lbl" id="lbl-equip">③ Equipment</label><select id="equipSelect" class="inp"></select></div>
+        <button onclick="addEquipment()" class="btn-dark" id="addEquipBtn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Add to Quotation</button>
+      </div></div>
+    <div class="sec"><div class="card">
+      <div class="disc-row"><span style="font-size:11px;font-weight:600;color:#475569">Discount Mode</span>
+        <div class="toggle-pill"><button id="btnModeIndividual" onclick="setDiscountMode('individual')" class="active">Individual</button><button id="btnModeOverall" onclick="setDiscountMode('overall')">Overall</button></div></div>
+      <div id="overallDiscountPanel" style="display:none">
+        <div class="g2" style="margin-bottom:8px">
+          <div><label class="lbl">Type</label><select id="overallModType" onchange="updateOverallDiscount()" class="inp" style="font-size:13px"><option value="none">None</option><option value="markup">Markup %</option><option value="discount">Discount %</option><option value="smartmarkup">✨ Smart Markup</option></select></div>
+          <div><label class="lbl">Markup / Discount %</label><input id="overallModPct" type="number" min="0" max="500" step="0.1" value="0" onchange="updateOverallDiscount()" class="inp"/></div>
+        </div></div></div></div>
+    <div class="sec">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <p class="sec-title" style="margin-bottom:0">Equipment Line Items</p>
+        <div style="display:flex;align-items:center;gap:5px">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:11px;height:11px;color:#cbd5e1;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <input type="range" id="itemsFontSize" min="11" max="18" step="1" value="14" oninput="updateItemsFontSize(this.value)" style="width:56px;height:4px;cursor:pointer"/>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:15px;height:15px;color:#cbd5e1;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </div>
+      </div>
+      <div id="lineItemsContainer" class="vy3"></div>
+      <p id="noItemsMsg" class="no-items">No equipment added yet.</p></div>
+    <div class="sec"><p class="sec-title">Additional Works</p>
+      <div class="vy2">
+        <input id="awTitle" placeholder="Section title e.g. M&amp;E Works…" class="inp" oninput="updatePreview();save()"/>
+        <div id="awItemsContainer" class="vy2"></div>
+        <p id="awNoItems" class="no-items">No works added yet.</p>
+        <button onclick="addAWItem()" class="btn-dashed"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Add Work Item</button>
+      </div></div>
+  </div>
+
+  <!-- ── Preview Tab ──────────────────────────────────────────────────────── -->
+  <div id="tab-preview" class="tab-panel">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button id="pdfBtn" onclick="downloadPDF()" class="pdf-btn btn-dark" style="flex:1;border-radius:10px;padding:10px"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download PDF</button>
+      <button onclick="openEmailDraft()" class="btn-dark" style="flex:1;border-radius:10px;padding:10px;background:linear-gradient(135deg,#0369a1,#0284c7)!important"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Email Draft</button>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><p style="font-size:11px;font-weight:600;color:#334155;margin-bottom:2px">Oil Carry Over</p><p style="font-size:10px;color:#94a3b8">Show in compressor specs</p></div>
+        <div class="toggle-pill" style="width:auto"><button id="oilToggleOff" class="active" onclick="setOilCarryOver(false)">Off</button><button id="oilToggleOn" onclick="setOilCarryOver(true)">On</button></div>
+      </div></div>
+    <div class="card" style="margin-bottom:12px" id="previewOrderCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <p class="sec-title" style="margin-bottom:0">Item Order</p>
+        <span style="font-size:10px;color:#94a3b8">Drag or use ↑↓ to reorder</span>
+      </div>
+      <div id="previewOrderList"></div>
+      <p id="previewOrderEmpty" style="font-size:11px;color:#cbd5e1;text-align:center;padding:10px 0;display:none">No equipment added yet.</p></div>
+    <div class="card" style="margin-bottom:12px" id="attachmentsCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div><p class="sec-title" style="margin-bottom:0">Attachments</p><p style="font-size:10px;color:#94a3b8;margin-top:2px">JPEG / PNG images appended to PDF</p></div>
+        <label style="cursor:pointer">
+          <input type="file" accept="image/jpeg,image/png" multiple style="display:none" onchange="addAttachments(this)"/>
+          <span class="btn-icon" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;cursor:pointer"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></span>
+        </label>
+      </div>
+      <div id="attachmentList"></div>
+      <p id="attachmentEmpty" style="font-size:11px;color:#cbd5e1;text-align:center;padding:8px 0">No attachments added.</p></div>
+    <div class="card" style="margin-bottom:12px" id="equipPicCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleEquipPicBlock()">
+        <div><p class="sec-title" style="margin-bottom:0">Equipment Picture</p><p style="font-size:10px;color:#6B7280;margin-top:2px">Added as picture pages after tech details</p></div>
+        <svg id="equipPicChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;color:#6B7280;transition:transform .2s;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+      <div id="equipPicBlock" style="display:none;margin-top:12px">
+        <div id="equipPicList"></div>
+        <p id="equipPicEmpty" style="font-size:11px;color:#6B7280;text-align:center;padding:8px 0">Add equipment items first.</p>
+      </div></div>
+  </div>
+
+</div><!-- /leftPanel -->
+
+<!-- Resizer -->
+<div id="resizer"></div>
+
+<!-- ── RIGHT PANEL ────────────────────────────────────────────────────────── -->
+<div id="rightPanel">
+  <div id="pagesWrapper"></div>
+  <div id="pageNav">
+    <button class="nav-btn" id="prevPageBtn" onclick="changePage(-1)" disabled>
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>Prev
+    </button>
+    <span id="pageIndicator">Page 1 / 1</span>
+    <button class="nav-btn" id="nextPageBtn" onclick="changePage(1)" disabled>
+      Next<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+  <div id="mobilePreviewWrapper">
+    <div id="mobilePageNav">
+      <button class="mob-nav-btn" id="mobPrevBtn" onclick="changeMobilePage(-1)" disabled><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>Prev</button>
+      <span id="mobPageIndicator">Page 1 / 1</span>
+      <button class="mob-nav-btn" id="mobNextBtn" onclick="changeMobilePage(1)" disabled>Next<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+    <div id="mobilePageContent"></div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- ── MODALS ─────────────────────────────────────────────────────────────── -->
+
+<!-- Customer modal -->
+<div id="custModal" class="modal-bg"><div class="modal" style="width:340px">
+  <div class="mhdr"><h3>Add Customer</h3><button class="mx" onclick="document.getElementById('custModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <div class="vy2"><input id="newCustName" placeholder="Contact Name" class="inp"/><input id="newCustCompany" placeholder="Company" class="inp"/><input id="newCustPhone" placeholder="Contact No." class="inp"/><input id="newCustEmail" placeholder="Email" class="inp"/><textarea id="newCustAddress" placeholder="Address" rows="2" class="inp"></textarea></div>
+  <div class="m-actions"><button onclick="saveNewCustomer()" class="btn-dark">Save Customer</button><button onclick="document.getElementById('custModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
+</div></div>
+
+<!-- Terms modal -->
+<div id="termsModal" class="modal-bg"><div class="modal" style="width:380px">
+  <div class="mhdr"><h3>Terms Template</h3><button class="mx" onclick="document.getElementById('termsModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <div class="vy2"><input id="newTermsName" placeholder="Template name" class="inp"/><textarea id="newTermsText" placeholder="Terms text…" rows="5" class="inp"></textarea></div>
+  <div class="m-actions"><button onclick="saveTermsTemplate()" class="btn-dark">Save Template</button><button onclick="document.getElementById('termsModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
+</div></div>
+
+<!-- Payment modal -->
+<div id="payModal" class="modal-bg"><div class="modal" style="width:380px">
+  <div class="mhdr"><h3>Payment Template</h3><button class="mx" onclick="document.getElementById('payModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <div class="vy2"><input id="newPayName" placeholder="Template name" class="inp"/><textarea id="newPayText" placeholder="Payment terms…" rows="4" class="inp"></textarea></div>
+  <div class="m-actions"><button onclick="savePayTemplate()" class="btn-dark">Save Template</button><button onclick="document.getElementById('payModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
+</div></div>
+
+<!-- Email draft modal -->
+<div id="emailModal" class="modal-bg"><div class="modal" style="width:460px;max-width:95vw">
+  <div class="mhdr"><h3>Email Draft</h3><button class="mx" onclick="document.getElementById('emailModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="toneBtns"></div>
+  <textarea id="emailBody" rows="10" class="inp" style="font-size:13px;line-height:1.6"></textarea>
+  <div class="m-actions"><button onclick="copyEmail()" class="btn-dark">Copy to Clipboard</button><button onclick="document.getElementById('emailModal').classList.remove('on')" class="btn-outline">Close</button></div>
+</div></div>
+
+<!-- ── Load Quote Modal ───────────────────────────────────────────────────── -->
+<div id="loadModal" class="modal-bg">
+  <div class="modal" style="width:580px;max-width:95vw;max-height:88vh;display:flex;flex-direction:column;padding:24px">
+    <div class="mhdr">
+      <h3>Load Quote</h3>
+      <button class="mx" onclick="closeLoadModal()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="load-search">
+      <input id="loadSearchInp" class="inp" placeholder="Search by quote no. or customer name…" oninput="filterLoadResults()"/>
+      <button class="btn-dark" style="width:auto;padding:0 16px;font-size:12px" onclick="filterLoadResults()">Search</button>
+    </div>
+    <div id="loadResultsArea" class="load-results"></div>
+    <!-- Revision picker (hidden until card selected) -->
+    <div id="revPickerArea" style="display:none;margin-top:12px;border-top:1px solid #f1f5f9;padding-top:12px">
+      <p style="font-size:11px;font-weight:700;color:#374151;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Select Revision to Load</p>
+      <div id="revPickerList" class="rev-list"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn-dark" style="font-size:13px" onclick="confirmLoadRevision()">Load Selected</button>
+        <button class="btn-outline" style="font-size:13px" onclick="document.getElementById('revPickerArea').style.display='none'">Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Status Transition Modal ───────────────────────────────────────────── -->
+<div id="statusModal" class="modal-bg">
+  <div class="modal" style="width:420px;max-width:95vw">
+    <div class="mhdr">
+      <h3>Update Status</h3>
+      <button class="mx" onclick="document.getElementById('statusModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <p style="font-size:12px;color:#64748b;margin-bottom:14px">Current: <strong id="currentStatusLabel">—</strong></p>
+    <div class="status-opt">
+      <button class="status-opt-btn" onclick="selectStatus('delivered')">📤 Delivered</button>
+      <button class="status-opt-btn" onclick="selectStatus('negotiation')">🤝 Negotiation</button>
+      <button class="status-opt-btn" onclick="selectStatus('win')">🏆 Win</button>
+      <button class="status-opt-btn" onclick="selectStatus('loss')">❌ Loss</button>
+    </div>
+    <!-- Loss fields -->
+    <div class="loss-fields" id="lossFields">
+      <p style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Loss Details</p>
+      <div class="vy2">
+        <div>
+          <label class="lbl">Reason *</label>
+          <select id="lossReason" class="inp" style="font-size:13px">
+            <option value="">— Select reason —</option>
+            <option value="Pricing">Pricing</option>
+            <option value="Relationship">Relationship</option>
+            <option value="Brand">Brand</option>
+            <option value="Product">Product</option>
+            <option value="No Response">No Response</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Lost to (competitor) — optional</label>
+          <input id="lossCompetitor" class="inp" placeholder="e.g. Atlas Copco, Airman…"/>
+        </div>
+        <div>
+          <label class="lbl" id="lossRemarkLbl">Remark — optional</label>
+          <textarea id="lossRemark" class="inp" rows="2" placeholder="Additional notes…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div id="winLockWarning" style="display:none;margin-top:10px;padding:10px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:12px;color:#c2410c">
+      ⚠️ Marking as <strong>Win</strong> will lock this quotation. Ensure all details are finalised before proceeding.
+    </div>
+    <div class="m-actions" style="margin-top:14px">
+      <button class="btn-dark" onclick="confirmStatusChange()">Confirm</button>
+      <button class="btn-outline" onclick="document.getElementById('statusModal').classList.remove('on')">Cancel</button>
+    </div>
+    <p id="statusModalErr" class="m-err"></p>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ── Firebase SDKs ──────────────────────────────────────────────────────── -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// FIREBASE INIT + AUTH GUARD
+// ═══════════════════════════════════════════════════════════════════════════
+let auth, db;
+let currentUser = null;
+let currentUserName = '';
+
+window.addEventListener('load', () => {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  auth = firebase.auth();
+  db   = firebase.firestore();
+
+auth.onAuthStateChanged(async user => {
+  if(!user){ window.location.href='index.html'; return; }
+  currentUser = user;
+  // Try to get display name from users collection
+  try {
+    const uDoc = await db.collection(COL.USERS).doc(user.uid).get();
+    currentUserName = uDoc.exists ? (uDoc.data().displayName || user.email) : user.email;
+  } catch(e){ currentUserName = user.email; }
+  document.getElementById('userTag').textContent = currentUserName;
+
+  // Run daily backup
+  runDailyBackup();
+
+  // Check if opened with ?id= param
+  const params = new URLSearchParams(window.location.search);
+  const loadId = params.get('id');
+  const loadRev = params.get('rev');
+  if(loadId){ await loadQuoteById(loadId, loadRev ? parseInt(loadRev) : null); }
+  else { load(); if(!document.getElementById('quoteDate').value) document.getElementById('quoteDate').value=today(); restoreValidityBtn(); updatePreview(); }
+});
+
+}); // end window.addEventListener('load')
+
+function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
+function goToDashboard(){ window.location.href='dashboard.html'; }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════
+let equipmentLib=[];let customerLib=[];let lineItems=[];let awItems=[];
+let logoDataUrl='';let currentTheme='default';let discountMode='individual';
+let overallModType='none';let overallModPct=0;let overallSmartPct=20;
+let specFontSize=11;let itemsFontSize=14;let currentPage=0;let mobilePage=0;
+let validityDays=0;let showOilCarryOver=false;let attachments=[];
+let termsTemplates=[];let payTemplates=[];
+
+// CRM state
+let currentQuoteId   = null; // Firestore doc ID
+let currentBaseNo    = null; // e.g. "QT-2026-0041"
+let currentRevision  = 0;
+let currentStatus    = 'draft';
+let pendingStatus    = null;
+let isLocked         = false; // true when status=win
+
+// Load results cache
+let allQuotes = [];
+let selectedLoadDoc = null;
+let selectedRevision = null;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUOTE NUMBER GENERATION
+// ═══════════════════════════════════════════════════════════════════════════
+async function generateQuoteNumber(){
+  const year = new Date().getFullYear().toString();
+  try {
+    const counterRef = db.collection(COL.META).doc(META_DOC_ID);
+    const newNo = await db.runTransaction(async t => {
+      const doc = await t.get(counterRef);
+      const data = doc.exists ? doc.data() : {};
+      const cur = data[year] || 0;
+      const next = cur + 1;
+      t.set(counterRef, { [year]: next, lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      return next;
+    });
+    const padded = String(newNo).padStart(4,'0');
+    const qNo = `QT-${year}-${padded}`;
+    currentBaseNo = qNo;
+    currentRevision = 0;
+    document.getElementById('quoteNumber').value = qNo;
+    updateStatusBar();
+    updatePreview();
+    save();
+    showToast(`Quote number generated: ${qNo}`,'ok');
+  } catch(e){
+    showToast('Failed to generate quote number. Check connection.','err');
+    console.error(e);
+  }
+}
+
+function getDisplayQuoteNo(){
+  if(!currentBaseNo) return document.getElementById('quoteNumber').value || '';
+  if(currentRevision === 0) return currentBaseNo;
+  return `${currentBaseNo} Rev.${currentRevision}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATUS BAR
+// ═══════════════════════════════════════════════════════════════════════════
+function updateStatusBar(){
+  const badge = document.getElementById('statusBadge');
+  const revTag = document.getElementById('revTag');
+  const labels = { draft:'Draft', delivered:'Delivered', negotiation:'Negotiation', win:'Win ✓', loss:'Loss' };
+  badge.textContent = labels[currentStatus] || currentStatus;
+  badge.className = 'status-badge ' + currentStatus;
+  if(currentRevision > 0){
+    revTag.textContent = `Rev.${currentRevision}`;
+    revTag.style.display = '';
+  } else {
+    revTag.style.display = 'none';
+  }
+  // Lock UI if win
+  isLocked = (currentStatus === 'win');
+  document.getElementById('btnSaveCloud').disabled = isLocked;
+  document.getElementById('btnSaveCloud').style.opacity = isLocked ? '.4' : '';
+
+  // Cloud status
+  setCloudStatus('saved');
+}
+
+function setCloudStatus(state, label){
+  const el = document.getElementById('cloudStatus');
+  const labels = { draft:'● Draft', saving:'↑ Saving…', saved:'✓ Saved', error:'⚠ Error' };
+  el.textContent = label || labels[state] || state;
+  el.className = 'status-badge'; // reset
+  el.id = 'cloudStatus';
+  el.className = state;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════════════
+let _toastTimer;
+function showToast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'on ' + type;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>t.className='', 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SAVE TO CLOUD
+// ═══════════════════════════════════════════════════════════════════════════
+async function saveToCloud(){
+  if(isLocked){ showToast('This quotation is locked (Win). No changes allowed.','err'); return; }
+  if(!currentUser){ showToast('Not signed in.','err'); return; }
+  if(!currentBaseNo){
+    showToast('Generate a quote number first.','err');
+    switchTab('info');
+    return;
+  }
+
+  setCloudStatus('saving');
+  const quoteData = buildQuoteData();
+
+  try {
+    if(!currentQuoteId){
+      // New quote
+      const docRef = await db.collection(COL.QUOTATIONS).add(quoteData);
+      currentQuoteId = docRef.id;
+    } else {
+      // Existing — if negotiation, snapshot current before overwrite
+      if(currentStatus === 'negotiation'){
+        const existing = await db.collection(COL.QUOTATIONS).doc(currentQuoteId).get();
+        if(existing.exists){
+          await db.collection(COL.QUOTATIONS).doc(currentQuoteId)
+            .collection('versions').doc(`rev_${currentRevision}`)
+            .set({ ...existing.data(), _snapshotAt: firebase.firestore.FieldValue.serverTimestamp(), _snapshotBy: currentUser.uid });
+          // Increment revision
+          currentRevision += 1;
+          quoteData.revision = currentRevision;
+          quoteData.displayQuoteNo = getDisplayQuoteNo();
+          document.getElementById('quoteNumber').value = getDisplayQuoteNo();
+          updatePreview();
+        }
+      }
+      await db.collection(COL.QUOTATIONS).doc(currentQuoteId).set(quoteData);
+    }
+    // Update local draft
+    save();
+    updateStatusBar();
+    setCloudStatus('saved');
+    showToast(`Saved: ${quoteData.displayQuoteNo}`,'ok');
+  } catch(e){
+    setCloudStatus('error');
+    showToast('Save failed. Check connection.','err');
+    console.error(e);
+  }
+}
+
+function buildQuoteData(){
+  const now = firebase.firestore.FieldValue.serverTimestamp();
+  const custCompany = document.getElementById('custCompany').value.trim();
+
+  // Compute totals
+  const totals = computeTotals();
+
+  // Status history entry (only add if status changed)
+  return {
+    quoteNo:       currentBaseNo,
+    revision:      currentRevision,
+    displayQuoteNo: getDisplayQuoteNo(),
+    status:        currentStatus,
+    customer: {
+      name:    document.getElementById('custName').value.trim(),
+      company: custCompany,
+      phone:   document.getElementById('custPhone').value.trim(),
+      email:   document.getElementById('custEmail').value.trim(),
+      address: document.getElementById('custAddress').value.trim(),
+    },
+    company: {
+      name:    document.getElementById('companyName').value.trim(),
+      tagline: document.getElementById('companyTagline').value.trim(),
+      address: document.getElementById('companyAddress').value.trim(),
+      phone:   document.getElementById('companyPhone').value.trim(),
+    },
+    salesperson: {
+      name:  document.getElementById('salesName').value.trim(),
+      phone: document.getElementById('salesPhone').value.trim(),
+      email: document.getElementById('salesEmail').value.trim(),
+    },
+    quoteDate:   document.getElementById('quoteDate').value,
+    validityDays,
+    notes:       document.getElementById('quoteNotes').value.trim(),
+    payment:     document.getElementById('quotePayment').value.trim(),
+    terms:       document.getElementById('quoteTerms').value.trim(),
+    footer:      document.getElementById('quoteFooter').value.trim(),
+    lineItems,
+    awItems,
+    totals,
+    discountMode,
+    overallModType,
+    overallModPct,
+    overallSmartPct,
+    specFontSize,
+    itemsFontSize,
+    theme:       currentTheme,
+    logoBase64:  logoDataUrl,
+    showOilCarryOver,
+    createdBy:   currentUser.uid,
+    createdByName: currentUserName,
+    updatedAt:   now,
+    createdAt:   firebase.firestore.FieldValue.serverTimestamp(),
+  };
+}
+
+function computeTotals(){
+  let subtotal = 0;
+  lineItems.forEach(item => {
+    const e = equipmentLib[item.equipIdx];
+    if(!e) return;
+    subtotal += calcUnitPrice(item) * (item.qty || 1);
+  });
+  awItems.forEach(aw => { subtotal += (parseFloat(aw.price)||0) * (aw.qty||1); });
+  return { subtotal, grandTotal: subtotal };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATUS MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+function openStatusModal(){
+  if(!currentBaseNo){ showToast('Generate a quote number first.','err'); return; }
+  pendingStatus = null;
+  document.getElementById('currentStatusLabel').textContent = currentStatus;
+  document.getElementById('lossFields').classList.remove('on');
+  document.getElementById('winLockWarning').style.display = 'none';
+  document.getElementById('lossReason').value = '';
+  document.getElementById('lossCompetitor').value = '';
+  document.getElementById('lossRemark').value = '';
+  document.getElementById('statusModalErr').classList.remove('on');
+  // Clear selected buttons
+  document.querySelectorAll('.status-opt-btn').forEach(b => b.className = 'status-opt-btn');
+  document.getElementById('statusModal').classList.add('on');
+}
+
+function selectStatus(s){
+  pendingStatus = s;
+  document.querySelectorAll('.status-opt-btn').forEach(b => b.className = 'status-opt-btn');
+  event.target.className = `status-opt-btn sel-${s}`;
+  document.getElementById('lossFields').classList.toggle('on', s==='loss');
+  document.getElementById('winLockWarning').style.display = s==='win' ? '' : 'none';
+  // Remark mandatory label
+  document.getElementById('lossRemarkLbl').textContent =
+    s === 'loss' ? 'Remark — mandatory if reason is "Other"' : 'Remark — optional';
+}
+
+async function confirmStatusChange(){
+  if(!pendingStatus){ showToast('Select a status first.','err'); return; }
+  const err = document.getElementById('statusModalErr');
+
+  // Validate loss fields
+  if(pendingStatus === 'loss'){
+    const reason = document.getElementById('lossReason').value;
+    const remark = document.getElementById('lossRemark').value.trim();
+    if(!reason){ err.textContent='Please select a loss reason.'; err.classList.add('on'); return; }
+    if(reason === 'Other' && !remark){ err.textContent='Remark is required when reason is "Other".'; err.classList.add('on'); return; }
+  }
+  err.classList.remove('on');
+
+  const prevStatus = currentStatus;
+  currentStatus = pendingStatus;
+
+  // Build status history entry
+  const histEntry = { status: pendingStatus, at: new Date().toISOString(), by: currentUser.uid, byName: currentUserName };
+
+  let lossDetails = null;
+  if(pendingStatus === 'loss'){
+    lossDetails = {
+      reason:     document.getElementById('lossReason').value,
+      competitor: document.getElementById('lossCompetitor').value.trim(),
+      remark:     document.getElementById('lossRemark').value.trim(),
+      recordedAt: new Date().toISOString(),
+      recordedBy: currentUser.uid,
+    };
+  }
+
+  if(currentQuoteId){
+    try {
+      const update = {
+        status: pendingStatus,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        statusHistory: firebase.firestore.FieldValue.arrayUnion(histEntry),
+      };
+      if(lossDetails) update.lossDetails = lossDetails;
+      await db.collection(COL.QUOTATIONS).doc(currentQuoteId).update(update);
+      showToast(`Status updated: ${pendingStatus}`,'ok');
+    } catch(e){ showToast('Failed to update status.','err'); currentStatus = prevStatus; console.error(e); }
+  }
+
+  updateStatusBar();
+  save();
+  document.getElementById('statusModal').classList.remove('on');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOAD QUOTE MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+async function openLoadModal(){
+  document.getElementById('loadModal').classList.add('on');
+  document.getElementById('loadSearchInp').value = '';
+  document.getElementById('revPickerArea').style.display = 'none';
+  document.getElementById('loadResultsArea').innerHTML = '<p style="font-size:12px;color:#94a3b8;text-align:center;padding:20px">Loading…</p>';
+
+  try {
+    const snap = await db.collection(COL.QUOTATIONS).orderBy('updatedAt','desc').limit(100).get();
+    allQuotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderLoadResults(allQuotes);
+  } catch(e){
+    document.getElementById('loadResultsArea').innerHTML = '<p style="font-size:12px;color:#dc2626;text-align:center;padding:20px">Failed to load. Check connection.</p>';
+  }
+}
+
+function closeLoadModal(){
+  document.getElementById('loadModal').classList.remove('on');
+  selectedLoadDoc = null;
+  selectedRevision = null;
+}
+
+function filterLoadResults(){
+  const q = document.getElementById('loadSearchInp').value.toLowerCase();
+  const filtered = allQuotes.filter(d =>
+    (d.quoteNo||'').toLowerCase().includes(q) ||
+    (d.customer?.company||'').toLowerCase().includes(q) ||
+    (d.customer?.name||'').toLowerCase().includes(q)
+  );
+  renderLoadResults(filtered);
+  document.getElementById('revPickerArea').style.display = 'none';
+}
+
+function renderLoadResults(docs){
+  const area = document.getElementById('loadResultsArea');
+  if(!docs.length){ area.innerHTML='<p style="font-size:12px;color:#94a3b8;text-align:center;padding:20px">No quotes found.</p>'; return; }
+  const statusColors = { draft:'#94a3b8', delivered:'#1d4ed8', negotiation:'#c2410c', win:'#15803d', loss:'#dc2626' };
+  area.innerHTML = docs.map(d => `
+    <div class="load-card" onclick="selectLoadDoc('${d.id}')">
+      <div class="load-card-top">
+        <span class="load-card-no">${d.displayQuoteNo || d.quoteNo || '—'}</span>
+        ${d.revision > 0 ? `<span class="load-card-rev">Rev.${d.revision}</span>` : ''}
+        <span class="load-card-status" style="background:${statusColors[d.status]||'#94a3b8'}20;color:${statusColors[d.status]||'#94a3b8'}">${d.status||'draft'}</span>
+      </div>
+      <div class="load-card-cust">${d.customer?.company || d.customer?.name || 'Unknown customer'}</div>
+      <div class="load-card-meta">${d.quoteDate||'No date'} · By ${d.createdByName||'—'} · RM ${((d.totals?.grandTotal||0)).toLocaleString('en-MY',{minimumFractionDigits:2})}</div>
+    </div>`).join('');
+}
+
+async function selectLoadDoc(docId){
+  selectedLoadDoc = allQuotes.find(d => d.id === docId);
+  if(!selectedLoadDoc) return;
+
+  // Fetch versions subcollection
+  const verSnap = await db.collection(COL.QUOTATIONS).doc(docId).collection('versions').orderBy('revision','desc').get();
+  const versions = verSnap.docs.map(d => ({ revId: d.id, ...d.data() }));
+
+  // Show revision picker
+  const area = document.getElementById('revPickerArea');
+  area.style.display = '';
+  selectedRevision = { ...selectedLoadDoc }; // default = latest
+
+  const list = document.getElementById('revPickerList');
+  // Latest (current doc) + all snapshots
+  const entries = [
+    { rev: selectedLoadDoc.revision||0, date: selectedLoadDoc.quoteDate||'—', total: selectedLoadDoc.totals?.grandTotal||0, isLatest: true, data: selectedLoadDoc },
+    ...versions.map(v => ({ rev: v.revision||0, date: v.quoteDate||'—', total: v.totals?.grandTotal||0, isLatest: false, data: v }))
+  ].sort((a,b) => b.rev - a.rev);
+
+  list.innerHTML = entries.map((e,i) => `
+    <div class="rev-item ${i===0?'selected':''}" onclick="pickRevision(${i})" id="revItem_${i}" data-idx="${i}">
+      <span class="rev-num">${e.rev===0 ? 'Original' : `Rev.${e.rev}`}</span>
+      <span class="rev-date">${e.date}</span>
+      <span class="rev-total">RM ${(e.total).toLocaleString('en-MY',{minimumFractionDigits:2})}</span>
+      ${e.isLatest ? '<span class="rev-latest">Latest</span>' : ''}
+    </div>`).join('');
+
+  // Store entries for later
+  list._entries = entries;
+  selectedRevision = entries[0]?.data || selectedLoadDoc;
+}
+
+function pickRevision(idx){
+  document.querySelectorAll('.rev-item').forEach((el,i) => el.classList.toggle('selected', i===idx));
+  const entries = document.getElementById('revPickerList')._entries;
+  selectedRevision = entries[idx]?.data || selectedLoadDoc;
+}
+
+function confirmLoadRevision(){
+  if(!selectedRevision){ showToast('Select a revision.','err'); return; }
+  loadQuoteData(selectedRevision);
+  closeLoadModal();
+}
+
+async function loadQuoteById(quoteNo, rev){
+  try {
+    const snap = await db.collection(COL.QUOTATIONS).where('quoteNo','==',quoteNo).limit(1).get();
+    if(snap.empty){ showToast('Quote not found.','err'); return; }
+    const data = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    if(rev !== null && rev < data.revision){
+      // Load specific revision from versions
+      const vSnap = await db.collection(COL.QUOTATIONS).doc(data.id).collection('versions').doc(`rev_${rev}`).get();
+      if(vSnap.exists) loadQuoteData({ ...vSnap.data(), id: data.id });
+      else loadQuoteData(data);
+    } else {
+      loadQuoteData(data);
+    }
+  } catch(e){ showToast('Failed to load quote.','err'); console.error(e); }
+}
+
+function loadQuoteData(data){
+  // CRM state
+  currentQuoteId  = data.id || null;
+  currentBaseNo   = data.quoteNo || null;
+  currentRevision = data.revision || 0;
+  currentStatus   = data.status || 'draft';
+
+  // Form fields
+  const set = (id, val) => { const el=document.getElementById(id); if(el) el.value = val||''; };
+  set('companyName',    data.company?.name);
+  set('companyTagline', data.company?.tagline);
+  set('companyAddress', data.company?.address);
+  set('companyPhone',   data.company?.phone);
+  set('quoteNumber',    data.displayQuoteNo || data.quoteNo);
+  set('quoteDate',      data.quoteDate);
+  set('quoteNotes',     data.notes);
+  set('quotePayment',   data.payment);
+  set('quoteTerms',     data.terms);
+  set('quoteFooter',    data.footer);
+  set('salesName',      data.salesperson?.name);
+  set('salesPhone',     data.salesperson?.phone);
+  set('salesEmail',     data.salesperson?.email);
+  set('custName',       data.customer?.name);
+  set('custCompany',    data.customer?.company);
+  set('custPhone',      data.customer?.phone);
+  set('custEmail',      data.customer?.email);
+  set('custAddress',    data.customer?.address);
+
+  validityDays    = data.validityDays || 0;
+  lineItems       = data.lineItems || [];
+  awItems         = data.awItems || [];
+  discountMode    = data.discountMode || 'individual';
+  overallModType  = data.overallModType || 'none';
+  overallModPct   = data.overallModPct || 0;
+  overallSmartPct = data.overallSmartPct || 20;
+  specFontSize    = data.specFontSize || 11;
+  itemsFontSize   = data.itemsFontSize || 14;
+  showOilCarryOver= data.showOilCarryOver || false;
+  logoDataUrl     = data.logoBase64 || '';
+
+  if(data.theme) setTheme(data.theme);
+  restoreValidityBtn();
+  renderLineItems();
+  renderAWItems();
+  updateStatusBar();
+  updatePreview();
+  save();
+  showToast(`Loaded: ${data.displayQuoteNo || data.quoteNo}`,'ok');
+  switchTab('info');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NEW QUOTE
+// ═══════════════════════════════════════════════════════════════════════════
+function newQuote(){
+  if(!confirm('Start a new quotation? Unsaved changes will be lost.')) return;
+  currentQuoteId   = null;
+  currentBaseNo    = null;
+  currentRevision  = 0;
+  currentStatus    = 'draft';
+  isLocked         = false;
+  lineItems        = [];
+  awItems          = [];
+  validityDays     = 0;
+  attachments      = [];
+
+  ['companyName','companyTagline','companyAddress','companyPhone',
+   'quoteNumber','quoteDate','quoteNotes','quotePayment','quoteTerms','quoteFooter',
+   'salesName','salesPhone','salesEmail',
+   'custName','custCompany','custPhone','custEmail','custAddress'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+
+  document.getElementById('quoteDate').value = today();
+  renderLineItems();
+  renderAWItems();
+  updateStatusBar();
+  setCloudStatus('draft','● Draft');
+  updatePreview();
+  save();
+  switchTab('info');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DAILY BACKUP (7-day rolling)
+// ═══════════════════════════════════════════════════════════════════════════
+async function runDailyBackup(){
+  try {
+    const todayKey = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+    const backupRef = db.collection(COL.BACKUPS).doc(todayKey);
+    const existing = await backupRef.get();
+    if(existing.exists) return; // already backed up today
+
+    // Fetch all quotations
+    const snap = await db.collection(COL.QUOTATIONS).get();
+    const allData = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+
+    // Write today's backup
+    await backupRef.set({
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      recordCount: allData.length,
+      data: JSON.stringify(allData),
+    });
+
+    // Prune old backups (older than BACKUP_RETAIN days)
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - BACKUP_RETAIN);
+    const cutoffKey = cutoff.toISOString().slice(0,10);
+    const oldSnap = await db.collection(COL.BACKUPS).where(firebase.firestore.FieldPath.documentId(),'<',cutoffKey).get();
+    const batch = db.batch();
+    oldSnap.docs.forEach(d => batch.delete(d.ref));
+    if(!oldSnap.empty) await batch.commit();
+  } catch(e){ console.warn('Backup skipped:',e.message); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOCAL STORAGE (draft buffer)
+// ═══════════════════════════════════════════════════════════════════════════
+const DRAFT_KEY = 'qt_draft_v1';
+function save(){
+  const d={
+    companyName:v('companyName'),companyTagline:v('companyTagline'),companyAddress:v('companyAddress'),companyPhone:v('companyPhone'),
+    quoteNumber:v('quoteNumber'),quoteDate:v('quoteDate'),quoteNotes:v('quoteNotes'),quotePayment:v('quotePayment'),quoteTerms:v('quoteTerms'),quoteFooter:v('quoteFooter'),
+    salesName:v('salesName'),salesPhone:v('salesPhone'),salesEmail:v('salesEmail'),
+    custName:v('custName'),custCompany:v('custCompany'),custPhone:v('custPhone'),custEmail:v('custEmail'),custAddress:v('custAddress'),
+    validityDays,lineItems,awItems,discountMode,overallModType,overallModPct,overallSmartPct,
+    specFontSize,itemsFontSize,currentTheme,logoDataUrl,showOilCarryOver,termsTemplates,payTemplates,customerLib:customerLib.slice(0,50),
+    // CRM fields
+    currentQuoteId,currentBaseNo,currentRevision,currentStatus,
+  };
+  try{localStorage.setItem(DRAFT_KEY,JSON.stringify(d));}catch(e){}
+}
+function v(id){const el=document.getElementById(id);return el?el.value:'';}
+function load(){
+  let d;try{d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');}catch{d={};}
+  const set=(id,val)=>{const el=document.getElementById(id);if(el&&val!==undefined)el.value=val;};
+  set('companyName',d.companyName);set('companyTagline',d.companyTagline);set('companyAddress',d.companyAddress);set('companyPhone',d.companyPhone);
+  set('quoteNumber',d.quoteNumber);set('quoteDate',d.quoteDate);set('quoteNotes',d.quoteNotes);set('quotePayment',d.quotePayment);set('quoteTerms',d.quoteTerms);set('quoteFooter',d.quoteFooter);
+  set('salesName',d.salesName);set('salesPhone',d.salesPhone);set('salesEmail',d.salesEmail);
+  set('custName',d.custName);set('custCompany',d.custCompany);set('custPhone',d.custPhone);set('custEmail',d.custEmail);set('custAddress',d.custAddress);
+  validityDays=d.validityDays||0;lineItems=d.lineItems||[];awItems=d.awItems||[];
+  discountMode=d.discountMode||'individual';overallModType=d.overallModType||'none';overallModPct=d.overallModPct||0;overallSmartPct=d.overallSmartPct||20;
+  specFontSize=d.specFontSize||11;itemsFontSize=d.itemsFontSize||14;
+  showOilCarryOver=d.showOilCarryOver||false;
+  termsTemplates=d.termsTemplates||[];payTemplates=d.payTemplates||[];
+  customerLib=d.customerLib||[];
+  // CRM
+  currentQuoteId=d.currentQuoteId||null;currentBaseNo=d.currentBaseNo||null;currentRevision=d.currentRevision||0;currentStatus=d.currentStatus||'draft';
+  if(d.currentTheme)setTheme(d.currentTheme,null,true);
+  if(d.logoDataUrl)restoreLogo(d.logoDataUrl);
+  renderLineItems();renderAWItems();updateStatusBar();
+  populateCustDropdown();populateTermsDropdown();populatePayDropdown();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════════════════════════════
+function setTheme(theme, el, silent){
+  currentTheme=theme;
+  document.body.className='theme-'+theme;
+  document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.toggle('active',s.dataset.theme===theme));
+  if(!silent){updatePreview();save();}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOGO
+// ═══════════════════════════════════════════════════════════════════════════
+function handleLogoUpload(input){
+  const file=input.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{logoDataUrl=e.target.result;restoreLogo(logoDataUrl);updatePreview();save();};
+  r.readAsDataURL(file);
+}
+function restoreLogo(url){
+  logoDataUrl=url;
+  const area=document.getElementById('logoUploadArea');
+  area.innerHTML=`<div class="logo-preview-wrap"><img src="${url}" class="logo-preview-img"/><button class="logo-remove-btn" onclick="removeLogo()">Remove</button></div>`;
+}
+function removeLogo(){logoDataUrl='';document.getElementById('logoUploadArea').innerHTML=`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;color:#94a3b8;margin:0 auto 6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p style="font-size:11px;color:#94a3b8">Click to upload logo</p><input id="logoInput" type="file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)"/>`;updatePreview();save();}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════════════════════
+function switchTab(t){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('btn-tab-'+t).classList.add('active');
+  if(t==='preview'){if(isMobile())renderMobilePreview();}
+}
+function isMobile(){return window.innerWidth<768;}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILITY FUNCTIONS (preserved from original)
+// ═══════════════════════════════════════════════════════════════════════════
+function today(){const d=new Date();return d.toISOString().slice(0,10);}
+function fmt(n){return Number(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function seriesType(s){if(!s)return'compressor';const sl=s.toLowerCase();if(sl.includes('dryer'))return'dryer';if(sl.includes('filter')||sl.includes(' af')||sl.startsWith('af'))return'af';if(sl.includes('tank')||sl.includes(' at')||sl.startsWith('at'))return'at';return'compressor';}
+
+function getModifier(item){
+  if(discountMode==='overall'){return{modType:overallModType,modPct:overallModPct,smartMarkupPct:overallSmartPct};}
+  return{modType:item.modType||'none',modPct:item.modPct||0,smartMarkupPct:item.smartMarkupPct||20};
+}
+function calcUnitPrice(item){
+  const e=equipmentLib[item.equipIdx];if(!e)return 0;
+  const orig=e.rmUnit;const{modType,modPct,smartMarkupPct}=getModifier(item);
+  if(modType==='markup')return orig/(1-modPct/100);
+  if(modType==='discount')return orig*(1-modPct/100);
+  if(modType==='smartmarkup'){const mp=orig/(1-modPct/100);return mp;}
+  return orig;
+}
+function calcSmartInflatedPrice(item){
+  const mp=calcUnitPrice(item);const{smartMarkupPct}=getModifier(item);
+  return mp/(1-(smartMarkupPct||20)/100);
+}
+function updateItem(idx,key,val){
+  if(key==='qty')lineItems[idx].qty=Math.max(1,parseInt(val)||1);
+  else if(key==='modType')lineItems[idx].modType=val;
+  else if(key==='modPct')lineItems[idx].modPct=parseFloat(val)||0;
+  else if(key==='ltMin')lineItems[idx].ltMin=parseInt(val)||0;
+  else if(key==='ltMax')lineItems[idx].ltMax=parseInt(val)||0;
+  renderLineItems();save();
+}
+function setItemSmartPct(idx,pct){lineItems[idx].smartMarkupPct=parseFloat(pct)||20;renderLineItems();save();}
+function setDiscountMode(mode){discountMode=mode;document.getElementById('btnModeIndividual').classList.toggle('active',mode==='individual');document.getElementById('btnModeOverall').classList.toggle('active',mode==='overall');document.getElementById('overallDiscountPanel').style.display=mode==='overall'?'':'none';renderLineItems();save();}
+function updateOverallDiscount(){overallModType=document.getElementById('overallModType').value;overallModPct=parseFloat(document.getElementById('overallModPct').value)||0;renderLineItems();save();}
+function setOverallSmartPct(p){overallSmartPct=p;document.querySelectorAll('#overallSmPresets .sm-preset-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===p));document.getElementById('overallSmartPct').value=p;renderLineItems();save();}
+function syncOverallSmartPct(v){overallSmartPct=parseFloat(v)||20;document.querySelectorAll('#overallSmPresets .sm-preset-btn').forEach(b=>b.classList.toggle('active',false));renderLineItems();save();}
+function updateFontSize(v){specFontSize=parseInt(v);document.getElementById('fontSizeLabel').textContent=v+'px';updatePreview();save();}
+function updateItemsFontSize(v){itemsFontSize=parseInt(v);renderLineItems();save();}
+
+// ── Equipment & Customer imports ─────────────────────────────────────────
+function parseFile(file,cb){const ext=file.name.split('.').pop().toLowerCase();if(ext==='csv'){Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>cb(r.data)});}else{const r=new FileReader();r.onload=e=>{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});cb(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}));};r.readAsArrayBuffer(file);}}
+function importEquipment(input){const file=input.files[0];if(!file)return;parseFile(file,rows=>{const norm=rows.map(r=>{const n={};Object.keys(r).forEach(k=>{n[k.replace(/^\uFEFF/,'').trim()]=String(r[k]===null||r[k]===undefined?'':r[k]).trim();});return n;});equipmentLib=norm.map(r=>({model:r['Model']||'',tpl:r['TPL']||'',type:r['Type']||'',series:r['Series']||'',rmUnit:parseFloat(String(r['RM/ Unit']||'').replace(/[^0-9.]/g,''))||0,airQuality:r['Air Quality']||'',wcac:r['WC/AC']||'',kw:r['kW']||'',hp:r['hp']||'',loadP:r['Loading Pressure']||'',unloadP:r['Unload Pressure']||'',minM3:r['Min m3/min']||'',maxM3:r['Max m3/min']||'',minCFM:r['Min CFM']||'',maxCFM:r['Max CFM']||'',ieRating:r['IE Rating']||'',motorType:r['Motor Type']||'',dimension:r['Dimension']||'',outletSize:r['Outlet size']||'',weight:r['Weight']||'',noise:r['Noise level']||'',power:r['Power Supply']||'',outletTemp:r['Outlet air temperature']||'',starter:r['Starter Type']||'',waterFlow:r['Input water flow']||'',waterPres:r['water pressure']||'',presDrop:r['Pressure drop']||'',oilCarry:r['Oil carry over']||'',refrigerant:r['Refrigerant']||'',filterM3:r['Filter, m3/min']||r['filter, m3/min']||'',filterCFM:r['Filter, cfm']||r['filter, cfm']||'',filterOil:r['Filter oil carry over']||r['filter oil carry over']||'',filterPart:r['Particle removal']||r['particle removal']||'',filterDim:r['Filter dimension']||r['filter dimension']||'',filterOutlet:r['Filter outlet']||r['filter outlet']||'',filterWeight:r['Filter weight']||r['filter weigh']||r['Filter weigh']||'',tankVolume:r['tank volume']||r['Tank volume']||'',tankMat:r['Air tank Material']||r['air tank material']||'',tankPres:r['tank pressure']||r['Tank pressure']||'',tankDim:r['tank dimension']||r['Tank dimension']||'',tankOutlet:r['tank outlet']||r['Tank outlet']||''})).filter(e=>e.model);populateSeriesDropdown();populateStarterDropdown();populateEquipDropdown();const s=document.getElementById('equipStatus');s.textContent=`✓ ${equipmentLib.length} items loaded`;s.classList.add('on');save();});}
+function importCustomers(input){const file=input.files[0];if(!file)return;parseFile(file,rows=>{const norm=rows.map(r=>{const n={};Object.keys(r).forEach(k=>{n[k.replace(/^\uFEFF/,'').trim()]=String(r[k]||'').trim();});return n;});customerLib=norm.map(r=>{const ap=[r['Address'],r['Postcode'],r['State'],r['Country']].filter(Boolean);return{name:r['Name']||'',company:r['Company']||'',phone:r['Contact No']||'',email:r['Email']||'',address:ap.join(', ')};}).filter(c=>c.name||c.company);populateCustDropdown();const s=document.getElementById('custStatus');s.textContent=`✓ ${customerLib.length} customers`;s.classList.add('on');save();});}
+
+function populateSeriesDropdown(){const sel=document.getElementById('seriesSelect'),cur=sel.value;sel.innerHTML='<option value="">— All series —</option>';[...new Set(equipmentLib.map(e=>e.series).filter(Boolean))].sort().forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;if(s===cur)o.selected=true;sel.appendChild(o);});}
+function populateStarterDropdown(){const series=document.getElementById('seriesSelect').value,sel=document.getElementById('starterSelect'),cur=sel.value;sel.innerHTML='<option value="">— All —</option>';[...new Set(equipmentLib.filter(e=>(!series||e.series===series)&&seriesType(e.series)==='compressor').map(e=>e.starter).filter(Boolean))].sort().forEach(st=>{const o=document.createElement('option');o.value=st;o.textContent=st;if(st===cur)o.selected=true;sel.appendChild(o);});}
+function populateEquipDropdown(){const series=document.getElementById('seriesSelect').value,starter=document.getElementById('starterSelect').value,sel=document.getElementById('equipSelect');sel.innerHTML='<option value="">— Select equipment —</option>';equipmentLib.filter(e=>{if(series&&e.series!==series)return false;if(starter&&seriesType(e.series)==='compressor'&&e.starter!==starter)return false;return true;}).sort((a,b)=>(parseFloat(a.kw)||0)-(parseFloat(b.kw)||0)).forEach(e=>{const idx=equipmentLib.indexOf(e),o=document.createElement('option');o.value=idx;const st=seriesType(e.series);let label=e.model;if(st==='compressor')label+=[e.kw?` · ${e.kw}kW`:'',e.starter?` · ${e.starter}`:''].join('');else if(st==='dryer')label+=e.maxM3?` · ${e.maxM3} m³/min`:'';else if(st==='af')label+=e.filterM3?` · ${e.filterM3} m³/min`:'';else if(st==='at')label+=e.tankVolume?` · ${e.tankVolume}`:'';o.textContent=label;sel.appendChild(o);});}
+function onSeriesChange(){populateStarterDropdown();populateEquipDropdown();}
+function onStarterChange(){populateEquipDropdown();}
+function populateCustDropdown(){const sel=document.getElementById('customerSelect'),cur=sel.value;sel.innerHTML='<option value="">— Select or enter manually —</option>';customerLib.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.name+(c.company?` — ${c.company}`:'');if(String(i)===String(cur))o.selected=true;sel.appendChild(o);});}
+function selectCustomer(){const idx=document.getElementById('customerSelect').value;if(idx==='')return;const c=customerLib[parseInt(idx)];document.getElementById('custName').value=c.name;document.getElementById('custCompany').value=c.company;document.getElementById('custPhone').value=c.phone;document.getElementById('custEmail').value=c.email;document.getElementById('custAddress').value=c.address;updatePreview();}
+
+function addEquipment(){const idx=document.getElementById('equipSelect').value;if(idx===''){alert('Please select equipment first.');return;}lineItems.push({id:Date.now(),equipIdx:parseInt(idx),qty:1,modType:'none',modPct:0,smartMarkupPct:20,ltMin:0,ltMax:0});renderLineItems();save();}
+let dragSrcIdx=null;
+function moveItem(idx,dir){const newIdx=idx+dir;if(newIdx<0||newIdx>=lineItems.length)return;const tmp=lineItems[idx];lineItems[idx]=lineItems[newIdx];lineItems[newIdx]=tmp;renderLineItems();save();}
+
+function renderLineItems(){
+  const container=document.getElementById('lineItemsContainer'),msg=document.getElementById('noItemsMsg');
+  container.innerHTML='';if(!lineItems.length){msg.style.display='';updatePreview();return;}msg.style.display='none';
+  const total=lineItems.filter(item=>equipmentLib[item.equipIdx]).length;
+  lineItems.forEach((item,idx)=>{
+    const e=equipmentLib[item.equipIdx];if(!e)return;
+    const div=document.createElement('div');div.className='lcard';
+    const isFirst=idx===0,isLast=idx===total-1;
+    const isSmart=item.modType==='smartmarkup';
+    const smartMarkupPct=item.smartMarkupPct||20;
+    let modHTML='';
+    if(discountMode==='individual'){
+      const modTypeSelect=`<select onchange="updateItem(${idx},'modType',this.value)" class="inp"><option value="none"${item.modType==='none'?' selected':''}>None</option><option value="markup"${item.modType==='markup'?' selected':''}>Markup %</option><option value="discount"${item.modType==='discount'?' selected':''}>Discount %</option><option value="smartmarkup"${isSmart?' selected':''}>✨ Smart Markup</option></select>`;
+      modHTML=`<div class="g2"><div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div><div><label class="lbl">Modifier</label>${modTypeSelect}</div></div>`;
+      if(isSmart){const presets=[10,15,20,25,30];const presetBtns=presets.map(p=>`<button class="sm-preset-btn${smartMarkupPct===p?' active':''}" onclick="setItemSmartPct(${idx},${p})">${p}%</button>`).join('');modHTML+=`<div><label class="lbl">Markup %</label><input type="number" min="0" max="99.9" step="0.1" value="${item.modPct}" oninput="updateItem(${idx},'modPct',this.value)" class="inp"/></div><div><label class="lbl">Smart Inflate %</label><div class="sm-preset-row">${presetBtns}</div><input type="number" min="0" max="99.9" step="0.1" value="${smartMarkupPct}" oninput="setItemSmartPct(${idx},this.value)" class="inp" placeholder="Custom %"/></div>`;}
+      else if(item.modType!=='none'){modHTML+=`<div><label class="lbl">${item.modType==='markup'?'Markup':'Discount'} %</label><input type="number" min="0" max="100" step="0.1" value="${item.modPct}" onchange="updateItem(${idx},'modPct',this.value)" class="inp"/></div>`;}
+    }else{modHTML=`<div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div>`;}
+    const origUnit=e.rmUnit;const adjUnit=calcUnitPrice(item);const{modType:iModType,modPct:iModPct}=getModifier(item);const hasActiveMod=iModType!=='none'&&iModPct>0;
+    let priceInfoHTML='';
+    if(iModType==='smartmarkup'){const markupPrice=calcUnitPrice(item);const listedPrice=calcSmartInflatedPrice(item);const discountBack=((listedPrice-markupPrice)/listedPrice*100).toFixed(1);priceInfoHTML=`<div class="smart-markup-box"><div class="smart-markup-badge">✨ Smart Markup</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px"><div style="font-size:10px;color:#64748b">Cost<br><strong style="color:#1e293b">RM ${fmt(origUnit)}</strong></div><div style="font-size:10px;color:#64748b">Listed<br><strong style="color:#16a34a">RM ${fmt(listedPrice)}</strong></div><div style="font-size:10px;color:#64748b">Markup Price<br><strong style="color:#0369a1">RM ${fmt(markupPrice)}</strong></div></div><p style="font-size:10px;color:#6B7280;margin-top:6px">Customer gets ${discountBack}% discount off Listed Price, you receive RM ${fmt(markupPrice)}/unit</p></div>`;}
+    else if(hasActiveMod){priceInfoHTML=`<div style="display:flex;gap:12px;margin-top:6px;font-size:11px"><span style="color:#94a3b8">Cost: RM ${fmt(origUnit)}</span><span style="color:#1e293b;font-weight:600">→ RM ${fmt(adjUnit)}/unit</span></div>`;}
+    const ltRange=item.ltMin||item.ltMax?`${item.ltMin||0}–${item.ltMax||0} weeks`:'—';
+    div.innerHTML=`<div class="lcard-hdr"><div style="flex:1;min-width:0"><p class="lcard-model" style="font-size:${itemsFontSize}px">${e.model}</p><p class="lcard-sub">${e.series||''}${e.kw?' · '+e.kw+'kW':''}</p></div><div style="display:flex;align-items:flex-start;gap:4px">${isLocked?'':`<button class="btn-xred" onclick="removeItem(${idx})" title="Remove"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`}<div class="move-btns"><button class="move-btn" onclick="moveItem(${idx},-1)" ${isFirst||isLocked?'disabled':''}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button><button class="move-btn" onclick="moveItem(${idx},1)" ${isLast||isLocked?'disabled':''}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button></div></div></div>${isLocked?'':`${modHTML}${priceInfoHTML}<div class="lcard-foot"><div class="lt-pair"><span>LT:</span><input type="number" min="0" value="${item.ltMin||0}" onchange="updateItem(${idx},'ltMin',this.value)" class="inp"/><span>–</span><input type="number" min="0" value="${item.ltMax||0}" onchange="updateItem(${idx},'ltMax',this.value)" class="inp"/><span>wks</span></div></div>`}${isLocked?`<p style="font-size:11px;color:#94a3b8;margin-top:6px">🔒 Locked — Win status</p>`:''}`;
+    container.appendChild(div);
+  });
+  updatePreview();
+}
+function removeItem(idx){lineItems.splice(idx,1);renderLineItems();save();}
+
+// ── Additional Works ─────────────────────────────────────────────────────
+let awDragIdx=null;
+function addAWItem(){awItems.push({id:Date.now(),desc:'',qty:1,unit:'lot',price:0});renderAWItems();save();}
+function removeAWItem(idx){awItems.splice(idx,1);renderAWItems();save();}
+function updateAW(idx,key,val){awItems[idx][key]=key==='price'||key==='qty'?parseFloat(val)||0:val;if(key!=='desc')renderAWItems();save();}
+function renderAWItems(){
+  const c=document.getElementById('awItemsContainer'),msg=document.getElementById('awNoItems');
+  c.innerHTML='';if(!awItems.length){msg.style.display='';updatePreview();return;}msg.style.display='none';
+  awItems.forEach((aw,i)=>{
+    const d=document.createElement('div');d.className='card';d.style.cssText='padding:10px;margin-bottom:0';
+    d.innerHTML=`<div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><input value="${aw.desc||''}" placeholder="Description" class="inp" style="margin-bottom:6px;font-size:12px" oninput="awItems[${i}].desc=this.value;save()"/><div class="g2"><input type="number" min="1" value="${aw.qty||1}" class="inp" style="font-size:12px" onchange="updateAW(${i},'qty',this.value)"/><select class="inp" style="font-size:12px" onchange="updateAW(${i},'unit',this.value)"><option${aw.unit==='lot'?' selected':''}>lot</option><option${aw.unit==='unit'?' selected':''}>unit</option><option${aw.unit==='set'?' selected':''}>set</option><option${aw.unit==='pcs'?' selected':''}>pcs</option></select></div><input type="number" min="0" step="0.01" value="${aw.price||0}" placeholder="Unit price" class="inp" style="margin-top:6px;font-size:12px" onchange="updateAW(${i},'price',this.value)"/></div>${isLocked?'':`<button class="btn-xred" style="margin-top:2px" onclick="removeAWItem(${i})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>`}</div>`;
+    c.appendChild(d);
+  });
+  updatePreview();
+}
+
+// ── Terms & Payment templates ────────────────────────────────────────────
+function openTermsModal(){document.getElementById('newTermsName').value='';document.getElementById('newTermsText').value='';document.getElementById('termsModal').classList.add('on');}
+function saveTermsTemplate(){const n=document.getElementById('newTermsName').value.trim(),t=document.getElementById('newTermsText').value.trim();if(!n||!t)return;termsTemplates.push({name:n,text:t});populateTermsDropdown();save();document.getElementById('termsModal').classList.remove('on');}
+function populateTermsDropdown(){const sel=document.getElementById('termsSelect');sel.innerHTML='<option value="">— Select template —</option>';termsTemplates.forEach((t,i)=>{const o=document.createElement('option');o.value=i;o.textContent=t.name;sel.appendChild(o);});}
+function applyTermsTemplate(){const idx=document.getElementById('termsSelect').value;if(idx==='')return;document.getElementById('quoteTerms').value=termsTemplates[parseInt(idx)].text;updatePreview();save();}
+function openPayModal(){document.getElementById('newPayName').value='';document.getElementById('newPayText').value='';document.getElementById('payModal').classList.add('on');}
+function savePayTemplate(){const n=document.getElementById('newPayName').value.trim(),t=document.getElementById('newPayText').value.trim();if(!n||!t)return;payTemplates.push({name:n,text:t});populatePayDropdown();save();document.getElementById('payModal').classList.remove('on');}
+function populatePayDropdown(){const sel=document.getElementById('paySelect');sel.innerHTML='<option value="">— Select template —</option>';payTemplates.forEach((t,i)=>{const o=document.createElement('option');o.value=i;o.textContent=t.name;sel.appendChild(o);});}
+function applyPayTemplate(){const idx=document.getElementById('paySelect').value;if(idx==='')return;document.getElementById('quotePayment').value=payTemplates[parseInt(idx)].text;updatePreview();save();}
+
+// ── Customer modal ───────────────────────────────────────────────────────
+function openCustModal(){document.getElementById('newCustName').value='';document.getElementById('newCustCompany').value='';document.getElementById('newCustPhone').value='';document.getElementById('newCustEmail').value='';document.getElementById('newCustAddress').value='';document.getElementById('custModal').classList.add('on');}
+function saveNewCustomer(){const n=document.getElementById('newCustName').value.trim(),co=document.getElementById('newCustCompany').value.trim();if(!n&&!co)return;const c={name:n,company:co,phone:document.getElementById('newCustPhone').value.trim(),email:document.getElementById('newCustEmail').value.trim(),address:document.getElementById('newCustAddress').value.trim()};customerLib.push(c);populateCustDropdown();save();document.getElementById('custModal').classList.remove('on');document.getElementById('custName').value=c.name;document.getElementById('custCompany').value=c.company;document.getElementById('custPhone').value=c.phone;document.getElementById('custEmail').value=c.email;document.getElementById('custAddress').value=c.address;updatePreview();}
+
+// ── Validity ─────────────────────────────────────────────────────────────
+function setValidity(days,btn){validityDays=days;document.getElementById('quoteValidity').value=days>0?days:'';document.querySelectorAll('.validity-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');updatePreview();save();}
+function computeValidTill(){const dateVal=document.getElementById('quoteDate').value;if(!dateVal||!validityDays)return'';const d=new Date(dateVal);d.setDate(d.getDate()+validityDays);return d.toLocaleDateString('en-MY',{day:'numeric',month:'long',year:'numeric'});}
+function restoreValidityBtn(){const val=document.getElementById('quoteValidity').value;const days=parseInt(val)||0;validityDays=days;document.querySelectorAll('.validity-btn').forEach(b=>{const bDays=parseInt(b.textContent)||0;b.classList.toggle('active',days>0&&bDays===days);if(days===0&&b.textContent==='None')b.classList.add('active');});}
+
+// ── Oil & Attachments ────────────────────────────────────────────────────
+function setOilCarryOver(val){showOilCarryOver=val;document.getElementById('oilToggleOn').classList.toggle('active',val);document.getElementById('oilToggleOff').classList.toggle('active',!val);updatePreview();}
+function addAttachments(input){const files=Array.from(input.files);const readers=files.map(file=>new Promise(res=>{const r=new FileReader();r.onload=e=>res({name:file.name,dataUrl:e.target.result});r.readAsDataURL(file);}));Promise.all(readers).then(results=>{attachments.push(...results);renderAttachmentList();input.value='';});}
+function removeAttachment(idx){attachments.splice(idx,1);renderAttachmentList();}
+function renderAttachmentList(){const list=document.getElementById('attachmentList'),empty=document.getElementById('attachmentEmpty');empty.style.display=attachments.length?'none':'';list.innerHTML=attachments.map((a,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f1f5f9"><img src="${a.dataUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;flex-shrink:0"/><span style="flex:1;font-size:11px;font-weight:500;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</span><button class="btn-xred" onclick="removeAttachment(${i})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>`).join('');}
+
+// ── Equipment pictures ────────────────────────────────────────────────────
+let equipPicExpanded=false;
+function toggleEquipPicBlock(){equipPicExpanded=!equipPicExpanded;document.getElementById('equipPicBlock').style.display=equipPicExpanded?'':'none';document.getElementById('equipPicChevron').style.transform=equipPicExpanded?'rotate(180deg)':'';}
+
+// ── Preview order drag ────────────────────────────────────────────────────
+let orderDragIdx=null;
+function buildOrderList(){
+  const list=document.getElementById('previewOrderList'),empty=document.getElementById('previewOrderEmpty');
+  if(!lineItems.length){list.innerHTML='';empty.style.display='';return;}empty.style.display='none';
+  list.innerHTML='';
+  lineItems.forEach((item,i)=>{
+    const e=equipmentLib[item.equipIdx];if(!e)return;
+    const row=document.createElement('div');row.className='order-row';row.draggable=!isLocked;row.dataset.idx=i;
+    row.innerHTML=`<span class="order-row-num">${i+1}</span><span style="flex:1;font-size:11px;font-weight:500;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.model}</span>${isLocked?'':'<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;color:#cbd5e1;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>'}`;
+    if(!isLocked){row.addEventListener('dragstart',()=>{orderDragIdx=i;row.classList.add('dragging-row');});row.addEventListener('dragend',()=>row.classList.remove('dragging-row'));row.addEventListener('dragover',e=>{e.preventDefault();row.classList.add('drag-over-row');});row.addEventListener('dragleave',()=>row.classList.remove('drag-over-row'));row.addEventListener('drop',()=>{row.classList.remove('drag-over-row');if(orderDragIdx===null||orderDragIdx===i)return;const tmp=lineItems[orderDragIdx];lineItems[orderDragIdx]=lineItems[i];lineItems[i]=tmp;buildOrderList();updatePreview();save();orderDragIdx=null;});}
+    list.appendChild(row);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PDF PREVIEW (core rendering — preserved exactly from original)
+// ═══════════════════════════════════════════════════════════════════════════
+function updatePreview(){
+  buildOrderList();
+  const pages=document.getElementById('pagesWrapper');
+  const allHtml=buildAllPages();
+  pages.innerHTML=allHtml.join('');
+  currentPage=0;showPage();
+  if(isMobile()&&document.getElementById('tab-preview').classList.contains('active'))renderMobilePreview();
+}
+
+function buildAllPages(){
+  // Gather all inputs
+  const companyName=v('companyName'),companyTagline=v('companyTagline'),companyAddress=v('companyAddress'),companyPhone=v('companyPhone');
+  const custName=v('custName'),custCompany=v('custCompany'),custPhone=v('custPhone'),custEmail=v('custEmail'),custAddress=v('custAddress');
+  const quoteNo=getDisplayQuoteNo()||v('quoteNumber');
+  const quoteDate=v('quoteDate')?new Date(v('quoteDate')).toLocaleDateString('en-MY',{day:'numeric',month:'long',year:'numeric'}):'';
+  const validTill=computeValidTill();
+  const salesName=v('salesName'),salesPhone=v('salesPhone'),salesEmail=v('salesEmail');
+  const notes=v('quoteNotes'),payment=v('quotePayment'),terms=v('quoteTerms'),footer=v('quoteFooter');
+  const awTitle=v('awTitle')||'Additional Works';
+  const fs=specFontSize+'px';
+
+  const tp=currentTheme;
+  const colors={default:{primary:'#0f172a',accent:'#334155',light:'#f1f5f9',badge:'#0f172a',badgeText:'#fff',tag:'#f1f5f9',tagText:'#475569',totalBorder:'#0f172a',totalText:'#0f172a'},industrial:{primary:'#1B365D',accent:'#708090',light:'#E6F0FA',badge:'#1B365D',badgeText:'#fff',tag:'#E6F0FA',tagText:'#1B365D',totalBorder:'#1B365D',totalText:'#1B365D'},japandi:{primary:'#2C2C2C',accent:'#8B8176',light:'#F2EDE6',badge:'#2C2C2C',badgeText:'#F5F0E8',tag:'#EDE8E0',tagText:'#2C2C2C',totalBorder:'#2C2C2C',totalText:'#2C2C2C'}};
+  const c=colors[tp]||colors.default;
+  const bgPage=tp==='japandi'?'#FAF7F2':'#fff';
+  const fontFamily=tp==='japandi'?"'Cormorant Garamond',serif":"'Inter',sans-serif";
+
+  // Compute pricing
+  let equipTotal=0,awTotal=0;
+  const priceRows=lineItems.map(item=>{
+    const e=equipmentLib[item.equipIdx];if(!e)return null;
+    const isSmart=getModifier(item).modType==='smartmarkup';
+    const unitPrice=isSmart?calcSmartInflatedPrice(item):calcUnitPrice(item);
+    const unit2=isSmart?calcUnitPrice(item):null;
+    const lineTotal=(isSmart?calcUnitPrice(item):unitPrice)*(item.qty||1);
+    equipTotal+=lineTotal;
+    return{e,item,unitPrice,unit2,lineTotal,isSmart};
+  }).filter(Boolean);
+  const awPriceRows=awItems.map(aw=>({aw,lineTotal:(parseFloat(aw.price)||0)*(aw.qty||1)}));
+  awPriceRows.forEach(r=>awTotal+=r.lineTotal);
+  const grandTotal=equipTotal+awTotal;
+
+  const pages=[];
+
+  // ── Page 1: Cover ───────────────────────────────────────────────────────
+  let p1=`<div class="a4-page" style="background:${bgPage};font-family:${fontFamily}">`;
+  // Header
+  p1+=`<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid ${c.primary}">`;
+  if(logoDataUrl){p1+=`<img src="${logoDataUrl}" style="max-height:64px;max-width:200px;object-fit:contain"/>`;}
+  else{p1+=`<div style="font-family:${fontFamily};font-size:22px;font-weight:700;color:${c.primary}">${companyName||'Your Company'}</div>`;}
+  p1+=`<div style="text-align:right;font-size:11px;color:#64748b;line-height:1.7">${[companyTagline,companyAddress,companyPhone].filter(Boolean).join('<br/>')}</div>`;
+  p1+=`</div>`;
+  // Quote info block
+  p1+=`<div style="display:flex;justify-content:space-between;margin-bottom:36px">`;
+  p1+=`<div><div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px">Bill To</div>`;
+  p1+=`<div style="font-size:14px;font-weight:700;color:${c.primary}">${custCompany||custName||'—'}</div>`;
+  if(custCompany&&custName)p1+=`<div style="font-size:13px;color:#374151;margin-top:2px">${custName}</div>`;
+  p1+=`<div style="font-size:12px;color:#64748b;margin-top:6px;line-height:1.6">${[custPhone,custEmail,custAddress].filter(Boolean).join('<br/>')}</div></div>`;
+  p1+=`<div style="text-align:right"><div style="display:inline-block;background:${c.badge};color:${c.badgeText};padding:4px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">QUOTATION</div>`;
+  p1+=`<table style="font-size:12px;border-collapse:collapse;margin-left:auto"><tr><td style="color:#94a3b8;padding:2px 10px 2px 0;text-align:right">Quote No.</td><td style="font-weight:700;color:${c.primary}">${quoteNo}</td></tr>`;
+  if(quoteDate)p1+=`<tr><td style="color:#94a3b8;padding:2px 10px 2px 0;text-align:right">Date</td><td style="font-weight:600;color:#374151">${quoteDate}</td></tr>`;
+  if(validTill)p1+=`<tr><td style="color:#94a3b8;padding:2px 10px 2px 0;text-align:right">Valid Until</td><td style="font-weight:600;color:#374151">${validTill}</td></tr>`;
+  if(salesName)p1+=`<tr><td style="color:#94a3b8;padding:2px 10px 2px 0;text-align:right">Prepared by</td><td style="font-weight:600;color:#374151">${salesName}</td></tr>`;
+  p1+=`</table></div></div>`;
+  // Equipment table
+  p1+=`<table style="width:100%;border-collapse:collapse;margin-bottom:24px">`;
+  p1+=`<thead><tr style="background:${c.primary}"><th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Item</th><th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Description</th><th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Qty</th><th style="padding:10px 12px;text-align:right;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Unit Price</th><th style="padding:10px 12px;text-align:right;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Total</th></tr></thead><tbody>`;
+  priceRows.forEach((row,i)=>{
+    const bg=i%2===0?'#ffffff':c.light;
+    const label=row.e.model+(row.e.series?`<br/><span style="font-size:10px;color:#94a3b8">${row.e.series}</span>`:'');
+    p1+=`<tr style="background:${bg}"><td style="padding:10px 12px;font-size:13px;font-weight:600;color:${c.primary}">${String(i+1).padStart(2,'0')}</td>`;
+    p1+=`<td style="padding:10px 12px;font-size:13px;color:#1e293b">${label}</td>`;
+    p1+=`<td style="padding:10px 8px;text-align:center;font-size:13px;color:#374151">${row.item.qty}</td>`;
+    if(row.isSmart){p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;color:#374151"><span style="text-decoration:line-through;color:#94a3b8;font-size:11px">RM ${fmt(row.unitPrice)}</span><br/>RM ${fmt(row.unit2)}</td>`;}
+    else{p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;color:#374151">RM ${fmt(row.unitPrice)}</td>`;}
+    p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;font-weight:600;color:${c.primary}">RM ${fmt(row.lineTotal)}</td></tr>`;
+  });
+  // AW rows
+  if(awItems.length){
+    p1+=`<tr><td colspan="5" style="padding:8px 12px;font-size:11px;font-weight:700;color:${c.accent};text-transform:uppercase;letter-spacing:.08em;border-top:1px solid ${c.light}">${awTitle}</td></tr>`;
+    awPriceRows.forEach((r,i)=>{const bg=(priceRows.length+i)%2===0?'#fff':c.light;p1+=`<tr style="background:${bg}"><td style="padding:8px 12px;font-size:13px;font-weight:600;color:${c.accent}">${String(priceRows.length+i+1).padStart(2,'0')}</td><td style="padding:8px 12px;font-size:13px;color:#1e293b">${r.aw.desc||'—'}</td><td style="padding:8px 8px;text-align:center;font-size:13px">${r.aw.qty} ${r.aw.unit}</td><td style="padding:8px 12px;text-align:right;font-size:13px">RM ${fmt(r.aw.price)}</td><td style="padding:8px 12px;text-align:right;font-size:13px;font-weight:600">RM ${fmt(r.lineTotal)}</td></tr>`;});
+  }
+  p1+=`</tbody></table>`;
+  // Grand total
+  p1+=`<div style="display:flex;justify-content:flex-end;margin-bottom:24px"><div style="min-width:260px"><div style="border-top:2px solid ${c.totalBorder};padding-top:12px;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;font-weight:700;color:${c.totalText};letter-spacing:.04em;text-transform:uppercase">Grand Total (MYR)</span><span style="font-size:20px;font-weight:700;color:${c.totalText}">RM ${fmt(grandTotal)}</span></div></div></div>`;
+  // Notes
+  if(notes)p1+=`<div style="background:${c.light};border-radius:8px;padding:14px 16px;margin-bottom:16px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Notes</p><p style="font-size:13px;color:#374151;white-space:pre-wrap;line-height:1.6">${notes}</p></div>`;
+  if(payment)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Payment Terms</p><p style="font-size:12px;color:#374151;white-space:pre-wrap;line-height:1.6">${payment}</p></div>`;
+  if(terms)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Terms &amp; Conditions</p><p style="font-size:12px;color:#374151;white-space:pre-wrap;line-height:1.6">${terms}</p></div>`;
+  // Footer
+  p1+=`<div style="margin-top:auto;padding-top:24px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:flex-end">`;
+  p1+=`<div style="font-size:11px;color:#94a3b8">${footer||'Thank you for your kind consideration.'}</div>`;
+  if(salesName||salesPhone||salesEmail)p1+=`<div style="text-align:right;font-size:11px;color:#64748b">${[salesName,salesPhone,salesEmail].filter(Boolean).join(' · ')}</div>`;
+  p1+=`</div>`;
+  p1+=`</div>`; // end a4-page
+  pages.push(p1);
+
+  // ── Tech spec pages ──────────────────────────────────────────────────────
+  priceRows.forEach((row,i)=>{
+    const e=row.e;const item=row.item;
+    const st=seriesType(e.series);
+    if(st!=='compressor'&&st!=='dryer'&&st!=='af'&&st!=='at')return;
+    let specRows=[];
+    if(st==='compressor'){specRows=[['Air Quality',e.airQuality],['WC/AC',e.wcac],['Motor Power',e.kw?e.kw+' kW':''],['Motor HP',e.hp?e.hp+' hp':''],['Motor Type',e.motorType],['IE Rating',e.ieRating],['Loading Pressure',e.loadP],['Unload Pressure',e.unloadP],['Free Air Delivery',e.minM3&&e.maxM3?`${e.minM3}–${e.maxM3} m³/min`:(e.minCFM&&e.maxCFM?`${e.minCFM}–${e.maxCFM} CFM`:'')],['Power Supply',e.power],['Noise Level',e.noise],['Outlet Size',e.outletSize],['Dimension',e.dimension],['Weight',e.weight],['Outlet Air Temp.',e.outletTemp],['Starter Type',e.starter],( showOilCarryOver?[['Oil Carry Over',e.oilCarry]]:[])].filter(r=>r[1]);}
+    else if(st==='dryer'){specRows=[['Refrigerant',e.refrigerant],['Min Flow',e.minM3?e.minM3+' m³/min':''],['Max Flow',e.maxM3?e.maxM3+' m³/min':''],['Min CFM',e.minCFM],['Max CFM',e.maxCFM],['Power Supply',e.power],['Dimension',e.dimension],['Weight',e.weight]].filter(r=>r[1]);}
+    else if(st==='af'){specRows=[['Flow Rate',e.filterM3?e.filterM3+' m³/min':''],['CFM',e.filterCFM],['Oil Carry Over',e.filterOil],['Particle Removal',e.filterPart],['Dimension',e.filterDim],['Outlet',e.filterOutlet],['Weight',e.filterWeight]].filter(r=>r[1]);}
+    else if(st==='at'){specRows=[['Volume',e.tankVolume],['Material',e.tankMat],['Pressure',e.tankPres],['Dimension',e.tankDim],['Outlet',e.tankOutlet]].filter(r=>r[1]);}
+    let sp=`<div class="a4-page" style="background:${bgPage};font-family:${fontFamily}">`;
+    sp+=`<div style="padding-bottom:14px;margin-bottom:24px;border-bottom:2px solid ${c.primary};display:flex;align-items:center;justify-content:space-between">`;
+    sp+=`<div><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px">Technical Specification</div><div style="font-size:18px;font-weight:700;color:${c.primary}">${e.model}</div>${e.series?`<div style="font-size:11px;color:#64748b;margin-top:2px">${e.series}</div>`:''}</div>`;
+    sp+=`<div style="text-align:right;font-size:11px;color:#94a3b8">${quoteNo}<br/>Item ${String(i+1).padStart(2,'0')}</div></div>`;
+    sp+=`<table class="spec-table" style="font-size:${fs}">`;
+    specRows.forEach(([lbl,val])=>{sp+=`<tr><td>${lbl}</td><td>${val}</td></tr>`;});
+    sp+=`</table>`;
+    if(item.ltMin||item.ltMax){sp+=`<div style="margin-top:20px;padding:12px 16px;background:${c.light};border-radius:8px"><span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em">Lead Time: </span><span style="font-size:13px;font-weight:600;color:${c.primary}">${item.ltMin||0}–${item.ltMax||0} weeks</span></div>`;}
+    sp+=`<div style="margin-top:auto;padding-top:20px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8"><span>${companyName||''}</span><span>${quoteNo}</span></div>`;
+    sp+=`</div>`;
+    pages.push(sp);
+  });
+
+  return pages;
+}
+
+// ── Page navigation ──────────────────────────────────────────────────────
+function showPage(){
+  const all=document.querySelectorAll('#pagesWrapper .a4-page');
+  all.forEach((p,i)=>p.style.display=i===currentPage?'block':'none');
+  document.getElementById('pageIndicator').textContent=`Page ${currentPage+1} / ${all.length}`;
+  document.getElementById('prevPageBtn').disabled=currentPage===0;
+  document.getElementById('nextPageBtn').disabled=currentPage>=all.length-1;
+}
+function changePage(dir){const all=document.querySelectorAll('#pagesWrapper .a4-page');currentPage=Math.max(0,Math.min(all.length-1,currentPage+dir));showPage();}
+function renderMobilePreview(){
+  const allHtml=buildAllPages();
+  const content=document.getElementById('mobilePageContent');
+  content.innerHTML='';
+  const wrapper=document.createElement('div');
+  wrapper.style.cssText='width:794px';
+  wrapper.innerHTML=allHtml[mobilePage]||'';
+  const scaler=document.createElement('div');
+  scaler.className='page-scaler';
+  const scale=(window.innerWidth-32)/794;
+  scaler.style.transform=`scale(${scale})`;
+  scaler.style.width='794px';
+  scaler.style.height=(1123*scale)+'px';
+  scaler.appendChild(wrapper);
+  content.appendChild(scaler);
+  document.getElementById('mobPageIndicator').textContent=`Page ${mobilePage+1} / ${allHtml.length}`;
+  document.getElementById('mobPrevBtn').disabled=mobilePage===0;
+  document.getElementById('mobNextBtn').disabled=mobilePage>=allHtml.length-1;
+  document.getElementById('pagesWrapper').style.display='none';
+  document.getElementById('pageNav').style.display='none';
+  document.getElementById('mobilePreviewWrapper').style.display='flex';
+}
+function changeMobilePage(dir){const n=buildAllPages().length;mobilePage=Math.max(0,Math.min(n-1,mobilePage+dir));renderMobilePreview();}
+
+// ── Email draft ──────────────────────────────────────────────────────────
+const emailTones=[{name:'Professional',fn:()=>{const cn=v('custName')||'Sir/Madam',sn=v('salesName')||'Our Team',qn=getDisplayQuoteNo()||v('quoteNumber')||'this quotation';return`Dear ${cn},\n\nThank you for the opportunity to submit our quotation.\n\nPlease find attached our Quotation ${qn} for your review and consideration.\n\nShould you require any clarification or additional information, please do not hesitate to contact us.\n\nWe look forward to your favourable response.\n\nBest regards,\n${sn}`;}},{name:'Warm',fn:()=>{const cn=v('custName')||'there',sn=v('salesName')||'the team';return`Hi ${cn},\n\nHope you're doing well!\n\nI've attached our quotation for your reference. Please take a look and let me know if you have any questions.\n\nLooking forward to hearing from you!\n\nBest,\n${sn}`;}},{name:'Follow-up',fn:()=>{const cn=v('custName')||'Sir/Madam',sn=v('salesName')||'',qn=getDisplayQuoteNo()||v('quoteNumber')||'our quotation';return`Dear ${cn},\n\nI hope this message finds you well. I wanted to follow up on ${qn} that was sent previously.\n\nPlease let me know if you have had the opportunity to review it, or if you need any further information to assist with your decision.\n\nWe remain available should you wish to discuss.\n\nBest regards,\n${sn}`;}},{name:'Urgent',fn:()=>{const cn=v('custName')||'Sir/Madam',sn=v('salesName')||'',vt=computeValidTill();return`Dear ${cn},\n\nI wanted to bring to your attention that our quotation${vt?' is valid until '+vt:''} and we would appreciate your feedback at your earliest convenience.\n\nPlease do not hesitate to reach out if you need any clarification.\n\nThank you for your time.\n\nBest regards,\n${sn}`;}},{name:'Thank You',fn:()=>{const cn=v('custName')||'Sir/Madam',sn=v('salesName')||'';return`Dear ${cn},\n\nThank you for placing your trust in us. We are pleased to confirm and look forward to delivering as per the agreed terms.\n\nShould you have any queries, please feel free to contact us.\n\nWarm regards,\n${sn}`;}}];
+let activeTone=0;
+function openEmailDraft(){const tb=document.getElementById('toneBtns');tb.innerHTML=emailTones.map((t,i)=>`<button class="tone-btn${i===activeTone?' active':''}" onclick="setTone(${i})">${t.name}</button>`).join('');document.getElementById('emailBody').value=emailTones[activeTone].fn();document.getElementById('emailModal').classList.add('on');}
+function setTone(i){activeTone=i;document.querySelectorAll('.tone-btn').forEach((b,j)=>b.classList.toggle('active',i===j));document.getElementById('emailBody').value=emailTones[i].fn();}
+function copyEmail(){navigator.clipboard.writeText(document.getElementById('emailBody').value).then(()=>showToast('Copied to clipboard','ok'));}
+
+// ── PDF Download ─────────────────────────────────────────────────────────
+async function downloadPDF(){
+  const btn=document.getElementById('pdfBtn');btn.disabled=true;btn.innerHTML='Generating…';
+  try{
+    const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const allHtml=buildAllPages();
+    const awItems2=awItems;
+    const htmlPages=[...allHtml];
+    // Render all pages
+    const pagesWrapper=document.getElementById('pagesWrapper');
+    const allDom=[...document.querySelectorAll('#pagesWrapper .a4-page')];
+    // Show all for capture
+    allDom.forEach(p=>p.style.display='block');
+    const domPages=[...document.querySelectorAll('#pagesWrapper .a4-page')];
+    for(let i=0;i<domPages.length;i++){const canvas=await html2canvas(domPages[i],{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false,width:794,height:1123,windowWidth:794});if(i>0)pdf.addPage();pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,210,297);}
+    for(let i=0;i<attachments.length;i++){pdf.addPage();const img=new Image();img.src=attachments[i].dataUrl;await new Promise(res=>{img.onload=res;img.onerror=res;});const iw=img.naturalWidth,ih=img.naturalHeight,pw=210,ph=297,scale=Math.min(pw/iw*96/25.4,ph/ih*96/25.4,1),dw=(iw*scale*25.4/96),dh=(ih*scale*25.4/96),ox=(pw-dw)/2,oy=(ph-dh)/2;pdf.addImage(attachments[i].dataUrl,'JPEG',ox,oy,dw,dh);}
+    const custCo=v('custCompany')||v('custName')||'Client';
+    const dateStr=v('quoteDate')||today();
+    pdf.save(`${getDisplayQuoteNo()||v('quoteNumber')||'quotation'}_${custCo}_${dateStr}.pdf`);
+  }catch(err){console.error(err);alert('PDF generation failed: '+err.message);}
+  finally{showPage();btn.disabled=false;btn.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download PDF';}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EVENT LISTENERS
+// ═══════════════════════════════════════════════════════════════════════════
+document.getElementById('leftPanel').addEventListener('input',e=>{const tag=e.target.tagName.toLowerCase();if(tag==='input'||tag==='textarea'){updatePreview();save();}});
+['custModal','termsModal','payModal','emailModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
+document.getElementById('loadModal').addEventListener('click',e=>{if(e.target===document.getElementById('loadModal'))closeLoadModal();});
+document.getElementById('statusModal').addEventListener('click',e=>{if(e.target===document.getElementById('statusModal'))document.getElementById('statusModal').classList.remove('on');});
+
+// Resizer
+(function(){const resizer=document.getElementById('resizer'),left=document.getElementById('leftPanel');let d=false,sx=0,sw=0;resizer.addEventListener('mousedown',e=>{d=true;sx=e.clientX;sw=left.offsetWidth;resizer.classList.add('dragging');document.body.style.cursor='col-resize';document.body.style.userSelect='none';});document.addEventListener('mousemove',e=>{if(!d)return;left.style.width=Math.min(680,Math.max(280,sw+(e.clientX-sx)))+'px';});document.addEventListener('mouseup',()=>{if(!d)return;d=false;resizer.classList.remove('dragging');document.body.style.cursor='';document.body.style.userSelect='';});})();
+
+window.addEventListener('resize',()=>{if(isMobile()&&document.getElementById('tab-preview').classList.contains('active'))renderMobilePreview();});
+</script>
+</body>
+</html>
