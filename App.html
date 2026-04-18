@@ -580,7 +580,7 @@ window.addEventListener('load', () => {
   auth = firebase.auth();
   db   = firebase.firestore();
 
-auth.onAuthStateChanged(async user => {
+  auth.onAuthStateChanged(async user => {
   if(!user){ window.location.href='index.html'; return; }
   currentUser = user;
   // Try to get display name from users collection
@@ -601,6 +601,7 @@ auth.onAuthStateChanged(async user => {
   else { load(); if(!document.getElementById('quoteDate').value) document.getElementById('quoteDate').value=today(); restoreValidityBtn(); updatePreview(); }
 });
 
+  }); // end auth.onAuthStateChanged
 }); // end window.addEventListener('load')
 
 function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
@@ -1459,7 +1460,7 @@ function buildAllPages(){
     const st=seriesType(e.series);
     if(st!=='compressor'&&st!=='dryer'&&st!=='af'&&st!=='at')return;
     let specRows=[];
-    if(st==='compressor'){specRows=[['Air Quality',e.airQuality],['WC/AC',e.wcac],['Motor Power',e.kw?e.kw+' kW':''],['Motor HP',e.hp?e.hp+' hp':''],['Motor Type',e.motorType],['IE Rating',e.ieRating],['Loading Pressure',e.loadP],['Unload Pressure',e.unloadP],['Free Air Delivery',e.minM3&&e.maxM3?`${e.minM3}–${e.maxM3} m³/min`:(e.minCFM&&e.maxCFM?`${e.minCFM}–${e.maxCFM} CFM`:'')],['Power Supply',e.power],['Noise Level',e.noise],['Outlet Size',e.outletSize],['Dimension',e.dimension],['Weight',e.weight],['Outlet Air Temp.',e.outletTemp],['Starter Type',e.starter],( showOilCarryOver?[['Oil Carry Over',e.oilCarry]]:[])].filter(r=>r[1]);}
+    if(st==='compressor'){specRows=[['Air Quality',e.airQuality],['WC/AC',e.wcac],['Motor Power',e.kw?e.kw+' kW':''],['Motor HP',e.hp?e.hp+' hp':''],['Motor Type',e.motorType],['IE Rating',e.ieRating],['Loading Pressure',e.loadP],['Unload Pressure',e.unloadP],['Free Air Delivery',e.minM3&&e.maxM3?`${e.minM3}–${e.maxM3} m³/min`:(e.minCFM&&e.maxCFM?`${e.minCFM}–${e.maxCFM} CFM`:'')],['Power Supply',e.power],['Noise Level',e.noise],['Outlet Size',e.outletSize],['Dimension',e.dimension],['Weight',e.weight],['Outlet Air Temp.',e.outletTemp],['Starter Type',e.starter],..( showOilCarryOver?[['Oil Carry Over',e.oilCarry]]:[])].filter(r=>r[1]);}
     else if(st==='dryer'){specRows=[['Refrigerant',e.refrigerant],['Min Flow',e.minM3?e.minM3+' m³/min':''],['Max Flow',e.maxM3?e.maxM3+' m³/min':''],['Min CFM',e.minCFM],['Max CFM',e.maxCFM],['Power Supply',e.power],['Dimension',e.dimension],['Weight',e.weight]].filter(r=>r[1]);}
     else if(st==='af'){specRows=[['Flow Rate',e.filterM3?e.filterM3+' m³/min':''],['CFM',e.filterCFM],['Oil Carry Over',e.filterOil],['Particle Removal',e.filterPart],['Dimension',e.filterDim],['Outlet',e.filterOutlet],['Weight',e.filterWeight]].filter(r=>r[1]);}
     else if(st==='at'){specRows=[['Volume',e.tankVolume],['Material',e.tankMat],['Pressure',e.tankPres],['Dimension',e.tankDim],['Outlet',e.tankOutlet]].filter(r=>r[1]);}
