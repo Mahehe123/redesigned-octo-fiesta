@@ -31,7 +31,7 @@ body.theme-japandi{--theme-primary:#2C2C2C;--theme-primary-hover:#1a1a1a;--theme
 .validity-btn{padding:5px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}.validity-btn:hover{border-color:#94a3b8;color:#334155}.validity-btn.active{background:var(--theme-primary);border-color:var(--theme-primary);color:#fff}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#f8f8f8}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
 .app{display:flex;height:100vh}
-#leftPanel{height:100vh;display:flex;flex-direction:column;min-width:280px;max-width:680px;width:380px;flex-shrink:0;background:#fff;border-right:1px solid #f1f5f9}
+#leftPanel{height:100vh;display:flex;flex-direction:column;min-width:300px;max-width:680px;width:420px;flex-shrink:0;background:#fff;border-right:1px solid #f1f5f9}
 #rightPanel{height:100vh;overflow-y:auto;background:#d1d5db;flex:1;min-width:300px;display:flex;flex-direction:column;align-items:center}
 #resizer{width:5px;cursor:col-resize;background:#e2e8f0;flex-shrink:0;transition:background .15s;position:relative;z-index:10}
 #resizer:hover,#resizer.dragging{background:#94a3b8}
@@ -60,11 +60,11 @@ body.theme-japandi{--theme-primary:#2C2C2C;--theme-primary-hover:#1a1a1a;--theme
 .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 4px 8px;cursor:pointer;border:none;background:transparent;color:#6B7280;transition:color .15s;position:relative;font-size:9px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;font-family:inherit}
 .tab-btn svg{width:20px;height:20px;flex-shrink:0}.tab-btn.active{color:#0f172a}
 .tab-btn.active::after{content:'';position:absolute;bottom:0;left:12px;right:12px;height:2px;background:#0f172a;border-radius:2px 2px 0 0}
-.tab-panel{display:none;flex:1;overflow-y:auto;padding:20px 20px 24px}.tab-panel.active{display:block}
-.inp{width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:6px 12px;font-size:14px;outline:none;background:#fff;color:#1e293b;font-family:inherit}.inp:focus{box-shadow:0 0 0 2px #cbd5e1}
+.tab-panel{display:none;flex:1;overflow-y:auto;padding:20px 20px 28px}.tab-panel.active{display:block}
+.inp{width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;background:#fff;color:#1e293b;font-family:inherit}.inp:focus{box-shadow:0 0 0 2px #cbd5e1}
 textarea.inp{resize:none}
-.sec{margin-bottom:20px}.sec-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:10px}
-.vy2>*+*{margin-top:8px}.vy3>*+*{margin-top:12px}.lbl{font-size:11px;color:#4B5563;display:block;margin-bottom:4px}
+.sec{margin-bottom:24px}.sec-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:12px}
+.vy2>*+*{margin-top:10px}.vy3>*+*{margin-top:14px}.lbl{font-size:11px;color:#4B5563;display:block;margin-bottom:5px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row{display:flex;align-items:center;gap:8px}.f1{flex:1}
 .btn-dark{width:100%;border-radius:10px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;padding:10px;border:none;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}.btn-dark:hover{background:#1e293b}
 .btn-icon{width:32px;height:32px;border-radius:8px;background:#0f172a;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}.btn-icon:hover{background:#334155}.btn-icon svg{width:16px;height:16px}
@@ -283,6 +283,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
         <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:#64748b">Size</span><span id="fontSizeLabel" style="font-size:11px;font-weight:700;color:#1e293b">11px</span></div>
         <input type="range" id="specFontSize" min="8" max="16" step="1" value="11" oninput="updateFontSize(this.value)"/>
         <div style="display:flex;justify-content:space-between;font-size:11px;color:#cbd5e1;margin-top:4px"><span>8px</span><span>16px</span></div></div></div>
+    <div class="sec"><p class="sec-title">Menu Font Size</p>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:#64748b">Size</span><span id="menuFontSizeLabel" style="font-size:11px;font-weight:700;color:#1e293b">14px</span></div>
+        <input type="range" id="menuFontSize" min="11" max="18" step="1" value="14" oninput="updateMenuFontSize(this.value)"/>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#cbd5e1;margin-top:4px"><span>11px</span><span>18px</span></div>
+        <p style="font-size:10px;color:#94a3b8;margin-top:6px">Adjusts font size across all tabs — Settings, Info, Items, and Preview.</p></div></div>
   </div>
 
   <!-- ── Info Tab ─────────────────────────────────────────────────────────── -->
@@ -300,6 +306,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
           </button>
         </div>
         <input id="quoteDate" type="date" class="inp"/>
+        <div>
+          <label class="lbl">Follow-up Date</label>
+          <input id="followUpDate" type="date" class="inp"/>
+        </div>
         <div>
           <label class="lbl">Validity Period</label>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -612,7 +622,7 @@ function goToDashboard(){ window.location.href='dashboard.html'; }
 let equipmentLib=[];let customerLib=[];let lineItems=[];let awItems=[];
 let logoDataUrl='';let currentTheme='default';let discountMode='individual';
 let overallModType='none';let overallModPct=0;let overallSmartPct=20;
-let specFontSize=11;let itemsFontSize=14;let currentPage=0;let mobilePage=0;
+let specFontSize=11;let itemsFontSize=14;let menuFontSize=14;let currentPage=0;let mobilePage=0;
 let validityDays=0;let showOilCarryOver=false;let attachments=[];
 let termsTemplates=[];let payTemplates=[];
 
@@ -767,6 +777,13 @@ function buildQuoteData(){
   // Compute totals
   const totals = computeTotals();
 
+  // Snapshot the equipment entries referenced by lineItems so they survive cross-device loads
+  const equipmentSnapshot = {};
+  lineItems.forEach(item => {
+    const idx = item.equipIdx;
+    if(equipmentLib[idx]) equipmentSnapshot[String(idx)] = equipmentLib[idx];
+  });
+
   // Status history entry (only add if status changed)
   return {
     quoteNo:       currentBaseNo,
@@ -792,6 +809,7 @@ function buildQuoteData(){
       email: document.getElementById('salesEmail').value.trim(),
     },
     quoteDate:   document.getElementById('quoteDate').value,
+    followUpDate: document.getElementById('followUpDate').value,
     validityDays,
     notes:       document.getElementById('quoteNotes').value.trim(),
     payment:     document.getElementById('quotePayment').value.trim(),
@@ -806,9 +824,11 @@ function buildQuoteData(){
     overallSmartPct,
     specFontSize,
     itemsFontSize,
+    menuFontSize,
     theme:       currentTheme,
     logoBase64:  logoDataUrl,
     showOilCarryOver,
+    equipmentSnapshot,
     createdBy:   currentUser.uid,
     createdByName: currentUserName,
     updatedAt:   now,
@@ -1031,6 +1051,7 @@ function loadQuoteData(data){
   set('companyPhone',   data.company?.phone);
   set('quoteNumber',    data.displayQuoteNo || data.quoteNo);
   set('quoteDate',      data.quoteDate);
+  set('followUpDate',   data.followUpDate);
   set('quoteNotes',     data.notes);
   set('quotePayment',   data.payment);
   set('quoteTerms',     data.terms);
@@ -1047,17 +1068,41 @@ function loadQuoteData(data){
   validityDays    = data.validityDays || 0;
   lineItems       = data.lineItems || [];
   awItems         = data.awItems || [];
+
+  // Restore equipment snapshot: merge saved entries back into equipmentLib
+  // so that equipIdx references resolve correctly even without a CSV import
+  if(data.equipmentSnapshot && Object.keys(data.equipmentSnapshot).length) {
+    const snap = data.equipmentSnapshot;
+    // Expand equipmentLib to accommodate all saved indices
+    Object.entries(snap).forEach(([idxStr, equip]) => {
+      const idx = parseInt(idxStr);
+      if(!equipmentLib[idx]) {
+        // Pad array if needed
+        while(equipmentLib.length <= idx) equipmentLib.push(null);
+        equipmentLib[idx] = equip;
+      }
+    });
+    // Rebuild dropdowns so the loaded library is usable
+    populateSeriesDropdown();
+    populateStarterDropdown();
+    populateEquipDropdown();
+  }
   discountMode    = data.discountMode || 'individual';
   overallModType  = data.overallModType || 'none';
   overallModPct   = data.overallModPct || 0;
   overallSmartPct = data.overallSmartPct || 20;
   specFontSize    = data.specFontSize || 11;
   itemsFontSize   = data.itemsFontSize || 14;
+  menuFontSize    = data.menuFontSize || 14;
   showOilCarryOver= data.showOilCarryOver || false;
   logoDataUrl     = data.logoBase64 || '';
 
   if(data.theme) setTheme(data.theme);
   restoreValidityBtn();
+  applyMenuFontSize();
+  // Sync font size slider UI
+  const sfEl=document.getElementById('specFontSize'); if(sfEl){sfEl.value=specFontSize;document.getElementById('fontSizeLabel').textContent=specFontSize+'px';}
+  const ifEl=document.getElementById('itemsFontSize'); if(ifEl) ifEl.value=itemsFontSize;
   renderLineItems();
   renderAWItems();
   updateStatusBar();
@@ -1083,7 +1128,7 @@ function newQuote(){
   attachments      = [];
 
   ['companyName','companyTagline','companyAddress','companyPhone',
-   'quoteNumber','quoteDate','quoteNotes','quotePayment','quoteTerms','quoteFooter',
+   'quoteNumber','quoteDate','followUpDate','quoteNotes','quotePayment','quoteTerms','quoteFooter',
    'salesName','salesPhone','salesEmail',
    'custName','custCompany','custPhone','custEmail','custAddress'].forEach(id => {
     const el=document.getElementById(id); if(el) el.value='';
@@ -1138,11 +1183,11 @@ const DRAFT_KEY = 'qt_draft_v1';
 function save(){
   const d={
     companyName:v('companyName'),companyTagline:v('companyTagline'),companyAddress:v('companyAddress'),companyPhone:v('companyPhone'),
-    quoteNumber:v('quoteNumber'),quoteDate:v('quoteDate'),quoteNotes:v('quoteNotes'),quotePayment:v('quotePayment'),quoteTerms:v('quoteTerms'),quoteFooter:v('quoteFooter'),
+    quoteNumber:v('quoteNumber'),quoteDate:v('quoteDate'),followUpDate:v('followUpDate'),quoteNotes:v('quoteNotes'),quotePayment:v('quotePayment'),quoteTerms:v('quoteTerms'),quoteFooter:v('quoteFooter'),
     salesName:v('salesName'),salesPhone:v('salesPhone'),salesEmail:v('salesEmail'),
     custName:v('custName'),custCompany:v('custCompany'),custPhone:v('custPhone'),custEmail:v('custEmail'),custAddress:v('custAddress'),
     validityDays,lineItems,awItems,discountMode,overallModType,overallModPct,overallSmartPct,
-    specFontSize,itemsFontSize,currentTheme,logoDataUrl,showOilCarryOver,termsTemplates,payTemplates,customerLib:customerLib.slice(0,50),
+    specFontSize,itemsFontSize,menuFontSize,currentTheme,logoDataUrl,showOilCarryOver,termsTemplates,payTemplates,customerLib:customerLib.slice(0,50),
     // CRM fields
     currentQuoteId,currentBaseNo,currentRevision,currentStatus,
   };
@@ -1153,12 +1198,12 @@ function load(){
   let d;try{d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');}catch{d={};}
   const set=(id,val)=>{const el=document.getElementById(id);if(el&&val!==undefined)el.value=val;};
   set('companyName',d.companyName);set('companyTagline',d.companyTagline);set('companyAddress',d.companyAddress);set('companyPhone',d.companyPhone);
-  set('quoteNumber',d.quoteNumber);set('quoteDate',d.quoteDate);set('quoteNotes',d.quoteNotes);set('quotePayment',d.quotePayment);set('quoteTerms',d.quoteTerms);set('quoteFooter',d.quoteFooter);
+  set('quoteNumber',d.quoteNumber);set('quoteDate',d.quoteDate);set('followUpDate',d.followUpDate);set('quoteNotes',d.quoteNotes);set('quotePayment',d.quotePayment);set('quoteTerms',d.quoteTerms);set('quoteFooter',d.quoteFooter);
   set('salesName',d.salesName);set('salesPhone',d.salesPhone);set('salesEmail',d.salesEmail);
   set('custName',d.custName);set('custCompany',d.custCompany);set('custPhone',d.custPhone);set('custEmail',d.custEmail);set('custAddress',d.custAddress);
   validityDays=d.validityDays||0;lineItems=d.lineItems||[];awItems=d.awItems||[];
   discountMode=d.discountMode||'individual';overallModType=d.overallModType||'none';overallModPct=d.overallModPct||0;overallSmartPct=d.overallSmartPct||20;
-  specFontSize=d.specFontSize||11;itemsFontSize=d.itemsFontSize||14;
+  specFontSize=d.specFontSize||11;itemsFontSize=d.itemsFontSize||14;menuFontSize=d.menuFontSize||14;
   showOilCarryOver=d.showOilCarryOver||false;
   termsTemplates=d.termsTemplates||[];payTemplates=d.payTemplates||[];
   customerLib=d.customerLib||[];
@@ -1166,6 +1211,10 @@ function load(){
   currentQuoteId=d.currentQuoteId||null;currentBaseNo=d.currentBaseNo||null;currentRevision=d.currentRevision||0;currentStatus=d.currentStatus||'draft';
   if(d.currentTheme)setTheme(d.currentTheme,null,true);
   if(d.logoDataUrl)restoreLogo(d.logoDataUrl);
+  applyMenuFontSize();
+  // Sync font size slider UI
+  const sfEl=document.getElementById('specFontSize');if(sfEl){sfEl.value=specFontSize;const lbl=document.getElementById('fontSizeLabel');if(lbl)lbl.textContent=specFontSize+'px';}
+  const ifEl=document.getElementById('itemsFontSize');if(ifEl)ifEl.value=itemsFontSize;
   renderLineItems();renderAWItems();updateStatusBar();
   populateCustDropdown();populateTermsDropdown();populatePayDropdown();
 }
@@ -1245,7 +1294,8 @@ function updateOverallDiscount(){overallModType=document.getElementById('overall
 function setOverallSmartPct(p){overallSmartPct=p;document.querySelectorAll('#overallSmPresets .sm-preset-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===p));document.getElementById('overallSmartPct').value=p;renderLineItems();save();}
 function syncOverallSmartPct(v){overallSmartPct=parseFloat(v)||20;document.querySelectorAll('#overallSmPresets .sm-preset-btn').forEach(b=>b.classList.toggle('active',false));renderLineItems();save();}
 function updateFontSize(v){specFontSize=parseInt(v);document.getElementById('fontSizeLabel').textContent=v+'px';updatePreview();save();}
-function updateItemsFontSize(v){itemsFontSize=parseInt(v);renderLineItems();save();}
+function updateMenuFontSize(v){menuFontSize=parseInt(v);document.getElementById('menuFontSizeLabel').textContent=v+'px';applyMenuFontSize();save();}
+function applyMenuFontSize(){document.getElementById('leftPanel').style.fontSize=menuFontSize+'px';const lbl=document.getElementById('menuFontSize');if(lbl)lbl.value=menuFontSize;const lblTxt=document.getElementById('menuFontSizeLabel');if(lblTxt)lblTxt.textContent=menuFontSize+'px';}
 
 // ── Equipment & Customer imports ─────────────────────────────────────────
 function parseFile(file,cb){const ext=file.name.split('.').pop().toLowerCase();if(ext==='csv'){Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>cb(r.data)});}else{const r=new FileReader();r.onload=e=>{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});cb(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}));};r.readAsArrayBuffer(file);}}
