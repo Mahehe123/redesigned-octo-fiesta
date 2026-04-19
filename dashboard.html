@@ -280,18 +280,16 @@ tr:hover td{background:#faf9f7;cursor:pointer}
 
 <script>
 // Defer init until all scripts are loaded
-// ── Firebase init (sync — SDKs are loaded above) ──────────────────────────
-if (!firebase.apps.length) {
-  firebase.initializeApp(FIREBASE_CONFIG);
-}
-auth = firebase.auth();
-db   = firebase.firestore();
-
-let currentUser = null;
+let auth, db, currentUser = null;
 let allQuotes = [], filtered = [];
 let sortField = 'quoteDate', sortDir = -1;
 
-// ── Auth guard ──────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  auth = firebase.auth();
+  db   = firebase.firestore();
+
+// ── Auth guard ────────────────────────────────────────────────────────────
 auth.onAuthStateChanged(async user => {
   if(!user){ window.location.href='index.html'; return; }
   currentUser = user;
@@ -301,10 +299,12 @@ auth.onAuthStateChanged(async user => {
     const name = uDoc.exists ? (uDoc.data().displayName || user.email) : user.email;
     document.getElementById('userChip').textContent = name;
   } catch(e){ document.getElementById('userChip').textContent = user.email; }
-    loadDashboard();
-}); // end auth.onAuthStateChanged
+  loadDashboard();
+});
 
+}); // end window.addEventListener('load')
 
+function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
 
 // ── Load all data ─────────────────────────────────────────────────────────
 async function loadDashboard(){
@@ -543,8 +543,6 @@ async function manualBackup(){
   } catch(e){ statusEl.textContent='Backup failed.'; showToast('Backup failed.','err'); console.error(e); }
 }
 
-function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
-  
 // ── Toast ─────────────────────────────────────────────────────────────────
 let _tt;
 function showToast(msg,type=''){
