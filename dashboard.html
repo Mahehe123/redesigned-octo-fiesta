@@ -10,7 +10,7 @@
 body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:#f1f5f9}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
 
-/* ── Topbar ──────────────────────────────────────────────────────────────── */
+/* ── Topbar ── */
 .topbar{background:#fff;border-bottom:1px solid #e8e6e1;padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
 .brand{display:flex;align-items:center;gap:10px}
 .brand-icon{width:32px;height:32px;background:linear-gradient(135deg,#2C2C2C,#4a4a4a);border-radius:8px;display:flex;align-items:center;justify-content:center}
@@ -26,10 +26,10 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .tb-btn.danger{background:#fef2f2;color:#dc2626;border-color:#fecaca}.tb-btn.danger:hover{background:#fee2e2}
 .user-chip{font-size:11px;font-weight:600;color:#64748b;background:#f1f5f9;border-radius:999px;padding:4px 12px}
 
-/* ── Layout ──────────────────────────────────────────────────────────────── */
+/* ── Layout ── */
 .main{padding:24px 28px;max-width:1400px;margin:0 auto}
 
-/* ── KPI Strip ───────────────────────────────────────────────────────────── */
+/* ── KPI Strip ── */
 .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
 .kpi{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:18px 20px;position:relative;overflow:hidden}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
@@ -42,53 +42,114 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .kpi-val{font-size:26px;font-weight:700;color:#1e293b;line-height:1}
 .kpi-sub{font-size:11px;color:#94a3b8;margin-top:4px;font-weight:500}
 
-/* ── Pipeline bar ────────────────────────────────────────────────────────── */
+/* ── Pipeline bar ── */
 .pipeline{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 24px;margin-bottom:24px}
 .pipeline-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px}
 .pipeline-track{height:12px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;margin-bottom:10px}
-.pipeline-seg{height:100%;transition:width .4s ease;border-radius:0}
+.pipeline-seg{height:100%;transition:width .4s ease}
 .pipeline-seg:first-child{border-radius:999px 0 0 999px}
 .pipeline-seg:last-child{border-radius:0 999px 999px 0}
 .pipeline-legend{display:flex;gap:16px;flex-wrap:wrap}
 .pipeline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:#374151}
 
-/* ── Filters ─────────────────────────────────────────────────────────────── */
-.filters{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.filter-inp{border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:13px;color:#374151;outline:none;font-family:inherit;background:#fff;min-width:180px}
-.filter-inp:focus{border-color:#8B8176;box-shadow:0 0 0 2px rgba(139,129,118,.12)}
-.filter-select{border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:13px;color:#374151;outline:none;font-family:inherit;background:#fff;cursor:pointer}
-.filter-select:focus{border-color:#8B8176}
-.filter-clear{font-size:12px;font-weight:600;color:#8B8176;cursor:pointer;padding:4px 8px;border-radius:6px;border:none;background:transparent;font-family:inherit}
-.filter-clear:hover{background:#f5f4f1}
-.filter-count{font-size:11px;font-weight:600;color:#94a3b8;margin-left:auto}
+/* ── Quotation Summary Section ── */
+.qs-section{background:#fff;border:1px solid #e8e6e1;border-radius:14px;overflow:hidden;margin-bottom:24px}
+.qs-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f1f5f9}
+.qs-title{font-size:13px;font-weight:700;color:#1e293b}
+.qs-subtitle{font-size:11px;color:#94a3b8;margin-top:2px;font-weight:400}
+.btn-all-quotes{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#2C2C2C;background:#F5F4F1;border:1px solid #e8e6e1;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.btn-all-quotes:hover{background:#ede8e0;border-color:#ccc8c2}
+.btn-all-quotes svg{width:14px;height:14px}
 
-/* ── Table ───────────────────────────────────────────────────────────────── */
-.table-wrap{background:#fff;border:1px solid #e8e6e1;border-radius:14px;overflow:hidden;margin-bottom:24px}
-.table-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f1f5f9}
-.table-title{font-size:13px;font-weight:700;color:#1e293b}
-table{width:100%;border-collapse:collapse}
-thead tr{background:#faf9f7}
-th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;white-space:nowrap;cursor:pointer;user-select:none;border-bottom:1px solid #f1f5f9}
-th:hover{color:#374151}
-th.sorted{color:#2C2C2C}
-td{padding:11px 16px;font-size:13px;border-bottom:1px solid #faf9f7;color:#374151;vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#faf9f7;cursor:pointer}
+/* ── Summary Table ── */
+.summary-table-wrap{overflow-x:auto}
+table.summary-table{width:100%;border-collapse:collapse}
+table.summary-table thead tr{background:#faf9f7}
+table.summary-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #f1f5f9}
+table.summary-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #faf9f7;color:#374151;vertical-align:middle}
+table.summary-table tr:last-child td{border-bottom:none}
+table.summary-table tr:hover td{background:#faf9f7;cursor:pointer}
 .td-bold{font-weight:600;color:#1e293b}
-.td-mono{font-family:'SF Mono',monospace;font-size:12px;font-weight:600;color:#2C2C2C}
+.td-mono{font-family:'SF Mono','Fira Mono',monospace;font-size:11px;font-weight:600;color:#2C2C2C}
+.td-value{font-weight:700;color:#1e293b;text-align:right;white-space:nowrap}
+.td-overdue{color:#dc2626!important;font-weight:700}
+.td-upcoming{color:#0369a1;font-weight:600}
+.td-nodate{color:#cbd5e1}
 
 /* Status badges */
-.badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 .badge.draft{background:#f1f5f9;color:#94a3b8}
 .badge.delivered{background:#eff6ff;color:#1d4ed8}
 .badge.negotiation{background:#fff7ed;color:#c2410c}
 .badge.win{background:#f0fdf4;color:#15803d}
 .badge.loss{background:#fef2f2;color:#dc2626}
+.rev-pill{display:inline-flex;align-items:center;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;background:#f1f5f9;color:#64748b;margin-left:4px}
 
-.rev-pill{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;font-size:9px;font-weight:700;background:#f1f5f9;color:#64748b;margin-left:4px}
+/* ── Equipment hover cell ── */
+.equip-cell{position:relative;display:inline-flex;align-items:center;gap:5px;cursor:default}
+.equip-name{font-size:12px;font-weight:600;color:#1e293b;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.equip-badge{font-size:10px;background:#EDE8E0;color:#2C2C2C;padding:1px 6px;border-radius:4px;font-weight:600;flex-shrink:0}
 
-/* ── Loss Analysis ───────────────────────────────────────────────────────── */
+/* Floating equipment tooltip */
+.equip-tooltip{
+  display:none;position:fixed;z-index:9999;
+  background:#fff;border:1px solid #e8e6e1;border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.14);
+  padding:12px 14px;min-width:220px;max-width:300px;
+  pointer-events:none;
+}
+.equip-tooltip.visible{display:block}
+.equip-tooltip-title{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:8px}
+.equip-tooltip-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:4px 0;border-bottom:1px solid #f1f5f9;font-size:12px}
+.equip-tooltip-row:last-child{border-bottom:none}
+.equip-tooltip-row.aw-row{color:#8B8176;font-style:italic}
+.equip-tooltip-model{flex:1;font-weight:500;color:#1e293b;line-height:1.3}
+.equip-tooltip-qty{font-weight:700;color:#2C2C2C;font-size:11px;white-space:nowrap;flex-shrink:0}
+.equip-tooltip-divider{height:1px;background:#f1f5f9;margin:6px 0}
+.equip-tooltip-aw-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8B8176;margin:4px 0 2px}
+
+/* ── All Quotations Modal ── */
+#allQuotesModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:flex-start;justify-content:center;padding:32px 20px;overflow-y:auto}
+#allQuotesModal.open{display:flex}
+.aq-modal{background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.18);width:100%;max-width:1100px;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.aq-modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #f1f5f9;flex-shrink:0}
+.aq-modal-title{font-size:15px;font-weight:700;color:#0f172a}
+.aq-modal-close{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:4px;border-radius:6px;transition:color .15s;display:flex;align-items:center}
+.aq-modal-close:hover{color:#64748b}
+.aq-modal-close svg{width:20px;height:20px}
+
+/* Filters inside modal */
+.aq-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 24px;border-bottom:1px solid #f1f5f9;background:#faf9f7;flex-shrink:0}
+.filter-inp{border:1px solid #e2e8f0;border-radius:8px;padding:6px 11px;font-size:12px;color:#374151;outline:none;font-family:inherit;background:#fff}
+.filter-inp:focus{border-color:#8B8176;box-shadow:0 0 0 2px rgba(139,129,118,.1)}
+.filter-select{border:1px solid #e2e8f0;border-radius:8px;padding:6px 11px;font-size:12px;color:#374151;outline:none;font-family:inherit;background:#fff;cursor:pointer}
+.filter-select:focus{border-color:#8B8176}
+.filter-clear{font-size:11px;font-weight:600;color:#8B8176;cursor:pointer;padding:4px 8px;border-radius:6px;border:none;background:transparent;font-family:inherit}
+.filter-clear:hover{background:#f5f4f1}
+.aq-filter-count{font-size:11px;font-weight:600;color:#94a3b8;margin-left:auto}
+
+/* Modal body / table */
+.aq-modal-body{flex:1;overflow-y:auto;min-height:200px}
+table.aq-table{width:100%;border-collapse:collapse}
+table.aq-table thead tr{background:#faf9f7;position:sticky;top:0;z-index:2}
+table.aq-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #f1f5f9;cursor:pointer;user-select:none}
+table.aq-table th:hover{color:#374151}
+table.aq-table th.sorted{color:#2C2C2C}
+table.aq-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #faf9f7;color:#374151;vertical-align:middle}
+table.aq-table tr:last-child td{border-bottom:none}
+table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
+
+/* Pagination */
+.aq-pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid #f1f5f9;background:#faf9f7;flex-shrink:0}
+.aq-page-info{font-size:12px;color:#64748b;font-weight:500}
+.aq-page-btns{display:flex;align-items:center;gap:6px}
+.page-btn{padding:5px 11px;border-radius:7px;border:1px solid #e2e8f0;background:#fff;color:#374151;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.page-btn:hover:not(:disabled){background:#f1f5f9;border-color:#cbd5e1}
+.page-btn:disabled{opacity:.35;cursor:not-allowed}
+.page-btn.active{background:#2C2C2C;color:#fff;border-color:#2C2C2C}
+
+/* ── Loss Analysis ── */
 .analysis{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
 .analysis-card{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 22px}
 .analysis-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:16px}
@@ -103,19 +164,19 @@ tr:hover td{background:#faf9f7;cursor:pointer}
 .comp-count{font-size:11px;color:#94a3b8;font-weight:500}
 .empty-state{text-align:center;padding:32px;font-size:12px;color:#94a3b8}
 
-/* ── Admin panel ─────────────────────────────────────────────────────────── */
+/* ── Admin panel ── */
 .admin{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 22px;margin-bottom:24px}
 .admin-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px}
 .admin-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
-/* ── Toast ───────────────────────────────────────────────────────────────── */
-#toast{position:fixed;bottom:24px;right:24px;z-index:999;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;background:#1e293b;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none}
+/* ── Toast ── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;background:#1e293b;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none}
 #toast.on{transform:translateY(0);opacity:1}
 #toast.ok{background:#15803d}
 #toast.err{background:#dc2626}
 
-/* ── Loading overlay ─────────────────────────────────────────────────────── */
-#loadingOverlay{position:fixed;inset:0;background:rgba(245,244,241,.8);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+/* ── Loading overlay ── */
+#loadingOverlay{position:fixed;inset:0;background:rgba(245,244,241,.85);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .spinner{width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#2C2C2C;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:13px;font-weight:600;color:#64748b}
@@ -128,6 +189,9 @@ tr:hover td{background:#faf9f7;cursor:pointer}
   <div class="spinner"></div>
   <div class="loading-text">Loading dashboard…</div>
 </div>
+
+<!-- Equipment tooltip (singleton, moved by JS) -->
+<div id="equipTooltip" class="equip-tooltip"></div>
 
 <!-- Topbar -->
 <div class="topbar">
@@ -199,49 +263,36 @@ tr:hover td{background:#faf9f7;cursor:pointer}
     <div class="pipeline-legend" id="pipelineLegend"></div>
   </div>
 
-  <!-- Filters -->
-  <div class="filters">
-    <input class="filter-inp" id="filterSearch" placeholder="Search quote no., customer, company…" oninput="applyFilters()"/>
-    <select class="filter-select" id="filterStatus" onchange="applyFilters()">
-      <option value="">All Statuses</option>
-      <option value="draft">Draft</option>
-      <option value="delivered">Delivered</option>
-      <option value="negotiation">Negotiation</option>
-      <option value="win">Win</option>
-      <option value="loss">Loss</option>
-    </select>
-    <select class="filter-select" id="filterUser" onchange="applyFilters()">
-      <option value="">All Salespeople</option>
-    </select>
-    <select class="filter-select" id="filterYear" onchange="applyFilters()">
-      <option value="">All Years</option>
-    </select>
-    <button class="filter-clear" onclick="clearFilters()">Clear</button>
-    <span class="filter-count" id="filterCount"></span>
-  </div>
-
-  <!-- Table -->
-  <div class="table-wrap">
-    <div class="table-header">
-      <span class="table-title">All Quotations</span>
+  <!-- Quotation Summary -->
+  <div class="qs-section">
+    <div class="qs-header">
+      <div>
+        <div class="qs-title">Quotation Summary</div>
+        <div class="qs-subtitle">Sorted by follow-up urgency — most overdue first</div>
+      </div>
+      <button class="btn-all-quotes" onclick="openAllQuotesModal()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+        All Quotations
+      </button>
     </div>
-    <div style="overflow-x:auto">
-      <table>
+    <div class="summary-table-wrap">
+      <table class="summary-table">
         <thead>
           <tr>
-            <th onclick="sortBy('displayQuoteNo')" id="th-displayQuoteNo">Quote No. ↕</th>
-            <th onclick="sortBy('customer.company')" id="th-customer.company">Customer ↕</th>
-            <th onclick="sortBy('quoteDate')" id="th-quoteDate">Date ↕</th>
-            <th onclick="sortBy('followUpDate')" id="th-followUpDate">Follow-up ↕</th>
-            <th onclick="sortBy('status')" id="th-status">Status ↕</th>
-            <th onclick="sortBy('totals.grandTotal')" id="th-totals.grandTotal" style="text-align:right">Value ↕</th>
-            <th onclick="sortBy('createdByName')" id="th-createdByName">Salesperson ↕</th>
+            <th>Salesperson</th>
+            <th>Quote No.</th>
+            <th>Quote Date</th>
+            <th>Follow-up</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th style="text-align:right">Value</th>
+            <th>Equipment</th>
           </tr>
         </thead>
-        <tbody id="quoteTableBody"></tbody>
+        <tbody id="summaryTableBody"></tbody>
       </table>
+      <div id="summaryEmpty" class="empty-state" style="display:none">No quotations yet.</div>
     </div>
-    <div id="tableEmpty" class="empty-state" style="display:none">No quotations found matching your filters.</div>
   </div>
 
   <!-- Loss Analysis -->
@@ -274,8 +325,65 @@ tr:hover td{background:#faf9f7;cursor:pointer}
 
 </div><!-- /main -->
 
+<!-- ── All Quotations Modal ──────────────────────────────────────────────────── -->
+<div id="allQuotesModal" onclick="aqModalBackdropClick(event)">
+  <div class="aq-modal">
+    <div class="aq-modal-header">
+      <div>
+        <div class="aq-modal-title">All Quotations</div>
+      </div>
+      <button class="aq-modal-close" onclick="closeAllQuotesModal()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <!-- Filters -->
+    <div class="aq-filters">
+      <input class="filter-inp" id="aqSearch" placeholder="Quote no., customer, company…" oninput="aqApplyFilters()" style="min-width:200px"/>
+      <select class="filter-select" id="aqStatus" onchange="aqApplyFilters()">
+        <option value="">All Statuses</option>
+        <option value="draft">Draft</option>
+        <option value="delivered">Delivered</option>
+        <option value="negotiation">Negotiation</option>
+        <option value="win">Win</option>
+        <option value="loss">Loss</option>
+      </select>
+      <select class="filter-select" id="aqUser" onchange="aqApplyFilters()">
+        <option value="">All Salespeople</option>
+      </select>
+      <select class="filter-select" id="aqYear" onchange="aqApplyFilters()">
+        <option value="">All Years</option>
+      </select>
+      <button class="filter-clear" onclick="aqClearFilters()">Clear</button>
+      <span class="aq-filter-count" id="aqFilterCount"></span>
+    </div>
+    <!-- Table -->
+    <div class="aq-modal-body">
+      <table class="aq-table">
+        <thead>
+          <tr>
+            <th onclick="aqSortBy('createdByName')" id="aqth-createdByName">Salesperson ↕</th>
+            <th onclick="aqSortBy('displayQuoteNo')" id="aqth-displayQuoteNo">Quote No. ↕</th>
+            <th onclick="aqSortBy('quoteDate')" id="aqth-quoteDate">Quote Date ↕</th>
+            <th onclick="aqSortBy('followUpDate')" id="aqth-followUpDate">Follow-up ↕</th>
+            <th onclick="aqSortBy('customer.company')" id="aqth-customer.company">Customer ↕</th>
+            <th onclick="aqSortBy('status')" id="aqth-status">Status ↕</th>
+            <th onclick="aqSortBy('totals.grandTotal')" id="aqth-totals.grandTotal" style="text-align:right">Value ↕</th>
+          </tr>
+        </thead>
+        <tbody id="aqTableBody"></tbody>
+      </table>
+      <div id="aqEmpty" class="empty-state" style="display:none">No quotations found.</div>
+    </div>
+    <!-- Pagination -->
+    <div class="aq-pagination">
+      <span class="aq-page-info" id="aqPageInfo"></span>
+      <div class="aq-page-btns" id="aqPageBtns"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Profile Modal -->
-<div id="profileModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100;align-items:center;justify-content:center">
+<div id="profileModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:400;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);padding:28px;width:420px;max-width:95vw">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <h3 style="font-size:15px;font-weight:700;color:#0f172a">My Profile</h3>
@@ -318,90 +426,57 @@ tr:hover td{background:#faf9f7;cursor:pointer}
 <script src="firebase-config.js"></script>
 
 <script>
-// Defer init until all scripts are loaded
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════
 let auth, db, currentUser = null;
-let allQuotes = [], filtered = [];
-let sortField = 'quoteDate', sortDir = -1;
+let userProfile = {};
+let allQuotes = [];
 
+// All-quotes modal state
+let aqFiltered = [];
+let aqSortField = 'followUpDate', aqSortDir = 1;
+let aqPage = 1;
+const AQ_PER_PAGE = 30;
+
+// Tooltip
+let tooltipTimeout = null;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FIREBASE INIT
+// ═══════════════════════════════════════════════════════════════════════════
 window.addEventListener('load', () => {
   if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   auth = firebase.auth();
   db   = firebase.firestore();
 
-// ── Auth guard ────────────────────────────────────────────────────────────
-let userProfile = {};
-
-auth.onAuthStateChanged(async user => {
-  if(!user){ window.location.href='index.html'; return; }
-  currentUser = user;
-  // Load profile from cloud
-  try{
-    const uDoc = await db.collection(COL.USERS).doc(user.uid).get();
-    if(uDoc.exists){ userProfile = uDoc.data(); }
-    const name = userProfile.displayName || user.email;
-    document.getElementById('userChip').textContent = name;
-  } catch(e){ document.getElementById('userChip').textContent = user.email; }
-  loadDashboard();
+  auth.onAuthStateChanged(async user => {
+    if(!user){ window.location.href='index.html'; return; }
+    currentUser = user;
+    try{
+      const uDoc = await db.collection(COL.USERS).doc(user.uid).get();
+      if(uDoc.exists){ userProfile = uDoc.data(); }
+      document.getElementById('userChip').textContent = userProfile.displayName || user.email;
+    } catch(e){ document.getElementById('userChip').textContent = user.email; }
+    loadDashboard();
+  });
 });
-
-}); // end window.addEventListener('load')
 
 function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
 
-// ── Profile modal ─────────────────────────────────────────────────────────
-function openProfileModal(){
-  document.getElementById('profileName').value           = userProfile.displayName    || '';
-  document.getElementById('profilePhone').value          = userProfile.phone          || '';
-  document.getElementById('profileEmail').value          = userProfile.email          || currentUser?.email || '';
-  document.getElementById('profileCompanyName').value    = userProfile.companyName    || '';
-  document.getElementById('profileCompanyTagline').value = userProfile.companyTagline || '';
-  document.getElementById('profileCompanyAddress').value = userProfile.companyAddress || '';
-  document.getElementById('profileCompanyPhone').value   = userProfile.companyPhone   || '';
-  document.getElementById('profileModal').style.display  = 'flex';
-}
-
-function closeProfileModal(){
-  document.getElementById('profileModal').style.display = 'none';
-}
-
-async function saveProfile(){
-  if(!currentUser){ showToast('Not signed in.','err'); return; }
-  const profile = {
-    displayName:     document.getElementById('profileName').value.trim(),
-    phone:           document.getElementById('profilePhone').value.trim(),
-    email:           document.getElementById('profileEmail').value.trim(),
-    companyName:     document.getElementById('profileCompanyName').value.trim(),
-    companyTagline:  document.getElementById('profileCompanyTagline').value.trim(),
-    companyAddress:  document.getElementById('profileCompanyAddress').value.trim(),
-    companyPhone:    document.getElementById('profileCompanyPhone').value.trim(),
-    updatedAt:       firebase.firestore.FieldValue.serverTimestamp(),
-  };
-  try {
-    await db.collection(COL.USERS).doc(currentUser.uid).set(profile, { merge: true });
-    userProfile = { ...userProfile, ...profile };
-    document.getElementById('userChip').textContent = profile.displayName || currentUser.email;
-    closeProfileModal();
-    showToast('Profile saved to cloud','ok');
-  } catch(e){ showToast('Save failed: '+(e.message||e.code),'err'); console.error(e); }
-}
-
-// Close profile modal on backdrop click
-document.addEventListener('click', e => {
-  const modal = document.getElementById('profileModal');
-  if(e.target === modal) closeProfileModal();
-});
-
-// ── Load all data ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// LOAD DASHBOARD
+// ═══════════════════════════════════════════════════════════════════════════
 async function loadDashboard(){
   document.getElementById('loadingOverlay').style.display='flex';
   try{
     const snap = await db.collection(COL.QUOTATIONS).orderBy('updatedAt','desc').get();
     allQuotes = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
-    buildFilterOptions();
-    applyFilters();
     renderKPIs();
     renderPipeline();
+    renderSummaryTable();
     renderLossAnalysis();
+    buildAqFilterOptions();
   } catch(e){
     showToast('Failed to load data. Check connection.','err');
     console.error(e);
@@ -409,15 +484,16 @@ async function loadDashboard(){
   document.getElementById('loadingOverlay').style.display='none';
 }
 
-// ── KPIs ──────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// KPIs
+// ═══════════════════════════════════════════════════════════════════════════
 function renderKPIs(){
   const fmt = n => 'RM ' + Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:0,maximumFractionDigits:0});
-  const sum = (arr) => arr.reduce((a,q)=>a+(q.totals?.grandTotal||0),0);
+  const sum = arr => arr.reduce((a,q)=>a+(q.totals?.grandTotal||0),0);
   const byStatus = s => allQuotes.filter(q=>q.status===s);
 
   document.getElementById('kpiTotal').textContent = allQuotes.length;
   document.getElementById('kpiTotalVal').textContent = fmt(sum(allQuotes));
-
   [['Delivered','delivered'],['Nego','negotiation'],['Win','win'],['Loss','loss']].forEach(([k,s])=>{
     const arr = byStatus(s);
     document.getElementById('kpi'+k).textContent = arr.length;
@@ -425,15 +501,17 @@ function renderKPIs(){
   });
 }
 
-// ── Pipeline bar ──────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// PIPELINE
+// ═══════════════════════════════════════════════════════════════════════════
 function renderPipeline(){
   const total = allQuotes.length || 1;
   const segs = [
-    { status:'delivered', label:'Delivered', color:'#3b82f6' },
-    { status:'negotiation', label:'Negotiation', color:'#f97316' },
-    { status:'win', label:'Win', color:'#22c55e' },
-    { status:'loss', label:'Loss', color:'#ef4444' },
-    { status:'draft', label:'Draft', color:'#cbd5e1' },
+    {status:'delivered',label:'Delivered',color:'#3b82f6'},
+    {status:'negotiation',label:'Negotiation',color:'#f97316'},
+    {status:'win',label:'Win',color:'#22c55e'},
+    {status:'loss',label:'Loss',color:'#ef4444'},
+    {status:'draft',label:'Draft',color:'#cbd5e1'},
   ];
   const track = document.getElementById('pipelineTrack');
   const legend = document.getElementById('pipelineLegend');
@@ -454,131 +532,373 @@ function renderPipeline(){
   });
 }
 
-// ── Filter options ────────────────────────────────────────────────────────
-function buildFilterOptions(){
-  // Users
-  const users = [...new Set(allQuotes.map(q=>q.createdByName).filter(Boolean))].sort();
-  const userSel = document.getElementById('filterUser');
-  userSel.innerHTML='<option value="">All Salespeople</option>';
-  users.forEach(u=>{ const o=document.createElement('option');o.value=u;o.textContent=u;userSel.appendChild(o);});
-
-  // Years
-  const years = [...new Set(allQuotes.map(q=>q.quoteDate?.slice(0,4)).filter(Boolean))].sort().reverse();
-  const yearSel = document.getElementById('filterYear');
-  yearSel.innerHTML='<option value="">All Years</option>';
-  years.forEach(y=>{ const o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o);});
-}
-
-// ── Filters ───────────────────────────────────────────────────────────────
-function applyFilters(){
-  const q = document.getElementById('filterSearch').value.toLowerCase();
-  const status = document.getElementById('filterStatus').value;
-  const user = document.getElementById('filterUser').value;
-  const year = document.getElementById('filterYear').value;
-
-  filtered = allQuotes.filter(d=>{
-    if(status && (d.status||'draft')!==status) return false;
-    if(user && d.createdByName!==user) return false;
-    if(year && !d.quoteDate?.startsWith(year)) return false;
-    if(q){
-      const haystack = [d.displayQuoteNo,d.quoteNo,d.customer?.company,d.customer?.name,d.createdByName].join(' ').toLowerCase();
-      if(!haystack.includes(q)) return false;
+// ═══════════════════════════════════════════════════════════════════════════
+// EQUIPMENT HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+function getEquipmentList(quote){
+  // Returns array of {model, qty} from lineItems + awItems
+  const items = [];
+  const lib = quote.equipmentSnapshot || {};
+  const lineItems = quote.lineItems || [];
+  lineItems.forEach(item => {
+    const e = lib[String(item.equipIdx)] || lib[item.equipIdx];
+    if(e && e.model){
+      items.push({ model: e.model, qty: item.qty || 1, isAW: false,
+        value: (item.unitPrice || 0) * (item.qty || 1) });
     }
-    return true;
   });
-
-  // Sort
-  filtered.sort((a,b)=>{
-    const va = getNestedVal(a,sortField);
-    const vb = getNestedVal(b,sortField);
-    if(va===vb)return 0;
-    return (va>vb?1:-1)*sortDir;
+  const awItems = quote.awItems || [];
+  awItems.forEach(aw => {
+    if(aw.desc){
+      items.push({ model: aw.desc, qty: (aw.qty || 1) + (aw.unit ? ' '+aw.unit : ''), isAW: true, value: 0 });
+    }
   });
-
-  document.getElementById('filterCount').textContent = `${filtered.length} of ${allQuotes.length} quotes`;
-  renderTable();
+  return items;
 }
 
-function getNestedVal(obj,path){
-  return path.split('.').reduce((o,k)=>o?.[k],obj)||'';
+function getTopEquipment(quote){
+  // Returns the equipment line item with highest line total
+  const lib = quote.equipmentSnapshot || {};
+  const lineItems = quote.lineItems || [];
+  let top = null, topVal = -1;
+  lineItems.forEach(item => {
+    const e = lib[String(item.equipIdx)] || lib[item.equipIdx];
+    if(!e) return;
+    const val = (parseFloat(item.unitPrice)||0) * (item.qty||1);
+    if(val > topVal){ topVal = val; top = { model: e.model, qty: item.qty||1 }; }
+  });
+  // Fallback: if no equipment snapshot, try awItems
+  if(!top && (quote.awItems||[]).length){
+    const aw = quote.awItems[0];
+    top = { model: aw.desc || 'AW', qty: aw.qty || 1 };
+  }
+  return top;
 }
 
-function clearFilters(){
-  document.getElementById('filterSearch').value='';
-  document.getElementById('filterStatus').value='';
-  document.getElementById('filterUser').value='';
-  document.getElementById('filterYear').value='';
-  applyFilters();
+function buildEquipTooltipHtml(quote){
+  const equip = getEquipmentList(quote);
+  if(!equip.length) return '<div style="font-size:12px;color:#94a3b8">No equipment data</div>';
+
+  const mainItems = equip.filter(e=>!e.isAW);
+  const awItems   = equip.filter(e=>e.isAW);
+
+  let html = '<div class="equip-tooltip-title">Quoted Equipment</div>';
+  mainItems.forEach(e=>{
+    html += `<div class="equip-tooltip-row">
+      <span class="equip-tooltip-model">${e.model}</span>
+      <span class="equip-tooltip-qty">×${e.qty}</span>
+    </div>`;
+  });
+  if(awItems.length){
+    html += '<div class="equip-tooltip-divider"></div>';
+    html += '<div class="equip-tooltip-aw-label">Additional Works</div>';
+    awItems.forEach(e=>{
+      html += `<div class="equip-tooltip-row aw-row">
+        <span class="equip-tooltip-model">${e.model}</span>
+        <span class="equip-tooltip-qty">${e.qty}</span>
+      </div>`;
+    });
+  }
+  return html;
 }
 
-// ── Sort ──────────────────────────────────────────────────────────────────
-function sortBy(field){
-  if(sortField===field) sortDir*=-1;
-  else { sortField=field; sortDir=-1; }
-  // Update header indicators
-  document.querySelectorAll('th').forEach(th=>th.classList.remove('sorted'));
-  const thEl = document.getElementById('th-'+field);
-  if(thEl) thEl.classList.add('sorted');
-  applyFilters();
+// ═══════════════════════════════════════════════════════════════════════════
+// TOOLTIP BEHAVIOUR
+// ═══════════════════════════════════════════════════════════════════════════
+const tooltip = document.getElementById('equipTooltip');
+
+function showEquipTooltip(el, quote, event){
+  tooltip.innerHTML = buildEquipTooltipHtml(quote);
+  tooltip.classList.add('visible');
+  positionTooltip(event);
 }
 
-// ── Table render ──────────────────────────────────────────────────────────
-function renderTable(){
-  const tbody = document.getElementById('quoteTableBody');
-  const empty = document.getElementById('tableEmpty');
+function positionTooltip(event){
+  const TW = tooltip.offsetWidth  || 240;
+  const TH = tooltip.offsetHeight || 120;
+  const VW = window.innerWidth;
+  const VH = window.innerHeight;
+  let x = event.clientX + 14;
+  let y = event.clientY + 14;
+  if(x + TW > VW - 8) x = event.clientX - TW - 14;
+  if(y + TH > VH - 8) y = event.clientY - TH - 14;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+}
 
-  if(!filtered.length){ tbody.innerHTML=''; empty.style.display=''; return; }
+function hideEquipTooltip(){
+  tooltip.classList.remove('visible');
+}
+
+document.addEventListener('mousemove', e => {
+  if(tooltip.classList.contains('visible')) positionTooltip(e);
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUOTATION SUMMARY TABLE
+// ═══════════════════════════════════════════════════════════════════════════
+function sortSummaryQuotes(quotes){
+  const today = new Date().toISOString().slice(0,10);
+  // Priority: overdue first (most overdue = most negative gap), then upcoming (soonest first), then no date
+  return [...quotes].sort((a,b)=>{
+    const fa = a.followUpDate || '';
+    const fb = b.followUpDate || '';
+    const aOver = fa && fa < today;
+    const bOver = fb && fb < today;
+    const aUp   = fa && fa >= today;
+    const bUp   = fb && fb >= today;
+
+    // Both overdue → most overdue (oldest date) first
+    if(aOver && bOver) return fa < fb ? -1 : fa > fb ? 1 : 0;
+    // Both upcoming → soonest first
+    if(aUp && bUp) return fa < fb ? -1 : fa > fb ? 1 : 0;
+    // Overdue beats upcoming
+    if(aOver && !bOver) return -1;
+    if(!aOver && bOver) return 1;
+    // Upcoming beats no-date
+    if(aUp && !bUp) return -1;
+    if(!aUp && bUp) return 1;
+    return 0;
+  });
+}
+
+function renderSummaryTable(){
+  const tbody = document.getElementById('summaryTableBody');
+  const empty = document.getElementById('summaryEmpty');
+  const today = new Date().toISOString().slice(0,10);
+
+  if(!allQuotes.length){ tbody.innerHTML=''; empty.style.display=''; return; }
   empty.style.display='none';
 
-  tbody.innerHTML = filtered.map(d=>{
-    const revPill = d.revision > 0 ? `<span class="rev-pill">Rev.${d.revision}</span>` : '';
-    const status = d.status || 'draft';
-    const total = (d.totals?.grandTotal||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const followUp = d.followUpDate || '';
-    const followUpDisplay = followUp ? followUp : '<span style="color:#cbd5e1">—</span>';
-    const followUpStyle = followUp && followUp < new Date().toISOString().slice(0,10) ? 'color:#ef4444;font-weight:600' : followUp ? 'color:#0369a1;font-weight:500' : '';
-    return `<tr onclick="openQuote('${d.quoteNo}','${d._id}')">
-      <td><span class="td-mono">${d.displayQuoteNo||d.quoteNo||'—'}</span>${revPill}</td>
-      <td><span class="td-bold">${d.customer?.company||d.customer?.name||'—'}</span>${d.customer?.company&&d.customer?.name?`<br/><span style="font-size:11px;color:#94a3b8">${d.customer.name}</span>`:''}</td>
-      <td>${d.quoteDate||'—'}</td>
-      <td style="${followUpStyle}">${followUpDisplay}</td>
+  const sorted = sortSummaryQuotes(allQuotes);
+
+  tbody.innerHTML = sorted.map(q=>{
+    const status = q.status||'draft';
+    const revPill = q.revision > 0 ? `<span class="rev-pill">Rev.${q.revision}</span>` : '';
+    const total = (q.totals?.grandTotal||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+    // Follow-up styling
+    const fu = q.followUpDate || '';
+    let fuHtml, fuClass='';
+    if(!fu){
+      fuHtml = '<span class="td-nodate">—</span>';
+    } else if(fu < today){
+      fuClass = 'td-overdue';
+      fuHtml = `<span class="${fuClass}" title="Overdue">⚠ ${fu}</span>`;
+    } else {
+      fuClass = 'td-upcoming';
+      fuHtml = `<span class="${fuClass}">${fu}</span>`;
+    }
+
+    // Equipment top item
+    const topEquip = getTopEquipment(q);
+    const equipCell = topEquip
+      ? `<div class="equip-cell" data-qid="${q._id}">
+           <span class="equip-name" title="${topEquip.model}">${topEquip.model}</span>
+           ${topEquip.qty > 1 ? `<span class="equip-badge">×${topEquip.qty}</span>` : ''}
+         </div>`
+      : '<span style="color:#cbd5e1;font-size:12px">—</span>';
+
+    return `<tr onclick="openQuote('${q.quoteNo||''}','${q._id}')">
+      <td>${q.createdByName||'—'}</td>
+      <td><span class="td-mono">${q.displayQuoteNo||q.quoteNo||'—'}</span>${revPill}</td>
+      <td>${q.quoteDate||'—'}</td>
+      <td>${fuHtml}</td>
+      <td>
+        <span class="td-bold">${q.customer?.company||q.customer?.name||'—'}</span>
+        ${q.customer?.company&&q.customer?.name?`<br/><span style="font-size:11px;color:#94a3b8">${q.customer.name}</span>`:''}
+      </td>
       <td><span class="badge ${status}">${status}</span></td>
-      <td style="text-align:right"><span class="td-bold">RM ${total}</span></td>
-      <td>${d.createdByName||'—'}</td>
+      <td class="td-value">RM ${total}</td>
+      <td onclick="event.stopPropagation()">${equipCell}</td>
     </tr>`;
   }).join('');
+
+  // Attach tooltip events after render
+  document.querySelectorAll('#summaryTableBody .equip-cell').forEach(cell=>{
+    const qid = cell.dataset.qid;
+    const quote = allQuotes.find(q=>q._id===qid);
+    if(!quote) return;
+    cell.addEventListener('mouseenter', e => showEquipTooltip(cell, quote, e));
+    cell.addEventListener('mouseleave', hideEquipTooltip);
+  });
 }
 
 function openQuote(quoteNo, docId){
   window.location.href = `app.html?id=${encodeURIComponent(quoteNo)}`;
 }
 
-// ── Loss Analysis ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// ALL QUOTATIONS MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+function openAllQuotesModal(){
+  document.getElementById('allQuotesModal').classList.add('open');
+  aqApplyFilters();
+}
+
+function closeAllQuotesModal(){
+  document.getElementById('allQuotesModal').classList.remove('open');
+}
+
+function aqModalBackdropClick(e){
+  if(e.target === document.getElementById('allQuotesModal')) closeAllQuotesModal();
+}
+
+function buildAqFilterOptions(){
+  const users = [...new Set(allQuotes.map(q=>q.createdByName).filter(Boolean))].sort();
+  const userSel = document.getElementById('aqUser');
+  userSel.innerHTML = '<option value="">All Salespeople</option>';
+  users.forEach(u=>{ const o=document.createElement('option');o.value=u;o.textContent=u;userSel.appendChild(o); });
+
+  const years = [...new Set(allQuotes.map(q=>q.quoteDate?.slice(0,4)).filter(Boolean))].sort().reverse();
+  const yearSel = document.getElementById('aqYear');
+  yearSel.innerHTML = '<option value="">All Years</option>';
+  years.forEach(y=>{ const o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o); });
+}
+
+function aqApplyFilters(){
+  const q   = document.getElementById('aqSearch').value.toLowerCase();
+  const st  = document.getElementById('aqStatus').value;
+  const usr = document.getElementById('aqUser').value;
+  const yr  = document.getElementById('aqYear').value;
+
+  aqFiltered = allQuotes.filter(d=>{
+    if(st && (d.status||'draft')!==st) return false;
+    if(usr && d.createdByName!==usr) return false;
+    if(yr && !d.quoteDate?.startsWith(yr)) return false;
+    if(q){
+      const hay = [d.displayQuoteNo,d.quoteNo,d.customer?.company,d.customer?.name,d.createdByName].join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  aqFiltered.sort((a,b)=>{
+    const va = getNestedVal(a, aqSortField);
+    const vb = getNestedVal(b, aqSortField);
+    if(va===vb) return 0;
+    return (va>vb?1:-1)*aqSortDir;
+  });
+
+  document.getElementById('aqFilterCount').textContent = `${aqFiltered.length} of ${allQuotes.length} quotes`;
+  aqPage = 1;
+  aqRenderTable();
+}
+
+function aqClearFilters(){
+  document.getElementById('aqSearch').value='';
+  document.getElementById('aqStatus').value='';
+  document.getElementById('aqUser').value='';
+  document.getElementById('aqYear').value='';
+  aqApplyFilters();
+}
+
+function aqSortBy(field){
+  if(aqSortField===field) aqSortDir*=-1;
+  else { aqSortField=field; aqSortDir=-1; }
+  document.querySelectorAll('th[id^="aqth-"]').forEach(th=>th.classList.remove('sorted'));
+  const thEl = document.getElementById('aqth-'+field);
+  if(thEl) thEl.classList.add('sorted');
+  aqApplyFilters();
+}
+
+function aqRenderTable(){
+  const tbody = document.getElementById('aqTableBody');
+  const empty = document.getElementById('aqEmpty');
+  const today = new Date().toISOString().slice(0,10);
+
+  const totalPages = Math.max(1, Math.ceil(aqFiltered.length / AQ_PER_PAGE));
+  aqPage = Math.min(aqPage, totalPages);
+  const start = (aqPage-1)*AQ_PER_PAGE;
+  const pageItems = aqFiltered.slice(start, start+AQ_PER_PAGE);
+
+  if(!aqFiltered.length){ tbody.innerHTML=''; empty.style.display=''; }
+  else{
+    empty.style.display='none';
+    tbody.innerHTML = pageItems.map(d=>{
+      const revPill = d.revision>0 ? `<span class="rev-pill">Rev.${d.revision}</span>` : '';
+      const status = d.status||'draft';
+      const total = (d.totals?.grandTotal||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+      const fu = d.followUpDate||'';
+      let fuHtml='<span class="td-nodate">—</span>';
+      if(fu && fu<today) fuHtml=`<span class="td-overdue">⚠ ${fu}</span>`;
+      else if(fu) fuHtml=`<span class="td-upcoming">${fu}</span>`;
+      return `<tr onclick="openQuote('${d.quoteNo||''}','${d._id}')">
+        <td>${d.createdByName||'—'}</td>
+        <td><span class="td-mono">${d.displayQuoteNo||d.quoteNo||'—'}</span>${revPill}</td>
+        <td>${d.quoteDate||'—'}</td>
+        <td>${fuHtml}</td>
+        <td><span class="td-bold">${d.customer?.company||d.customer?.name||'—'}</span>${d.customer?.company&&d.customer?.name?`<br/><span style="font-size:11px;color:#94a3b8">${d.customer.name}</span>`:''}</td>
+        <td><span class="badge ${status}">${status}</span></td>
+        <td class="td-value">RM ${total}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Pagination
+  const pageInfo = document.getElementById('aqPageInfo');
+  const pageBtns = document.getElementById('aqPageBtns');
+  if(!aqFiltered.length){ pageInfo.textContent=''; pageBtns.innerHTML=''; return; }
+
+  const endIdx = Math.min(start+AQ_PER_PAGE, aqFiltered.length);
+  pageInfo.textContent = `Showing ${start+1}–${endIdx} of ${aqFiltered.length} quotations`;
+
+  // Build page buttons (show max 7 at a time)
+  let btns = '';
+  btns += `<button class="page-btn" onclick="aqGoPage(${aqPage-1})" ${aqPage===1?'disabled':''}>‹ Prev</button>`;
+
+  const maxBtns = 7;
+  let startP = Math.max(1, aqPage - Math.floor(maxBtns/2));
+  let endP   = Math.min(totalPages, startP + maxBtns - 1);
+  if(endP - startP < maxBtns - 1) startP = Math.max(1, endP - maxBtns + 1);
+
+  if(startP > 1) btns += `<button class="page-btn" onclick="aqGoPage(1)">1</button>${startP>2?'<span style="padding:0 4px;color:#94a3b8">…</span>':''}`;
+  for(let p=startP;p<=endP;p++){
+    btns += `<button class="page-btn${p===aqPage?' active':''}" onclick="aqGoPage(${p})">${p}</button>`;
+  }
+  if(endP < totalPages) btns += `${endP<totalPages-1?'<span style="padding:0 4px;color:#94a3b8">…</span>':''}<button class="page-btn" onclick="aqGoPage(${totalPages})">${totalPages}</button>`;
+
+  btns += `<button class="page-btn" onclick="aqGoPage(${aqPage+1})" ${aqPage===totalPages?'disabled':''}>Next ›</button>`;
+  pageBtns.innerHTML = btns;
+}
+
+function aqGoPage(p){
+  const totalPages = Math.max(1, Math.ceil(aqFiltered.length/AQ_PER_PAGE));
+  aqPage = Math.max(1, Math.min(totalPages, p));
+  aqRenderTable();
+  // Scroll modal body to top
+  document.querySelector('.aq-modal-body').scrollTop = 0;
+}
+
+function getNestedVal(obj, path){
+  return path.split('.').reduce((o,k)=>o?.[k], obj) || '';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOSS ANALYSIS
+// ═══════════════════════════════════════════════════════════════════════════
 function renderLossAnalysis(){
   const losses = allQuotes.filter(q=>q.status==='loss');
-
-  // By reason
   const reasonEl = document.getElementById('lossReasonChart');
   if(!losses.length){ reasonEl.innerHTML='<div class="empty-state">No loss data yet.</div>'; }
   else{
-    const reasons = {};
+    const reasons={};
     losses.forEach(q=>{ const r=q.lossDetails?.reason||'Unknown'; reasons[r]=(reasons[r]||0)+1; });
-    const max = Math.max(...Object.values(reasons));
-    reasonEl.innerHTML = Object.entries(reasons).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`
+    const max=Math.max(...Object.values(reasons));
+    reasonEl.innerHTML=Object.entries(reasons).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`
       <div class="loss-bar-row">
         <span class="loss-bar-label">${r}</span>
         <div class="loss-bar-track"><div class="loss-bar-fill" style="width:${(n/max*100).toFixed(0)}%"></div></div>
         <span class="loss-bar-count">${n}</span>
       </div>`).join('');
   }
-
-  // Competitors
-  const compEl = document.getElementById('competitorList');
-  const comps = {};
+  const compEl=document.getElementById('competitorList');
+  const comps={};
   losses.forEach(q=>{ const c=(q.lossDetails?.competitor||'').trim(); if(c){ comps[c]=(comps[c]||0)+1; } });
   if(!Object.keys(comps).length){ compEl.innerHTML='<div class="empty-state">No competitor data recorded yet.</div>'; }
   else{
-    compEl.innerHTML = Object.entries(comps).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`
+    compEl.innerHTML=Object.entries(comps).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`
       <div class="comp-item">
         <span class="comp-name">${c}</span>
         <span class="comp-count">${n} time${n>1?'s':''}</span>
@@ -586,55 +906,95 @@ function renderLossAnalysis(){
   }
 }
 
-// ── Admin: Export full DB ──────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════════════════════════════════════
 async function exportFullDB(){
   showToast('Preparing export…');
   try{
-    const snap = await db.collection(COL.QUOTATIONS).get();
-    const data = snap.docs.map(d=>({_id:d.id,...d.data()}));
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json],{type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const dateStr = new Date().toISOString().slice(0,10);
-    a.href=url; a.download=`Mitsumori_Export_${dateStr}.json`; a.click();
+    const snap=await db.collection(COL.QUOTATIONS).get();
+    const data=snap.docs.map(d=>({_id:d.id,...d.data()}));
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`Mitsumori_Export_${new Date().toISOString().slice(0,10)}.json`;a.click();
     URL.revokeObjectURL(url);
     showToast(`Exported ${data.length} quotes`,'ok');
-  } catch(e){ showToast('Export failed.','err'); console.error(e); }
+  }catch(e){showToast('Export failed.','err');console.error(e);}
 }
 
-// ── Admin: Manual backup ──────────────────────────────────────────────────
 async function manualBackup(){
-  const statusEl = document.getElementById('backupStatus');
-  statusEl.textContent = 'Running backup…';
+  const statusEl=document.getElementById('backupStatus');
+  statusEl.textContent='Running backup…';
   try{
-    const snap = await db.collection(COL.QUOTATIONS).get();
-    const allData = snap.docs.map(d=>({_id:d.id,...d.data()}));
-    const todayKey = new Date().toISOString().slice(0,10);
+    const snap=await db.collection(COL.QUOTATIONS).get();
+    const allData=snap.docs.map(d=>({_id:d.id,...d.data()}));
+    const todayKey=new Date().toISOString().slice(0,10);
     await db.collection(COL.BACKUPS).doc(todayKey).set({
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      recordCount: allData.length,
-      data: JSON.stringify(allData),
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      recordCount:allData.length,
+      data:JSON.stringify(allData),
     });
-    // Prune old
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate()-BACKUP_RETAIN);
-    const cutoffKey = cutoff.toISOString().slice(0,10);
-    const old = await db.collection(COL.BACKUPS).where(firebase.firestore.FieldPath.documentId(),'<',cutoffKey).get();
-    const batch = db.batch();
+    const cutoff=new Date(); cutoff.setDate(cutoff.getDate()-BACKUP_RETAIN);
+    const cutoffKey=cutoff.toISOString().slice(0,10);
+    const old=await db.collection(COL.BACKUPS).where(firebase.firestore.FieldPath.documentId(),'<',cutoffKey).get();
+    const batch=db.batch();
     old.docs.forEach(d=>batch.delete(d.ref));
     if(!old.empty) await batch.commit();
-    statusEl.textContent = `✓ Backup complete — ${allData.length} records, ${old.size} old snapshots pruned`;
+    statusEl.textContent=`✓ Backup complete — ${allData.length} records, ${old.size} old snapshots pruned`;
     showToast('Backup complete','ok');
-  } catch(e){ statusEl.textContent='Backup failed.'; showToast('Backup failed.','err'); console.error(e); }
+  }catch(e){statusEl.textContent='Backup failed.';showToast('Backup failed.','err');console.error(e);}
 }
 
-// ── Toast ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// PROFILE MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+function openProfileModal(){
+  document.getElementById('profileName').value           = userProfile.displayName    || '';
+  document.getElementById('profilePhone').value          = userProfile.phone          || '';
+  document.getElementById('profileEmail').value          = userProfile.email          || currentUser?.email || '';
+  document.getElementById('profileCompanyName').value    = userProfile.companyName    || '';
+  document.getElementById('profileCompanyTagline').value = userProfile.companyTagline || '';
+  document.getElementById('profileCompanyAddress').value = userProfile.companyAddress || '';
+  document.getElementById('profileCompanyPhone').value   = userProfile.companyPhone   || '';
+  document.getElementById('profileModal').style.display  = 'flex';
+}
+function closeProfileModal(){ document.getElementById('profileModal').style.display='none'; }
+
+async function saveProfile(){
+  if(!currentUser){ showToast('Not signed in.','err'); return; }
+  const profile={
+    displayName:     document.getElementById('profileName').value.trim(),
+    phone:           document.getElementById('profilePhone').value.trim(),
+    email:           document.getElementById('profileEmail').value.trim(),
+    companyName:     document.getElementById('profileCompanyName').value.trim(),
+    companyTagline:  document.getElementById('profileCompanyTagline').value.trim(),
+    companyAddress:  document.getElementById('profileCompanyAddress').value.trim(),
+    companyPhone:    document.getElementById('profileCompanyPhone').value.trim(),
+    updatedAt:       firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  try{
+    await db.collection(COL.USERS).doc(currentUser.uid).set(profile,{merge:true});
+    userProfile={...userProfile,...profile};
+    document.getElementById('userChip').textContent=profile.displayName||currentUser.email;
+    closeProfileModal();
+    showToast('Profile saved to cloud','ok');
+  }catch(e){showToast('Save failed: '+(e.message||e.code),'err');console.error(e);}
+}
+
+document.addEventListener('click',e=>{
+  const modal=document.getElementById('profileModal');
+  if(e.target===modal) closeProfileModal();
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════════════
 let _tt;
 function showToast(msg,type=''){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.className='on '+(type||'');
-  clearTimeout(_tt); _tt=setTimeout(()=>t.className='',3000);
+  t.textContent=msg;t.className='on '+(type||'');
+  clearTimeout(_tt);_tt=setTimeout(()=>t.className='',3000);
 }
 </script>
 </body>
