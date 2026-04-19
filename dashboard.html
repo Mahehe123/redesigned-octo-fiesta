@@ -228,10 +228,10 @@ tr:hover td{background:#faf9f7;cursor:pointer}
             <th onclick="sortBy('displayQuoteNo')" id="th-displayQuoteNo">Quote No. ↕</th>
             <th onclick="sortBy('customer.company')" id="th-customer.company">Customer ↕</th>
             <th onclick="sortBy('quoteDate')" id="th-quoteDate">Date ↕</th>
+            <th onclick="sortBy('followUpDate')" id="th-followUpDate">Follow-up ↕</th>
             <th onclick="sortBy('status')" id="th-status">Status ↕</th>
             <th onclick="sortBy('totals.grandTotal')" id="th-totals.grandTotal" style="text-align:right">Value ↕</th>
             <th onclick="sortBy('createdByName')" id="th-createdByName">Salesperson ↕</th>
-            <th>Loss Reason</th>
           </tr>
         </thead>
         <tbody id="quoteTableBody"></tbody>
@@ -449,16 +449,17 @@ function renderTable(){
     const revPill = d.revision > 0 ? `<span class="rev-pill">Rev.${d.revision}</span>` : '';
     const status = d.status || 'draft';
     const total = (d.totals?.grandTotal||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const lossReason = status==='loss' && d.lossDetails?.reason ? d.lossDetails.reason : '—';
-    const lossStyle = status==='loss' ? 'color:#dc2626;font-weight:500' : 'color:#94a3b8';
+    const followUp = d.followUpDate || '';
+    const followUpDisplay = followUp ? followUp : '<span style="color:#cbd5e1">—</span>';
+    const followUpStyle = followUp && followUp < new Date().toISOString().slice(0,10) ? 'color:#ef4444;font-weight:600' : followUp ? 'color:#0369a1;font-weight:500' : '';
     return `<tr onclick="openQuote('${d.quoteNo}','${d._id}')">
       <td><span class="td-mono">${d.displayQuoteNo||d.quoteNo||'—'}</span>${revPill}</td>
       <td><span class="td-bold">${d.customer?.company||d.customer?.name||'—'}</span>${d.customer?.company&&d.customer?.name?`<br/><span style="font-size:11px;color:#94a3b8">${d.customer.name}</span>`:''}</td>
       <td>${d.quoteDate||'—'}</td>
+      <td style="${followUpStyle}">${followUpDisplay}</td>
       <td><span class="badge ${status}">${status}</span></td>
       <td style="text-align:right"><span class="td-bold">RM ${total}</span></td>
       <td>${d.createdByName||'—'}</td>
-      <td style="${lossStyle}">${lossReason}</td>
     </tr>`;
   }).join('');
 }
