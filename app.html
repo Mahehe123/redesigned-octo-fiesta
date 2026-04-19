@@ -84,7 +84,7 @@ textarea.inp{resize:none}
 .toggle-pill button.active{background:#1e293b;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)}
 input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:#e2e8f0;outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#1e293b;cursor:pointer}
-.a4-page{background:#fff;width:794px;min-height:1123px;flex-shrink:0;padding:56px 64px;box-shadow:0 4px 24px rgba(0,0,0,.13);position:relative;display:flex;flex-direction:column}
+.a4-page{background:#fff;width:794px;height:1123px;flex-shrink:0;padding:56px 64px;box-shadow:0 4px 24px rgba(0,0,0,.13);position:relative;display:flex;flex-direction:column}
 .spec-table{width:100%;border-collapse:collapse}
 .spec-table td{padding:5px 10px;vertical-align:top;border-bottom:1px solid #eef0f3}
 .spec-table tr:nth-child(even) td{background:#f4f6f9}
@@ -216,6 +216,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
       <button class="tb-btn danger" onclick="doLogout()" title="Sign out">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
       </button>
+      <button class="tb-btn" onclick="openProfileModal()" title="My Profile" style="background:#f0fdf4;color:#15803d">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        Profile
+      </button>
     </div>
   </div>
 
@@ -277,7 +281,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
     <div class="sec"><p class="sec-title">Customer Library</p>
       <div class="card-dash"><p class="card-hint">CSV/XLSX — Name, Company, Email, Country, State, Address, Postcode, Contact No</p>
         <label class="file-lbl"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Choose File<input id="custFile" type="file" accept=".csv,.xlsx,.xls" style="display:none" onchange="importCustomers(this)"/></label>
-        <p id="custStatus" class="st-ok"></p></div></div>
+        <p id="custStatus" class="st-ok"></p>
+        <button onclick="saveCustomersToCloud()" style="margin-top:8px;width:100%;border-radius:8px;border:1px solid #bbf7d0;background:#f0fdf4;color:#15803d;font-size:11px;font-weight:600;padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-family:inherit">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          Sync Customer List to Cloud
+        </button>
+        <p style="font-size:10px;color:#94a3b8;margin-top:5px">Cloud customers load automatically on every device.</p>
+      </div></div>
     <div class="sec"><p class="sec-title">Spec Font Size</p>
       <div class="card">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:#64748b">Size</span><span id="fontSizeLabel" style="font-size:11px;font-weight:700;color:#1e293b">11px</span></div>
@@ -464,6 +474,36 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 
 <!-- ── MODALS ─────────────────────────────────────────────────────────────── -->
 
+<!-- Profile modal -->
+<div id="profileModal" class="modal-bg"><div class="modal" style="width:420px;max-width:95vw">
+  <div class="mhdr"><h3>My Profile</h3><button class="mx" onclick="closeProfileModal()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <div style="margin-bottom:16px">
+    <p class="sec-title" style="margin-bottom:10px">Salesperson Info</p>
+    <div class="vy2">
+      <input id="profileName" placeholder="Your Name" class="inp"/>
+      <input id="profilePhone" placeholder="Contact Number" class="inp"/>
+      <input id="profileEmail" placeholder="Email" class="inp"/>
+    </div>
+  </div>
+  <div style="margin-bottom:16px;padding-top:14px;border-top:1px solid #f1f5f9">
+    <p class="sec-title" style="margin-bottom:10px">Company Info</p>
+    <div class="vy2">
+      <input id="profileCompanyName" placeholder="Company Name" class="inp"/>
+      <input id="profileCompanyTagline" placeholder="Tagline / Slogan" class="inp"/>
+      <input id="profileCompanyAddress" placeholder="Address" class="inp"/>
+      <input id="profileCompanyPhone" placeholder="Phone / Email" class="inp"/>
+    </div>
+  </div>
+  <p style="font-size:10px;color:#94a3b8;margin-bottom:12px">Saved to cloud. Auto-fills Salesperson &amp; Company fields on new quotes.</p>
+  <div class="m-actions">
+    <button class="btn-outline" style="flex:1" onclick="closeProfileModal()">Cancel</button>
+    <button class="btn-dark" style="flex:2" onclick="saveProfile()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+      Save to Cloud
+    </button>
+  </div>
+</div></div>
+
 <!-- Customer modal -->
 <div id="custModal" class="modal-bg"><div class="modal" style="width:340px">
   <div class="mhdr"><h3>Add Customer</h3><button class="mx" onclick="document.getElementById('custModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
@@ -593,12 +633,9 @@ window.addEventListener('load', () => {
 auth.onAuthStateChanged(async user => {
   if(!user){ window.location.href='index.html'; return; }
   currentUser = user;
-  // Try to get display name from users collection
-  try {
-    const uDoc = await db.collection(COL.USERS).doc(user.uid).get();
-    currentUserName = uDoc.exists ? (uDoc.data().displayName || user.email) : user.email;
-  } catch(e){ currentUserName = user.email; }
-  document.getElementById('userTag').textContent = currentUserName;
+  // Load profile from cloud (sets currentUserName, userProfile)
+  await loadUserProfile();
+  document.getElementById('userTag').textContent = currentUserName || user.email;
 
   // Run daily backup
   runDailyBackup();
@@ -608,7 +645,16 @@ auth.onAuthStateChanged(async user => {
   const loadId = params.get('id');
   const loadRev = params.get('rev');
   if(loadId){ await loadQuoteById(loadId, loadRev ? parseInt(loadRev) : null); }
-  else { load(); if(!document.getElementById('quoteDate').value) document.getElementById('quoteDate').value=today(); if(!document.getElementById('followUpDate').value) document.getElementById('followUpDate').value=todayPlus7(); restoreValidityBtn(); updatePreview(); }
+  else {
+    load();
+    if(!document.getElementById('quoteDate').value) document.getElementById('quoteDate').value=today();
+    if(!document.getElementById('followUpDate').value) document.getElementById('followUpDate').value=todayPlus7();
+    // Apply profile to empty fields, load customer cloud list
+    applyProfileToForm();
+    await loadCustomersFromCloud();
+    restoreValidityBtn();
+    updatePreview();
+  }
 });
 
 }); // end window.addEventListener('load')
@@ -1033,7 +1079,7 @@ async function loadQuoteById(quoteNo, rev){
     } else {
       loadQuoteData(data);
     }
-  } catch(e){ showToast('Failed to load quote.','err'); console.error(e); }
+  } catch(e){ showToast('Failed to load quote: ' + (e.code||e.message||'check connection'), 'err'); console.error(e); }
 }
 
 function loadQuoteData(data){
@@ -1042,7 +1088,6 @@ function loadQuoteData(data){
   currentBaseNo   = data.quoteNo || null;
   currentRevision = data.revision || 0;
   currentStatus   = data.status || 'draft';
-  isLocked        = currentStatus === 'win';
 
   // Form fields
   const set = (id, val) => { const el=document.getElementById(id); if(el) el.value = val||''; };
@@ -1111,7 +1156,7 @@ function loadQuoteData(data){
   save();
   showToast(`Loaded: ${data.displayQuoteNo || data.quoteNo}`,'ok');
   switchTab('info');
-  // Force a repaint so the right panel preview renders correctly after async load
+  // Force repaint so right panel renders after async Firebase load
   requestAnimationFrame(()=>{
     const pw=document.getElementById('pagesWrapper');
     pw.style.display='none';
@@ -1143,6 +1188,7 @@ function newQuote(){
 
   document.getElementById('quoteDate').value = today();
   document.getElementById('followUpDate').value = todayPlus7();
+  applyProfileToForm();
   renderLineItems();
   renderAWItems();
   updateStatusBar();
@@ -1238,7 +1284,120 @@ function setTheme(theme, el, silent){
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// LOGO
+// PROFILE — save/load salesperson + company info to Firestore qt_users doc
+// ═══════════════════════════════════════════════════════════════════════════
+let userProfile = {};
+
+async function loadUserProfile(){
+  if(!currentUser) return;
+  try {
+    const doc = await db.collection(COL.USERS).doc(currentUser.uid).get();
+    if(doc.exists){
+      const d = doc.data();
+      userProfile = d;
+      currentUserName = d.displayName || currentUser.email;
+      document.getElementById('userTag').textContent = currentUserName;
+    }
+  } catch(e){ console.warn('Profile load failed', e); }
+}
+
+function applyProfileToForm(){
+  // Only auto-fill if fields are currently empty (don't overwrite loaded quote data)
+  const setIfEmpty = (id, val) => {
+    const el = document.getElementById(id);
+    if(el && !el.value && val) el.value = val;
+  };
+  setIfEmpty('salesName',         userProfile.displayName   || '');
+  setIfEmpty('salesPhone',        userProfile.phone         || '');
+  setIfEmpty('salesEmail',        userProfile.email         || currentUser?.email || '');
+  setIfEmpty('companyName',       userProfile.companyName   || '');
+  setIfEmpty('companyTagline',    userProfile.companyTagline|| '');
+  setIfEmpty('companyAddress',    userProfile.companyAddress|| '');
+  setIfEmpty('companyPhone',      userProfile.companyPhone  || '');
+}
+
+function openProfileModal(){
+  document.getElementById('profileName').value          = userProfile.displayName    || '';
+  document.getElementById('profilePhone').value         = userProfile.phone          || '';
+  document.getElementById('profileEmail').value         = userProfile.email          || currentUser?.email || '';
+  document.getElementById('profileCompanyName').value   = userProfile.companyName    || '';
+  document.getElementById('profileCompanyTagline').value= userProfile.companyTagline || '';
+  document.getElementById('profileCompanyAddress').value= userProfile.companyAddress || '';
+  document.getElementById('profileCompanyPhone').value  = userProfile.companyPhone   || '';
+  document.getElementById('profileModal').classList.add('on');
+}
+
+function closeProfileModal(){
+  document.getElementById('profileModal').classList.remove('on');
+}
+
+async function saveProfile(){
+  if(!currentUser){ showToast('Not signed in.','err'); return; }
+  const profile = {
+    displayName:     document.getElementById('profileName').value.trim(),
+    phone:           document.getElementById('profilePhone').value.trim(),
+    email:           document.getElementById('profileEmail').value.trim(),
+    companyName:     document.getElementById('profileCompanyName').value.trim(),
+    companyTagline:  document.getElementById('profileCompanyTagline').value.trim(),
+    companyAddress:  document.getElementById('profileCompanyAddress').value.trim(),
+    companyPhone:    document.getElementById('profileCompanyPhone').value.trim(),
+    updatedAt:       firebase.firestore.FieldValue.serverTimestamp(),
+  };
+  try {
+    await db.collection(COL.USERS).doc(currentUser.uid).set(profile, { merge: true });
+    userProfile = { ...userProfile, ...profile };
+    currentUserName = profile.displayName || currentUser.email;
+    document.getElementById('userTag').textContent = currentUserName;
+    // Reflect changes in currently open form fields
+    const setField = (id, val) => { const el=document.getElementById(id); if(el) el.value=val; };
+    setField('salesName',      profile.displayName);
+    setField('salesPhone',     profile.phone);
+    setField('salesEmail',     profile.email);
+    setField('companyName',    profile.companyName);
+    setField('companyTagline', profile.companyTagline);
+    setField('companyAddress', profile.companyAddress);
+    setField('companyPhone',   profile.companyPhone);
+    updatePreview(); save();
+    closeProfileModal();
+    showToast('Profile saved to cloud','ok');
+  } catch(e){ showToast('Save failed: '+(e.message||e.code),'err'); console.error(e); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CUSTOMER LIBRARY — sync to Firestore qt_users/{uid}/customers subcollection
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadCustomersFromCloud(){
+  if(!currentUser) return;
+  try {
+    const snap = await db.collection(COL.USERS).doc(currentUser.uid)
+                         .collection('customers').orderBy('company').get();
+    if(!snap.empty){
+      const cloud = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+      // Merge with any locally imported ones, dedupe by company+name
+      const existing = new Set(customerLib.map(c => (c.company+c.name).toLowerCase()));
+      cloud.forEach(c => {
+        if(!existing.has((c.company+c.name).toLowerCase())) customerLib.push(c);
+      });
+      populateCustDropdown();
+    }
+  } catch(e){ console.warn('Customer cloud load failed', e); }
+}
+
+async function saveCustomersToCloud(){
+  if(!currentUser || !customerLib.length) return;
+  try {
+    const col = db.collection(COL.USERS).doc(currentUser.uid).collection('customers');
+    // Batch write all customers (up to 500 — more than enough)
+    const batch = db.batch();
+    customerLib.forEach(c => {
+      const id = c._id || (c.company+c.name).replace(/[^a-zA-Z0-9]/g,'_').slice(0,80)+'_'+Date.now();
+      const ref = col.doc(id);
+      batch.set(ref, { name:c.name||'', company:c.company||'', phone:c.phone||'', email:c.email||'', address:c.address||'' }, { merge:true });
+    });
+    await batch.commit();
+    showToast('Customer list saved to cloud','ok');
+  } catch(e){ showToast('Customer sync failed: '+(e.message||e.code),'err'); console.error(e); }
+}
 // ═══════════════════════════════════════════════════════════════════════════
 function handleLogoUpload(input){
   const file=input.files[0];if(!file)return;
@@ -1273,10 +1432,7 @@ function todayPlus7(){const d=new Date();d.setDate(d.getDate()+7);return d.toISO
 function onQuoteDateChange(){
   const qd=document.getElementById('quoteDate').value;
   const fu=document.getElementById('followUpDate');
-  if(qd&&!fu.value){
-    const d=new Date(qd);d.setDate(d.getDate()+7);
-    fu.value=d.toISOString().slice(0,10);
-  }
+  if(qd&&!fu.value){const d=new Date(qd);d.setDate(d.getDate()+7);fu.value=d.toISOString().slice(0,10);}
   updatePreview();save();
 }
 function fmt(n){return Number(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -1535,13 +1691,13 @@ function buildAllPages(){
     sp+=`<div style="padding-bottom:14px;margin-bottom:24px;border-bottom:2px solid ${c.primary};display:flex;align-items:center;justify-content:space-between">`;
     sp+=`<div><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px">Technical Specification</div><div style="font-size:18px;font-weight:700;color:${c.primary}">${e.model}</div>${e.series?`<div style="font-size:11px;color:#64748b;margin-top:2px">${e.series}</div>`:''}</div>`;
     sp+=`<div style="text-align:right;font-size:11px;color:#94a3b8">${quoteNo}<br/>Item ${String(i+1).padStart(2,'0')}</div></div>`;
-    sp+=`<div style="flex:1;display:flex;flex-direction:column">`;
+    sp+=`<div style="flex:1;min-height:0">`;
     sp+=`<table class="spec-table" style="font-size:${fs}">`;
     specRows.forEach(([lbl,val])=>{sp+=`<tr><td>${lbl}</td><td>${val}</td></tr>`;});
     sp+=`</table>`;
     if(item.ltMin||item.ltMax){sp+=`<div style="margin-top:20px;padding:12px 16px;background:${c.light};border-radius:8px"><span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em">Lead Time: </span><span style="font-size:13px;font-weight:600;color:${c.primary}">${item.ltMin||0}–${item.ltMax||0} weeks</span></div>`;}
     sp+=`</div>`;
-    sp+=`<div style="margin-top:auto;padding-top:20px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8"><span>${companyName||''}</span><span>${quoteNo}</span></div>`;
+    sp+=`<div style="padding-top:20px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8"><span>${companyName||''}</span><span>${quoteNo}</span></div>`;
     sp+=`</div>`;
     pages.push(sp);
   });
@@ -1617,7 +1773,7 @@ async function downloadPDF(){
 // EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════════════════════
 document.getElementById('leftPanel').addEventListener('input',e=>{const tag=e.target.tagName.toLowerCase();if(tag==='input'&&e.target.type==='range')return;if(tag==='input'||tag==='textarea'){updatePreview();save();}});
-['custModal','termsModal','payModal','emailModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
+['custModal','termsModal','payModal','emailModal','profileModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
 document.getElementById('loadModal').addEventListener('click',e=>{if(e.target===document.getElementById('loadModal'))closeLoadModal();});
 document.getElementById('statusModal').addEventListener('click',e=>{if(e.target===document.getElementById('statusModal'))document.getElementById('statusModal').classList.remove('on');});
 
