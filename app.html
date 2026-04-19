@@ -31,7 +31,7 @@ body.theme-japandi{--theme-primary:#2C2C2C;--theme-primary-hover:#1a1a1a;--theme
 .validity-btn{padding:5px 10px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}.validity-btn:hover{border-color:#94a3b8;color:#334155}.validity-btn.active{background:var(--theme-primary);border-color:var(--theme-primary);color:#fff}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#f8f8f8}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
 .app{display:flex;height:100vh}
-#leftPanel{height:100vh;display:flex;flex-direction:column;min-width:300px;max-width:680px;width:420px;flex-shrink:0;background:#fff;border-right:1px solid #f1f5f9}
+#leftPanel{height:100vh;display:flex;flex-direction:column;min-width:300px;max-width:680px;width:500px;flex-shrink:0;background:#fff;border-right:1px solid #f1f5f9}
 #rightPanel{height:100vh;overflow-y:auto;background:#d1d5db;flex:1;min-width:300px;display:flex;flex-direction:column;align-items:center}
 #resizer{width:5px;cursor:col-resize;background:#e2e8f0;flex-shrink:0;transition:background .15s;position:relative;z-index:10}
 #resizer:hover,#resizer.dragging{background:#94a3b8}
@@ -64,7 +64,7 @@ body.theme-japandi{--theme-primary:#2C2C2C;--theme-primary-hover:#1a1a1a;--theme
 .inp{width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;background:#fff;color:#1e293b;font-family:inherit}.inp:focus{box-shadow:0 0 0 2px #cbd5e1}
 textarea.inp{resize:none}
 .sec{margin-bottom:24px}.sec-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:12px}
-.vy2>*+*{margin-top:10px}.vy3>*+*{margin-top:14px}.lbl{font-size:11px;color:#4B5563;display:block;margin-bottom:5px}
+.vy2>*+*{margin-top:10px}.vy3>*+*{margin-top:14px}.lbl{font-size:11px;color:#4B5563;display:block;margin-bottom:5px}.lbl-equip-select{font-size:13px;font-weight:700;color:#1e293b;display:block;margin-bottom:5px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row{display:flex;align-items:center;gap:8px}.f1{flex:1}
 .btn-dark{width:100%;border-radius:10px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;padding:10px;border:none;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}.btn-dark:hover{background:#1e293b}
 .btn-icon{width:32px;height:32px;border-radius:8px;background:#0f172a;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}.btn-icon:hover{background:#334155}.btn-icon svg{width:16px;height:16px}
@@ -305,7 +305,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           </button>
         </div>
-        <input id="quoteDate" type="date" class="inp"/>
+        <input id="quoteDate" type="date" class="inp" oninput="onQuoteDateChange()"/>
         <div>
           <label class="lbl">Follow-up Date</label>
           <input id="followUpDate" type="date" class="inp"/>
@@ -361,9 +361,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
         <p class="sec-title" style="margin-bottom:0">Add Equipment</p>
       </div>
       <div class="vy2" id="addEquipSection">
-        <div><label class="lbl" id="lbl-series">① Series</label><select id="seriesSelect" onchange="onSeriesChange()" class="inp"></select></div>
-        <div><label class="lbl" id="lbl-starter">② Starter Type</label><select id="starterSelect" onchange="onStarterChange()" class="inp"></select></div>
-        <div><label class="lbl" id="lbl-equip">③ Equipment</label><select id="equipSelect" class="inp"></select></div>
+        <div><label class="lbl-equip-select" id="lbl-series">① Series</label><select id="seriesSelect" onchange="onSeriesChange()" class="inp"></select></div>
+        <div><label class="lbl-equip-select" id="lbl-starter">② Starter Type</label><select id="starterSelect" onchange="onStarterChange()" class="inp"></select></div>
+        <div><label class="lbl-equip-select" id="lbl-equip">③ Equipment</label><select id="equipSelect" class="inp"></select></div>
         <button onclick="addEquipment()" class="btn-dark" id="addEquipBtn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Add to Quotation</button>
       </div></div>
     <div class="sec"><div class="card">
@@ -608,7 +608,7 @@ auth.onAuthStateChanged(async user => {
   const loadId = params.get('id');
   const loadRev = params.get('rev');
   if(loadId){ await loadQuoteById(loadId, loadRev ? parseInt(loadRev) : null); }
-  else { load(); if(!document.getElementById('quoteDate').value) document.getElementById('quoteDate').value=today(); restoreValidityBtn(); updatePreview(); }
+  else { load(); if(!document.getElementById('quoteDate').value) document.getElementById('quoteDate').value=today(); if(!document.getElementById('followUpDate').value) document.getElementById('followUpDate').value=todayPlus7(); restoreValidityBtn(); updatePreview(); }
 });
 
 }); // end window.addEventListener('load')
@@ -1042,6 +1042,7 @@ function loadQuoteData(data){
   currentBaseNo   = data.quoteNo || null;
   currentRevision = data.revision || 0;
   currentStatus   = data.status || 'draft';
+  isLocked        = currentStatus === 'win';
 
   // Form fields
   const set = (id, val) => { const el=document.getElementById(id); if(el) el.value = val||''; };
@@ -1110,6 +1111,12 @@ function loadQuoteData(data){
   save();
   showToast(`Loaded: ${data.displayQuoteNo || data.quoteNo}`,'ok');
   switchTab('info');
+  // Force a repaint so the right panel preview renders correctly after async load
+  requestAnimationFrame(()=>{
+    const pw=document.getElementById('pagesWrapper');
+    pw.style.display='none';
+    requestAnimationFrame(()=>{ pw.style.display=''; updatePreview(); });
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1135,6 +1142,7 @@ function newQuote(){
   });
 
   document.getElementById('quoteDate').value = today();
+  document.getElementById('followUpDate').value = todayPlus7();
   renderLineItems();
   renderAWItems();
   updateStatusBar();
@@ -1261,6 +1269,16 @@ function isMobile(){return window.innerWidth<768;}
 // UTILITY FUNCTIONS (preserved from original)
 // ═══════════════════════════════════════════════════════════════════════════
 function today(){const d=new Date();return d.toISOString().slice(0,10);}
+function todayPlus7(){const d=new Date();d.setDate(d.getDate()+7);return d.toISOString().slice(0,10);}
+function onQuoteDateChange(){
+  const qd=document.getElementById('quoteDate').value;
+  const fu=document.getElementById('followUpDate');
+  if(qd&&!fu.value){
+    const d=new Date(qd);d.setDate(d.getDate()+7);
+    fu.value=d.toISOString().slice(0,10);
+  }
+  updatePreview();save();
+}
 function fmt(n){return Number(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function seriesType(s){if(!s)return'compressor';const sl=s.toLowerCase();if(sl.includes('dryer'))return'dryer';if(sl.includes('filter')||sl.includes(' af')||sl.startsWith('af'))return'af';if(sl.includes('tank')||sl.includes(' at')||sl.startsWith('at'))return'at';return'compressor';}
 
@@ -1517,10 +1535,12 @@ function buildAllPages(){
     sp+=`<div style="padding-bottom:14px;margin-bottom:24px;border-bottom:2px solid ${c.primary};display:flex;align-items:center;justify-content:space-between">`;
     sp+=`<div><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px">Technical Specification</div><div style="font-size:18px;font-weight:700;color:${c.primary}">${e.model}</div>${e.series?`<div style="font-size:11px;color:#64748b;margin-top:2px">${e.series}</div>`:''}</div>`;
     sp+=`<div style="text-align:right;font-size:11px;color:#94a3b8">${quoteNo}<br/>Item ${String(i+1).padStart(2,'0')}</div></div>`;
+    sp+=`<div style="flex:1;display:flex;flex-direction:column">`;
     sp+=`<table class="spec-table" style="font-size:${fs}">`;
     specRows.forEach(([lbl,val])=>{sp+=`<tr><td>${lbl}</td><td>${val}</td></tr>`;});
     sp+=`</table>`;
     if(item.ltMin||item.ltMax){sp+=`<div style="margin-top:20px;padding:12px 16px;background:${c.light};border-radius:8px"><span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em">Lead Time: </span><span style="font-size:13px;font-weight:600;color:${c.primary}">${item.ltMin||0}–${item.ltMax||0} weeks</span></div>`;}
+    sp+=`</div>`;
     sp+=`<div style="margin-top:auto;padding-top:20px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8"><span>${companyName||''}</span><span>${quoteNo}</span></div>`;
     sp+=`</div>`;
     pages.push(sp);
@@ -1596,7 +1616,7 @@ async function downloadPDF(){
 // ═══════════════════════════════════════════════════════════════════════════
 // EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════════════════════
-document.getElementById('leftPanel').addEventListener('input',e=>{const tag=e.target.tagName.toLowerCase();if(tag==='input'||tag==='textarea'){updatePreview();save();}});
+document.getElementById('leftPanel').addEventListener('input',e=>{const tag=e.target.tagName.toLowerCase();if(tag==='input'&&e.target.type==='range')return;if(tag==='input'||tag==='textarea'){updatePreview();save();}});
 ['custModal','termsModal','payModal','emailModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
 document.getElementById('loadModal').addEventListener('click',e=>{if(e.target===document.getElementById('loadModal'))closeLoadModal();});
 document.getElementById('statusModal').addEventListener('click',e=>{if(e.target===document.getElementById('statusModal'))document.getElementById('statusModal').classList.remove('on');});
