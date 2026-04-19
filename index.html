@@ -156,33 +156,35 @@ body::before{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
-// ── Init Firebase ─────────────────────────────────────────────────────────────
 let auth, db;
+
+// ── Auth + Firebase refs (global) ─────────────────────────────────────────────
 
 window.addEventListener('load', () => {
   firebase.initializeApp(FIREBASE_CONFIG);
   auth = firebase.auth();
   db   = firebase.firestore();
 
-// ── Auth state: redirect if already logged in ─────────────────────────────────
-auth.onAuthStateChanged(user => {
-  if(user) window.location.href = 'dashboard.html';
-});
+  // Auth state: redirect if already logged in
+  auth.onAuthStateChanged(user => {
+    if(user) window.location.href = 'dashboard.html';
+  });
+}); // end window.addEventListener('load')
 
-// ── Login handler ─────────────────────────────────────────────────────────────
+// ── Login handler (global scope so onclick="" can reach it) ───────────────────
 async function doLogin(){
+  if(!auth){ showErr('App not ready yet. Please wait.'); return; }
   const raw  = document.getElementById('inpUser').value.trim().toLowerCase();
   const pass = document.getElementById('inpPass').value;
-  const err  = document.getElementById('errBox');
   const btn  = document.getElementById('btnLogin');
   const spin = document.getElementById('spinner');
   const lbl  = document.getElementById('btnLabel');
 
-  err.classList.remove('on');
+  document.getElementById('errBox').classList.remove('on');
   if(!raw){ showErr('Please enter your username.'); return; }
   if(!pass){ showErr('Please enter your password.'); return; }
 
-  // Username → email convention (same as Mitsumori)
+  // Username → email convention
   const email = raw.includes('@') ? raw : `${raw}@mitsumori.app`;
 
   btn.disabled = true;
@@ -191,9 +193,9 @@ async function doLogin(){
 
   try {
     await auth.signInWithEmailAndPassword(email, pass);
-    // onAuthStateChanged will redirect
+    // onAuthStateChanged will handle redirect
   } catch(e) {
-    const msg = e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found'
+    const msg = (e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential')
       ? 'Incorrect username or password.'
       : e.code === 'auth/too-many-requests'
       ? 'Too many attempts. Please wait a moment and try again.'
@@ -205,12 +207,12 @@ async function doLogin(){
   }
 }
 
+// ── Error display (global scope) ──────────────────────────────────────────────
 function showErr(msg){
   const b = document.getElementById('errBox');
   b.textContent = msg;
   b.classList.add('on');
 }
-}); // end window.addEventListener('load')
 </script>
 </body>
 </html>
