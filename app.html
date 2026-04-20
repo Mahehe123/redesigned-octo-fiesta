@@ -89,7 +89,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .spec-table td{padding:5px 10px;vertical-align:top;border-bottom:1px solid #eef0f3}
 .spec-table tr:nth-child(even) td{background:#f4f6f9}
 .spec-table tr:last-child td{border-bottom:none}
-.spec-table td:first-child{color:#374151;width:46%;white-space:nowrap;font-size:11px}
+.spec-table td:first-child{color:#64748b;width:46%;white-space:nowrap;font-size:11px}
 .spec-table td:last-child{color:#1e293b;font-weight:600}
 #pagesWrapper{width:100%;flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:32px 16px;gap:32px}
 #pageNav{position:sticky;bottom:0;background:rgba(184,190,199,.8);backdrop-filter:blur(6px);width:100%;display:flex;align-items:center;justify-content:center;gap:16px;padding:10px;z-index:20}
@@ -274,10 +274,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
         <p style="font-size:11px;color:#94a3b8">Click to upload logo</p>
         <input id="logoInput" type="file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)"/>
       </div></div>
-    <div class="sec"><p class="sec-title">Equipment Library</p>
-      <div class="card-dash"><p class="card-hint">CSV or XLSX — all series in one file</p>
-        <label class="file-lbl"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Choose File<input id="equipFile" type="file" accept=".csv,.xlsx,.xls" style="display:none" onchange="importEquipment(this)"/></label>
-        <p id="equipStatus" class="st-ok"></p></div></div>
+    <div class="sec" id="equipLibSection">
+      <p class="sec-title">Equipment Library</p>
+      <!-- Admin: import panel -->
+      <div id="equipAdminPanel" style="display:none">
+        <div class="card-dash" style="margin-bottom:8px">
+          <p class="card-hint">CSV or XLSX — all series in one file. Replaces existing library for all users.</p>
+          <label class="file-lbl"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Choose File (Admin)<input id="equipFile" type="file" accept=".csv,.xlsx,.xls" style="display:none" onchange="importEquipment(this)"/></label>
+          <button onclick="pushEquipmentToCloud()" style="margin-top:8px;width:100%;border-radius:8px;border:1px solid #bbf7d0;background:#f0fdf4;color:#15803d;font-size:11px;font-weight:600;padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-family:inherit">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+            Push to Cloud (Replace All)
+          </button>
+        </div>
+      </div>
+      <!-- All users: status / last updated -->
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div>
+          <p id="equipStatus" class="st-ok" style="display:block;font-size:12px;font-weight:600;color:#15803d"></p>
+          <p id="equipCloudDate" style="font-size:10px;color:#94a3b8;margin-top:2px"></p>
+        </div>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;color:#cbd5e1;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg>
+      </div>
+    </div>
     <div class="sec"><p class="sec-title">Customer Library</p>
       <div class="card-dash"><p class="card-hint">CSV/XLSX — Name, Company, Email, Country, State, Address, Postcode, Contact No</p>
         <label class="file-lbl"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Choose File<input id="custFile" type="file" accept=".csv,.xlsx,.xls" style="display:none" onchange="importCustomers(this)"/></label>
@@ -354,12 +372,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
     <div class="sec"><p class="sec-title">Notes</p><textarea id="quoteNotes" placeholder="Notes to customer…" rows="3" class="inp"></textarea></div>
     <div class="sec"><p class="sec-title">Payment Terms</p>
       <div class="vy2">
-        <div class="row"><select id="paySelect" onchange="applyPayTemplate()" class="inp f1" style="font-size:12px"></select><button onclick="openPayModal()" class="btn-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button></div>
+        <div class="row">
+          <select id="paySelect" onchange="applyPayTemplate()" class="inp f1" style="font-size:12px"></select>
+          <button onclick="editPayTemplate()" class="btn-icon" title="Edit selected template" style="background:#0369a1"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+          <button onclick="deletePayTemplate()" class="btn-icon" title="Delete selected template" style="background:#dc2626"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+          <button onclick="openPayModal()" class="btn-icon" title="Add new template"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button>
+        </div>
         <textarea id="quotePayment" placeholder="Payment terms…" rows="4" class="inp"></textarea>
       </div></div>
     <div class="sec"><p class="sec-title">Terms &amp; Conditions</p>
       <div class="vy2">
-        <div class="row"><select id="termsSelect" onchange="applyTermsTemplate()" class="inp f1" style="font-size:12px"></select><button onclick="openTermsModal()" class="btn-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button></div>
+        <div class="row">
+          <select id="termsSelect" onchange="applyTermsTemplate()" class="inp f1" style="font-size:12px"></select>
+          <button onclick="editTermsTemplate()" class="btn-icon" title="Edit selected template" style="background:#0369a1"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+          <button onclick="deleteTermsTemplate()" class="btn-icon" title="Delete selected template" style="background:#dc2626"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+          <button onclick="openTermsModal()" class="btn-icon" title="Add new template"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg></button>
+        </div>
         <textarea id="quoteTerms" placeholder="Terms &amp; Conditions…" rows="4" class="inp"></textarea>
       </div></div>
   </div>
@@ -377,13 +405,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
         <button onclick="addEquipment()" class="btn-dark" id="addEquipBtn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Add to Quotation</button>
       </div></div>
     <div class="sec"><div class="card">
-      <div class="disc-row"><span style="font-size:11px;font-weight:600;color:#374151">Discount Mode</span>
+      <div class="disc-row"><span style="font-size:11px;font-weight:600;color:#475569">Discount Mode</span>
         <div class="toggle-pill"><button id="btnModeIndividual" onclick="setDiscountMode('individual')" class="active">Individual</button><button id="btnModeOverall" onclick="setDiscountMode('overall')">Overall</button></div></div>
       <div id="overallDiscountPanel" style="display:none">
-        <div style="margin-bottom:8px">
-          <label class="lbl">Discount %</label>
-          <input id="overallModPct" type="number" min="0" max="100" step="0.1" value="0" placeholder="e.g. 10" onchange="updateOverallDiscount()" class="inp"/>
-          <p style="font-size:10px;color:#64748b;margin-top:4px">Customer purchase price = Listed price × (1 − discount%)</p>
+        <div class="g2" style="margin-bottom:8px">
+          <div><label class="lbl">Type</label><select id="overallModType" onchange="updateOverallDiscount()" class="inp" style="font-size:13px"><option value="none">None</option><option value="markup">Markup %</option><option value="discount">Discount %</option><option value="smartmarkup">✨ Smart Markup</option></select></div>
+          <div><label class="lbl">Markup / Discount %</label><input id="overallModPct" type="number" min="0" max="500" step="0.1" value="0" onchange="updateOverallDiscount()" class="inp"/></div>
         </div></div></div></div>
     <div class="sec">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -512,18 +539,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   <div class="m-actions"><button onclick="saveNewCustomer()" class="btn-dark">Save Customer</button><button onclick="document.getElementById('custModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
 </div></div>
 
-<!-- Terms modal -->
+<!-- Terms modal (create + edit) -->
 <div id="termsModal" class="modal-bg"><div class="modal" style="width:380px">
-  <div class="mhdr"><h3>Terms Template</h3><button class="mx" onclick="document.getElementById('termsModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <div class="mhdr"><h3 id="termsModalTitle">Terms Template</h3><button class="mx" onclick="document.getElementById('termsModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <input type="hidden" id="termsEditIdx" value=""/>
   <div class="vy2"><input id="newTermsName" placeholder="Template name" class="inp"/><textarea id="newTermsText" placeholder="Terms text…" rows="5" class="inp"></textarea></div>
-  <div class="m-actions"><button onclick="saveTermsTemplate()" class="btn-dark">Save Template</button><button onclick="document.getElementById('termsModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
+  <div class="m-actions"><button onclick="saveTermsTemplate()" class="btn-dark" id="termsModalSaveBtn">Save Template</button><button onclick="document.getElementById('termsModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
 </div></div>
 
-<!-- Payment modal -->
+<!-- Payment modal (create + edit) -->
 <div id="payModal" class="modal-bg"><div class="modal" style="width:380px">
-  <div class="mhdr"><h3>Payment Template</h3><button class="mx" onclick="document.getElementById('payModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <div class="mhdr"><h3 id="payModalTitle">Payment Template</h3><button class="mx" onclick="document.getElementById('payModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+  <input type="hidden" id="payEditIdx" value=""/>
   <div class="vy2"><input id="newPayName" placeholder="Template name" class="inp"/><textarea id="newPayText" placeholder="Payment terms…" rows="4" class="inp"></textarea></div>
-  <div class="m-actions"><button onclick="savePayTemplate()" class="btn-dark">Save Template</button><button onclick="document.getElementById('payModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
+  <div class="m-actions"><button onclick="savePayTemplate()" class="btn-dark" id="payModalSaveBtn">Save Template</button><button onclick="document.getElementById('payModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
 </div></div>
 
 <!-- Email draft modal -->
@@ -625,6 +654,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 let auth, db;
 let currentUser = null;
 let currentUserName = '';
+let isAdmin = false;
+const ADMIN_EMAIL = 'admin@mitsumori.app';
+const EQUIP_COL   = 'qt_equipment';
+const EQUIP_META  = 'qt_equipment_meta';
+const EQUIP_CACHE_KEY = 'qt_equip_cache_v1';
 
 window.addEventListener('load', () => {
   if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
@@ -634,12 +668,21 @@ window.addEventListener('load', () => {
 auth.onAuthStateChanged(async user => {
   if(!user){ window.location.href='index.html'; return; }
   currentUser = user;
+  isAdmin = (user.email === ADMIN_EMAIL);
+  // Show admin panel in equipment settings if admin
+  if(isAdmin){
+    const panel=document.getElementById('equipAdminPanel');
+    if(panel) panel.style.display='';
+  }
   // Load profile from cloud (sets currentUserName, userProfile)
   await loadUserProfile();
   document.getElementById('userTag').textContent = currentUserName || user.email;
 
   // Run daily backup
   runDailyBackup();
+
+  // Load equipment library from cloud (smart cached)
+  await loadEquipmentFromCloud();
 
   // Check if opened with ?id= param
   const params = new URLSearchParams(window.location.search);
@@ -668,7 +711,7 @@ function goToDashboard(){ window.location.href='dashboard.html'; }
 // ═══════════════════════════════════════════════════════════════════════════
 let equipmentLib=[];let customerLib=[];let lineItems=[];let awItems=[];
 let logoDataUrl='';let currentTheme='default';let discountMode='individual';
-let overallModPct=0;
+let overallModType='none';let overallModPct=0;let overallSmartPct=20;
 let specFontSize=11;let itemsFontSize=14;let menuFontSize=14;let currentPage=0;let mobilePage=0;
 let validityDays=0;let showOilCarryOver=false;let attachments=[];
 let termsTemplates=[];let payTemplates=[];
@@ -866,7 +909,9 @@ function buildQuoteData(){
     awItems,
     totals,
     discountMode,
+    overallModType,
     overallModPct,
+    overallSmartPct,
     specFontSize,
     itemsFontSize,
     menuFontSize,
@@ -1133,7 +1178,9 @@ function loadQuoteData(data){
     populateEquipDropdown();
   }
   discountMode    = data.discountMode || 'individual';
+  overallModType  = data.overallModType || 'none';
   overallModPct   = data.overallModPct || 0;
+  overallSmartPct = data.overallSmartPct || 20;
   specFontSize    = data.specFontSize || 11;
   itemsFontSize   = data.itemsFontSize || 14;
   menuFontSize    = data.menuFontSize || 14;
@@ -1237,7 +1284,7 @@ function save(){
     quoteNumber:v('quoteNumber'),quoteDate:v('quoteDate'),followUpDate:v('followUpDate'),quoteNotes:v('quoteNotes'),quotePayment:v('quotePayment'),quoteTerms:v('quoteTerms'),quoteFooter:v('quoteFooter'),
     salesName:v('salesName'),salesPhone:v('salesPhone'),salesEmail:v('salesEmail'),
     custName:v('custName'),custCompany:v('custCompany'),custPhone:v('custPhone'),custEmail:v('custEmail'),custAddress:v('custAddress'),
-    validityDays,lineItems,awItems,discountMode,overallModPct,
+    validityDays,lineItems,awItems,discountMode,overallModType,overallModPct,overallSmartPct,
     specFontSize,itemsFontSize,menuFontSize,currentTheme,logoDataUrl,showOilCarryOver,termsTemplates,payTemplates,customerLib:customerLib.slice(0,50),
     // CRM fields
     currentQuoteId,currentBaseNo,currentRevision,currentStatus,
@@ -1253,7 +1300,7 @@ function load(){
   set('salesName',d.salesName);set('salesPhone',d.salesPhone);set('salesEmail',d.salesEmail);
   set('custName',d.custName);set('custCompany',d.custCompany);set('custPhone',d.custPhone);set('custEmail',d.custEmail);set('custAddress',d.custAddress);
   validityDays=d.validityDays||0;lineItems=d.lineItems||[];awItems=d.awItems||[];
-  discountMode=d.discountMode||'individual';overallModPct=d.overallModPct||0;
+  discountMode=d.discountMode||'individual';overallModType=d.overallModType||'none';overallModPct=d.overallModPct||0;overallSmartPct=d.overallSmartPct||20;
   specFontSize=d.specFontSize||11;itemsFontSize=d.itemsFontSize||14;menuFontSize=d.menuFontSize||14;
   showOilCarryOver=d.showOilCarryOver||false;
   termsTemplates=d.termsTemplates||[];payTemplates=d.payTemplates||[];
@@ -1296,6 +1343,124 @@ async function loadUserProfile(){
       document.getElementById('userTag').textContent = currentUserName;
     }
   } catch(e){ console.warn('Profile load failed', e); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EQUIPMENT CLOUD LIBRARY — smart cached load + admin push
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadEquipmentFromCloud(){
+  try {
+    // 1. Read cached version tag from localStorage
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(EQUIP_CACHE_KEY)||'null'); } catch(e){}
+
+    // 2. Fetch meta doc to check latest version timestamp
+    const metaDoc = await db.collection(EQUIP_META).doc('current').get();
+    if(!metaDoc.exists){
+      // No cloud library yet — fall back to cached or empty
+      if(cached && cached.items && cached.items.length){
+        equipmentLib = cached.items;
+        _afterEquipLoad(`✓ ${equipmentLib.length} items (cached)`);
+      }
+      return;
+    }
+
+    const cloudVersion = metaDoc.data().updatedAt?.seconds || 0;
+    const cachedVersion = cached?.version || 0;
+
+    // 3. If cached version matches cloud version, use cache (no Firestore read)
+    if(cached && cached.items && cached.items.length && cachedVersion >= cloudVersion){
+      equipmentLib = cached.items;
+      _afterEquipLoad(`✓ ${equipmentLib.length} items loaded`);
+      _setEquipCloudDate(metaDoc.data());
+      return;
+    }
+
+    // 4. Cache is stale or missing — fetch fresh from Firestore
+    const snap = await db.collection(EQUIP_COL).get();
+    if(snap.empty) return;
+    equipmentLib = snap.docs.map(d => d.data()).filter(e => e.model);
+
+    // 5. Save to localStorage cache with version tag
+    try {
+      localStorage.setItem(EQUIP_CACHE_KEY, JSON.stringify({
+        version: cloudVersion,
+        items: equipmentLib,
+        cachedAt: Date.now()
+      }));
+    } catch(e) { console.warn('Equipment cache write failed:', e); }
+
+    _afterEquipLoad(`✓ ${equipmentLib.length} items loaded`);
+    _setEquipCloudDate(metaDoc.data());
+
+  } catch(e) {
+    console.warn('Equipment cloud load failed, trying cache:', e);
+    // Offline fallback — use cache silently
+    try {
+      const cached = JSON.parse(localStorage.getItem(EQUIP_CACHE_KEY)||'null');
+      if(cached && cached.items && cached.items.length){
+        equipmentLib = cached.items;
+        _afterEquipLoad(`✓ ${equipmentLib.length} items (offline cache)`);
+      }
+    } catch(ce){}
+  }
+}
+
+function _afterEquipLoad(statusText){
+  populateSeriesDropdown();
+  populateStarterDropdown();
+  populateEquipDropdown();
+  const s = document.getElementById('equipStatus');
+  if(s){ s.textContent = statusText; s.style.display='block'; }
+}
+
+function _setEquipCloudDate(meta){
+  const el = document.getElementById('equipCloudDate');
+  if(!el) return;
+  const updatedBy = meta.updatedBy || 'Admin';
+  const ts = meta.updatedAt?.toDate ? meta.updatedAt.toDate() : null;
+  const dateStr = ts ? ts.toLocaleDateString('en-MY',{day:'numeric',month:'short',year:'numeric'}) : '';
+  el.textContent = dateStr ? `Last updated: ${dateStr} by ${updatedBy}` : `Updated by ${updatedBy}`;
+}
+
+async function pushEquipmentToCloud(){
+  if(!isAdmin){ showToast('Admin only.','err'); return; }
+  if(!equipmentLib.length){ showToast('Import equipment file first.','err'); return; }
+  if(!confirm(`Replace cloud equipment library with ${equipmentLib.length} items from the imported file?`)) return;
+
+  showToast('Pushing to cloud…');
+  try {
+    // Write all items in batches of 500
+    const BATCH_SIZE = 499;
+    // Delete existing collection first by overwriting docs keyed by index
+    const metaRef = db.collection(EQUIP_META).doc('current');
+
+    // Batch write all items
+    for(let i=0; i<equipmentLib.length; i+=BATCH_SIZE){
+      const batch = db.batch();
+      equipmentLib.slice(i, i+BATCH_SIZE).forEach((item, j) => {
+        const ref = db.collection(EQUIP_COL).doc(String(i+j).padStart(5,'0'));
+        batch.set(ref, item);
+      });
+      await batch.commit();
+    }
+
+    // Update meta with timestamp + uploader name
+    await metaRef.set({
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: currentUserName || currentUser.email,
+      itemCount: equipmentLib.length,
+    });
+
+    // Bust local cache so all users get fresh data next load
+    localStorage.removeItem(EQUIP_CACHE_KEY);
+
+    showToast(`✓ ${equipmentLib.length} items pushed to cloud`,'ok');
+    _setEquipCloudDate({updatedBy: currentUserName||currentUser.email, updatedAt:{toDate:()=>new Date()}});
+  } catch(e){
+    showToast('Push failed: ' + (e.message||e.code),'err');
+    console.error(e);
+  }
 }
 
 function applyProfileToForm(){
@@ -1436,55 +1601,43 @@ function fmt(n){return Number(n).toLocaleString('en-MY',{minimumFractionDigits:2
 function seriesType(s){if(!s)return'compressor';const sl=s.toLowerCase();if(sl.includes('dryer'))return'dryer';if(sl.includes('filter')||sl.includes(' af')||sl.startsWith('af'))return'af';if(sl.includes('tank')||sl.includes(' at')||sl.startsWith('at'))return'at';return'compressor';}
 
 function getModifier(item){
-  if(discountMode==='overall'){
-    const pct=overallModPct||0;
-    return{modType:pct>0?'discount':'none',modPct:pct,smartMarkupPct:0};
-  }
-  // Individual: item carries its own discount %
-  const pct=item.discountPct||0;
-  return{modType:pct>0?'discount':'none',modPct:pct,smartMarkupPct:0};
+  if(discountMode==='overall'){return{modType:overallModType,modPct:overallModPct,smartMarkupPct:overallSmartPct};}
+  return{modType:item.modType||'none',modPct:item.modPct||0,smartMarkupPct:item.smartMarkupPct||20};
 }
 function calcUnitPrice(item){
-  // Returns the customer PURCHASE price
   const e=equipmentLib[item.equipIdx];if(!e)return 0;
-  const listed=e.rmUnit; // default/listed price
-  const{modPct}=getModifier(item);
-  return modPct>0 ? listed*(1-modPct/100) : listed;
+  const orig=e.rmUnit;const{modType,modPct,smartMarkupPct}=getModifier(item);
+  if(modType==='markup')return orig/(1-modPct/100);
+  if(modType==='discount')return orig*(1-modPct/100);
+  if(modType==='smartmarkup'){const mp=orig/(1-modPct/100);return mp;}
+  return orig;
 }
-function getListedPrice(item){
-  const e=equipmentLib[item.equipIdx];if(!e)return 0;
-  return e.rmUnit;
+function calcSmartInflatedPrice(item){
+  const mp=calcUnitPrice(item);const{smartMarkupPct}=getModifier(item);
+  return mp/(1-(smartMarkupPct||20)/100);
 }
-// calcSmartInflatedPrice removed — discount model only
 function updateItem(idx,key,val){
   if(key==='qty')lineItems[idx].qty=Math.max(1,parseInt(val)||1);
-  else if(key==='discountPct')lineItems[idx].discountPct=Math.max(0,Math.min(100,parseFloat(val)||0));
+  else if(key==='modType')lineItems[idx].modType=val;
+  else if(key==='modPct')lineItems[idx].modPct=parseFloat(val)||0;
   else if(key==='ltMin')lineItems[idx].ltMin=parseInt(val)||0;
   else if(key==='ltMax')lineItems[idx].ltMax=parseInt(val)||0;
   renderLineItems();save();
 }
-// setItemSmartPct removed
-function setDiscountMode(mode){
-  discountMode=mode;
-  document.getElementById('btnModeIndividual').classList.toggle('active',mode==='individual');
-  document.getElementById('btnModeOverall').classList.toggle('active',mode==='overall');
-  document.getElementById('overallDiscountPanel').style.display=mode==='overall'?'':'none';
-  if(mode==='overall'){
-    const el=document.getElementById('overallModPct');
-    if(el)el.value=overallModPct||0;
-  }
-  renderLineItems();save();
-}
-function updateOverallDiscount(){overallModPct=parseFloat(document.getElementById('overallModPct').value)||0;renderLineItems();save();}
-// setOverallSmartPct removed
-// syncOverallSmartPct removed
+function setItemSmartPct(idx,pct){lineItems[idx].smartMarkupPct=parseFloat(pct)||20;renderLineItems();save();}
+function setDiscountMode(mode){discountMode=mode;document.getElementById('btnModeIndividual').classList.toggle('active',mode==='individual');document.getElementById('btnModeOverall').classList.toggle('active',mode==='overall');document.getElementById('overallDiscountPanel').style.display=mode==='overall'?'':'none';renderLineItems();save();}
+function updateOverallDiscount(){overallModType=document.getElementById('overallModType').value;overallModPct=parseFloat(document.getElementById('overallModPct').value)||0;renderLineItems();save();}
+function setOverallSmartPct(p){overallSmartPct=p;document.querySelectorAll('#overallSmPresets .sm-preset-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===p));document.getElementById('overallSmartPct').value=p;renderLineItems();save();}
+function syncOverallSmartPct(v){overallSmartPct=parseFloat(v)||20;document.querySelectorAll('#overallSmPresets .sm-preset-btn').forEach(b=>b.classList.toggle('active',false));renderLineItems();save();}
 function updateFontSize(v){specFontSize=parseInt(v);document.getElementById('fontSizeLabel').textContent=v+'px';updatePreview();save();}
 function updateMenuFontSize(v){menuFontSize=parseInt(v);document.getElementById('menuFontSizeLabel').textContent=v+'px';applyMenuFontSize();save();}
 function applyMenuFontSize(){document.getElementById('leftPanel').style.fontSize=menuFontSize+'px';const lbl=document.getElementById('menuFontSize');if(lbl)lbl.value=menuFontSize;const lblTxt=document.getElementById('menuFontSizeLabel');if(lblTxt)lblTxt.textContent=menuFontSize+'px';}
 
 // ── Equipment & Customer imports ─────────────────────────────────────────
 function parseFile(file,cb){const ext=file.name.split('.').pop().toLowerCase();if(ext==='csv'){Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>cb(r.data)});}else{const r=new FileReader();r.onload=e=>{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});cb(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''}));};r.readAsArrayBuffer(file);}}
-function importEquipment(input){const file=input.files[0];if(!file)return;parseFile(file,rows=>{const norm=rows.map(r=>{const n={};Object.keys(r).forEach(k=>{n[k.replace(/^\uFEFF/,'').trim()]=String(r[k]===null||r[k]===undefined?'':r[k]).trim();});return n;});equipmentLib=norm.map(r=>({model:r['Model']||'',tpl:r['TPL']||'',type:r['Type']||'',series:r['Series']||'',rmUnit:parseFloat(String(r['RM/ Unit']||'').replace(/[^0-9.]/g,''))||0,airQuality:r['Air Quality']||'',wcac:r['WC/AC']||'',kw:r['kW']||'',hp:r['hp']||'',loadP:r['Loading Pressure']||'',unloadP:r['Unload Pressure']||'',minM3:r['Min m3/min']||'',maxM3:r['Max m3/min']||'',minCFM:r['Min CFM']||'',maxCFM:r['Max CFM']||'',ieRating:r['IE Rating']||'',motorType:r['Motor Type']||'',dimension:r['Dimension']||'',outletSize:r['Outlet size']||'',weight:r['Weight']||'',noise:r['Noise level']||'',power:r['Power Supply']||'',outletTemp:r['Outlet air temperature']||'',starter:r['Starter Type']||'',waterFlow:r['Input water flow']||'',waterPres:r['water pressure']||'',presDrop:r['Pressure drop']||'',oilCarry:r['Oil carry over']||'',refrigerant:r['Refrigerant']||'',filterM3:r['Filter, m3/min']||r['filter, m3/min']||'',filterCFM:r['Filter, cfm']||r['filter, cfm']||'',filterOil:r['Filter oil carry over']||r['filter oil carry over']||'',filterPart:r['Particle removal']||r['particle removal']||'',filterDim:r['Filter dimension']||r['filter dimension']||'',filterOutlet:r['Filter outlet']||r['filter outlet']||'',filterWeight:r['Filter weight']||r['filter weigh']||r['Filter weigh']||'',tankVolume:r['tank volume']||r['Tank volume']||'',tankMat:r['Air tank Material']||r['air tank material']||'',tankPres:r['tank pressure']||r['Tank pressure']||'',tankDim:r['tank dimension']||r['Tank dimension']||'',tankOutlet:r['tank outlet']||r['Tank outlet']||''})).filter(e=>e.model);populateSeriesDropdown();populateStarterDropdown();populateEquipDropdown();const s=document.getElementById('equipStatus');s.textContent=`✓ ${equipmentLib.length} items loaded`;s.classList.add('on');save();});}
+function importEquipment(input){const file=input.files[0];if(!file)return;parseFile(file,rows=>{const norm=rows.map(r=>{const n={};Object.keys(r).forEach(k=>{n[k.replace(/^\uFEFF/,'').trim()]=String(r[k]===null||r[k]===undefined?'':r[k]).trim();});return n;});equipmentLib=norm.map(r=>({model:r['Model']||'',tpl:r['TPL']||'',type:r['Type']||'',series:r['Series']||'',rmUnit:parseFloat(String(r['RM/ Unit']||'').replace(/[^0-9.]/g,''))||0,airQuality:r['Air Quality']||'',wcac:r['WC/AC']||'',kw:r['kW']||'',hp:r['hp']||'',loadP:r['Loading Pressure']||'',unloadP:r['Unload Pressure']||'',minM3:r['Min m3/min']||'',maxM3:r['Max m3/min']||'',minCFM:r['Min CFM']||'',maxCFM:r['Max CFM']||'',ieRating:r['IE Rating']||'',motorType:r['Motor Type']||'',dimension:r['Dimension']||'',outletSize:r['Outlet size']||'',weight:r['Weight']||'',noise:r['Noise level']||'',power:r['Power Supply']||'',outletTemp:r['Outlet air temperature']||'',starter:r['Starter Type']||'',waterFlow:r['Input water flow']||'',waterPres:r['water pressure']||'',presDrop:r['Pressure drop']||'',oilCarry:r['Oil carry over']||'',refrigerant:r['Refrigerant']||'',filterM3:r['Filter, m3/min']||r['filter, m3/min']||'',filterCFM:r['Filter, cfm']||r['filter, cfm']||'',filterOil:r['Filter oil carry over']||r['filter oil carry over']||'',filterPart:r['Particle removal']||r['particle removal']||'',filterDim:r['Filter dimension']||r['filter dimension']||'',filterOutlet:r['Filter outlet']||r['filter outlet']||'',filterWeight:r['Filter weight']||r['filter weigh']||r['Filter weigh']||'',tankVolume:r['tank volume']||r['Tank volume']||'',tankMat:r['Air tank Material']||r['air tank material']||'',tankPres:r['tank pressure']||r['Tank pressure']||'',tankDim:r['tank dimension']||r['Tank dimension']||'',tankOutlet:r['tank outlet']||r['Tank outlet']||''})).filter(e=>e.model);populateSeriesDropdown();populateStarterDropdown();populateEquipDropdown();const s=document.getElementById('equipStatus');s.textContent=`✓ ${equipmentLib.length} items loaded locally`;s.style.display='block';
+      if(isAdmin) showToast('Equipment imported locally. Click "Push to Cloud" to share with all users.');
+      save();});}
 function importCustomers(input){const file=input.files[0];if(!file)return;parseFile(file,rows=>{const norm=rows.map(r=>{const n={};Object.keys(r).forEach(k=>{n[k.replace(/^\uFEFF/,'').trim()]=String(r[k]||'').trim();});return n;});customerLib=norm.map(r=>{const ap=[r['Address'],r['Postcode'],r['State'],r['Country']].filter(Boolean);return{name:r['Name']||'',company:r['Company']||'',phone:r['Contact No']||'',email:r['Email']||'',address:ap.join(', ')};}).filter(c=>c.name||c.company);populateCustDropdown();const s=document.getElementById('custStatus');s.textContent=`✓ ${customerLib.length} customers`;s.classList.add('on');save();});}
 
 function populateSeriesDropdown(){const sel=document.getElementById('seriesSelect'),cur=sel.value;sel.innerHTML='<option value="">— All series —</option>';[...new Set(equipmentLib.map(e=>e.series).filter(Boolean))].sort().forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;if(s===cur)o.selected=true;sel.appendChild(o);});}
@@ -1495,7 +1648,7 @@ function onStarterChange(){populateEquipDropdown();}
 function populateCustDropdown(){const sel=document.getElementById('customerSelect'),cur=sel.value;sel.innerHTML='<option value="">— Select or enter manually —</option>';customerLib.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.name+(c.company?` — ${c.company}`:'');if(String(i)===String(cur))o.selected=true;sel.appendChild(o);});}
 function selectCustomer(){const idx=document.getElementById('customerSelect').value;if(idx==='')return;const c=customerLib[parseInt(idx)];document.getElementById('custName').value=c.name;document.getElementById('custCompany').value=c.company;document.getElementById('custPhone').value=c.phone;document.getElementById('custEmail').value=c.email;document.getElementById('custAddress').value=c.address;updatePreview();}
 
-function addEquipment(){const idx=document.getElementById('equipSelect').value;if(idx===''){alert('Please select equipment first.');return;}lineItems.push({id:Date.now(),equipIdx:parseInt(idx),qty:1,discountPct:0,ltMin:0,ltMax:0});renderLineItems();save();}
+function addEquipment(){const idx=document.getElementById('equipSelect').value;if(idx===''){alert('Please select equipment first.');return;}lineItems.push({id:Date.now(),equipIdx:parseInt(idx),qty:1,modType:'none',modPct:0,smartMarkupPct:20,ltMin:0,ltMax:0});renderLineItems();save();}
 let dragSrcIdx=null;
 function moveItem(idx,dir){const newIdx=idx+dir;if(newIdx<0||newIdx>=lineItems.length)return;const tmp=lineItems[idx];lineItems[idx]=lineItems[newIdx];lineItems[newIdx]=tmp;renderLineItems();save();}
 
@@ -1507,32 +1660,20 @@ function renderLineItems(){
     const e=equipmentLib[item.equipIdx];if(!e)return;
     const div=document.createElement('div');div.className='lcard';
     const isFirst=idx===0,isLast=idx===total-1;
-    const discPct=item.discountPct||0;
-    const listedPrice=getListedPrice(item);
-    const purchasePrice=calcUnitPrice(item);
-
-    // Build modifier block
+    const isSmart=item.modType==='smartmarkup';
+    const smartMarkupPct=item.smartMarkupPct||20;
     let modHTML='';
     if(discountMode==='individual'){
-      modHTML=`<div class="g2">
-        <div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div>
-        <div><label class="lbl">Discount %</label><input type="number" min="0" max="100" step="0.1" value="${discPct||''}" placeholder="0" onchange="updateItem(${idx},'discountPct',this.value)" class="inp"/></div>
-      </div>`;
-    } else {
-      modHTML=`<div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div>`;
-    }
-
-    // Price summary pill
+      const modTypeSelect=`<select onchange="updateItem(${idx},'modType',this.value)" class="inp"><option value="none"${item.modType==='none'?' selected':''}>None</option><option value="markup"${item.modType==='markup'?' selected':''}>Markup %</option><option value="discount"${item.modType==='discount'?' selected':''}>Discount %</option><option value="smartmarkup"${isSmart?' selected':''}>✨ Smart Markup</option></select>`;
+      modHTML=`<div class="g2"><div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div><div><label class="lbl">Modifier</label>${modTypeSelect}</div></div>`;
+      if(isSmart){const presets=[10,15,20,25,30];const presetBtns=presets.map(p=>`<button class="sm-preset-btn${smartMarkupPct===p?' active':''}" onclick="setItemSmartPct(${idx},${p})">${p}%</button>`).join('');modHTML+=`<div><label class="lbl">Markup %</label><input type="number" min="0" max="99.9" step="0.1" value="${item.modPct}" oninput="updateItem(${idx},'modPct',this.value)" class="inp"/></div><div><label class="lbl">Smart Inflate %</label><div class="sm-preset-row">${presetBtns}</div><input type="number" min="0" max="99.9" step="0.1" value="${smartMarkupPct}" oninput="setItemSmartPct(${idx},this.value)" class="inp" placeholder="Custom %"/></div>`;}
+      else if(item.modType!=='none'){modHTML+=`<div><label class="lbl">${item.modType==='markup'?'Markup':'Discount'} %</label><input type="number" min="0" max="100" step="0.1" value="${item.modPct}" onchange="updateItem(${idx},'modPct',this.value)" class="inp"/></div>`;}
+    }else{modHTML=`<div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div>`;}
+    const origUnit=e.rmUnit;const adjUnit=calcUnitPrice(item);const{modType:iModType,modPct:iModPct}=getModifier(item);const hasActiveMod=iModType!=='none'&&iModPct>0;
     let priceInfoHTML='';
-    const effDisc=discountMode==='overall'?(overallModPct||0):discPct;
-    if(effDisc>0){
-      priceInfoHTML=`<div style="display:flex;gap:10px;margin-top:6px;padding:6px 10px;background:#f0fdf4;border-radius:8px;align-items:center;flex-wrap:wrap">
-        <div style="font-size:11px;color:#374151">Listed: <strong>RM ${fmt(listedPrice)}</strong></div>
-        <div style="font-size:11px;color:#64748b">→ ${effDisc}% off</div>
-        <div style="font-size:11px;color:#15803d;font-weight:700">Purchase: RM ${fmt(purchasePrice)}/unit</div>
-      </div>`;
-    }
-
+    if(iModType==='smartmarkup'){const markupPrice=calcUnitPrice(item);const listedPrice=calcSmartInflatedPrice(item);const discountBack=((listedPrice-markupPrice)/listedPrice*100).toFixed(1);priceInfoHTML=`<div class="smart-markup-box"><div class="smart-markup-badge">✨ Smart Markup</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px"><div style="font-size:10px;color:#64748b">Cost<br><strong style="color:#1e293b">RM ${fmt(origUnit)}</strong></div><div style="font-size:10px;color:#64748b">Listed<br><strong style="color:#16a34a">RM ${fmt(listedPrice)}</strong></div><div style="font-size:10px;color:#64748b">Markup Price<br><strong style="color:#0369a1">RM ${fmt(markupPrice)}</strong></div></div><p style="font-size:10px;color:#6B7280;margin-top:6px">Customer gets ${discountBack}% discount off Listed Price, you receive RM ${fmt(markupPrice)}/unit</p></div>`;}
+    else if(hasActiveMod){priceInfoHTML=`<div style="display:flex;gap:12px;margin-top:6px;font-size:11px"><span style="color:#94a3b8">Cost: RM ${fmt(origUnit)}</span><span style="color:#1e293b;font-weight:600">→ RM ${fmt(adjUnit)}/unit</span></div>`;}
+    const ltRange=item.ltMin||item.ltMax?`${item.ltMin||0}–${item.ltMax||0} weeks`:'—';
     div.innerHTML=`<div class="lcard-hdr"><div style="flex:1;min-width:0"><p class="lcard-model" style="font-size:${itemsFontSize}px">${e.model}</p><p class="lcard-sub">${e.series||''}${e.kw?' · '+e.kw+'kW':''}</p></div><div style="display:flex;align-items:flex-start;gap:4px">${isLocked?'':`<button class="btn-xred" onclick="removeItem(${idx})" title="Remove"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`}<div class="move-btns"><button class="move-btn" onclick="moveItem(${idx},-1)" ${isFirst||isLocked?'disabled':''}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button><button class="move-btn" onclick="moveItem(${idx},1)" ${isLast||isLocked?'disabled':''}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button></div></div></div>${isLocked?'':`${modHTML}${priceInfoHTML}<div class="lcard-foot"><div class="lt-pair"><span>LT:</span><input type="number" min="0" value="${item.ltMin||0}" onchange="updateItem(${idx},'ltMin',this.value)" class="inp"/><span>–</span><input type="number" min="0" value="${item.ltMax||0}" onchange="updateItem(${idx},'ltMax',this.value)" class="inp"/><span>wks</span></div></div>`}${isLocked?`<p style="font-size:11px;color:#94a3b8;margin-top:6px">🔒 Locked — Win status</p>`:''}`;
     container.appendChild(div);
   });
@@ -1557,12 +1698,128 @@ function renderAWItems(){
 }
 
 // ── Terms & Payment templates ────────────────────────────────────────────
-function openTermsModal(){document.getElementById('newTermsName').value='';document.getElementById('newTermsText').value='';document.getElementById('termsModal').classList.add('on');}
-function saveTermsTemplate(){const n=document.getElementById('newTermsName').value.trim(),t=document.getElementById('newTermsText').value.trim();if(!n||!t)return;termsTemplates.push({name:n,text:t});populateTermsDropdown();save();document.getElementById('termsModal').classList.remove('on');}
+
+// TERMS
+function openTermsModal(editIdx){
+  const isEdit = editIdx !== undefined && editIdx !== null && editIdx !== '';
+  document.getElementById('termsModalTitle').textContent = isEdit ? 'Edit Terms Template' : 'New Terms Template';
+  document.getElementById('termsModalSaveBtn').textContent = isEdit ? 'Update Template' : 'Save Template';
+  document.getElementById('termsEditIdx').value = isEdit ? editIdx : '';
+  if(isEdit && termsTemplates[editIdx]){
+    document.getElementById('newTermsName').value = termsTemplates[editIdx].name;
+    document.getElementById('newTermsText').value = termsTemplates[editIdx].text;
+  } else {
+    document.getElementById('newTermsName').value='';
+    document.getElementById('newTermsText').value='';
+  }
+  document.getElementById('termsModal').classList.add('on');
+}
+function editTermsTemplate(){
+  const idx=document.getElementById('termsSelect').value;
+  if(idx===''){showToast('Select a template to edit first.','err');return;}
+  openTermsModal(parseInt(idx));
+}
+function deleteTermsTemplate(){
+  const idx=document.getElementById('termsSelect').value;
+  if(idx===''){showToast('Select a template to delete first.','err');return;}
+  const t=termsTemplates[parseInt(idx)];
+  if(!confirm(`Delete template "${t.name}"? This cannot be undone.`)) return;
+  // Clear textarea if this template was applied
+  const cur=document.getElementById('quoteTerms').value;
+  if(cur===t.text){
+    document.getElementById('quoteTerms').value='';
+    showToast('Template deleted. Terms & Conditions field cleared.','err');
+  } else {
+    showToast(`Template "${t.name}" deleted.`);
+  }
+  termsTemplates.splice(parseInt(idx),1);
+  populateTermsDropdown();
+  save();
+}
+function saveTermsTemplate(){
+  const n=document.getElementById('newTermsName').value.trim();
+  const t=document.getElementById('newTermsText').value.trim();
+  if(!n||!t)return;
+  const editIdx=document.getElementById('termsEditIdx').value;
+  if(editIdx!==''){
+    const i=parseInt(editIdx);
+    const oldText=termsTemplates[i].text;
+    termsTemplates[i]={name:n,text:t};
+    // If this template was active, refresh textarea
+    if(document.getElementById('quoteTerms').value===oldText){
+      document.getElementById('quoteTerms').value=t;
+      updatePreview();
+    }
+    showToast('Template updated.');
+  } else {
+    termsTemplates.push({name:n,text:t});
+    showToast('Template saved.');
+  }
+  populateTermsDropdown();
+  save();
+  document.getElementById('termsModal').classList.remove('on');
+}
 function populateTermsDropdown(){const sel=document.getElementById('termsSelect');sel.innerHTML='<option value="">— Select template —</option>';termsTemplates.forEach((t,i)=>{const o=document.createElement('option');o.value=i;o.textContent=t.name;sel.appendChild(o);});}
 function applyTermsTemplate(){const idx=document.getElementById('termsSelect').value;if(idx==='')return;document.getElementById('quoteTerms').value=termsTemplates[parseInt(idx)].text;updatePreview();save();}
-function openPayModal(){document.getElementById('newPayName').value='';document.getElementById('newPayText').value='';document.getElementById('payModal').classList.add('on');}
-function savePayTemplate(){const n=document.getElementById('newPayName').value.trim(),t=document.getElementById('newPayText').value.trim();if(!n||!t)return;payTemplates.push({name:n,text:t});populatePayDropdown();save();document.getElementById('payModal').classList.remove('on');}
+
+// PAYMENT
+function openPayModal(editIdx){
+  const isEdit = editIdx !== undefined && editIdx !== null && editIdx !== '';
+  document.getElementById('payModalTitle').textContent = isEdit ? 'Edit Payment Template' : 'New Payment Template';
+  document.getElementById('payModalSaveBtn').textContent = isEdit ? 'Update Template' : 'Save Template';
+  document.getElementById('payEditIdx').value = isEdit ? editIdx : '';
+  if(isEdit && payTemplates[editIdx]){
+    document.getElementById('newPayName').value = payTemplates[editIdx].name;
+    document.getElementById('newPayText').value = payTemplates[editIdx].text;
+  } else {
+    document.getElementById('newPayName').value='';
+    document.getElementById('newPayText').value='';
+  }
+  document.getElementById('payModal').classList.add('on');
+}
+function editPayTemplate(){
+  const idx=document.getElementById('paySelect').value;
+  if(idx===''){showToast('Select a template to edit first.','err');return;}
+  openPayModal(parseInt(idx));
+}
+function deletePayTemplate(){
+  const idx=document.getElementById('paySelect').value;
+  if(idx===''){showToast('Select a template to delete first.','err');return;}
+  const t=payTemplates[parseInt(idx)];
+  if(!confirm(`Delete template "${t.name}"? This cannot be undone.`)) return;
+  const cur=document.getElementById('quotePayment').value;
+  if(cur===t.text){
+    document.getElementById('quotePayment').value='';
+    showToast('Template deleted. Payment Terms field cleared.','err');
+  } else {
+    showToast(`Template "${t.name}" deleted.`);
+  }
+  payTemplates.splice(parseInt(idx),1);
+  populatePayDropdown();
+  save();
+}
+function savePayTemplate(){
+  const n=document.getElementById('newPayName').value.trim();
+  const t=document.getElementById('newPayText').value.trim();
+  if(!n||!t)return;
+  const editIdx=document.getElementById('payEditIdx').value;
+  if(editIdx!==''){
+    const i=parseInt(editIdx);
+    const oldText=payTemplates[i].text;
+    payTemplates[i]={name:n,text:t};
+    if(document.getElementById('quotePayment').value===oldText){
+      document.getElementById('quotePayment').value=t;
+      updatePreview();
+    }
+    showToast('Template updated.');
+  } else {
+    payTemplates.push({name:n,text:t});
+    showToast('Template saved.');
+  }
+  populatePayDropdown();
+  save();
+  document.getElementById('payModal').classList.remove('on');
+}
 function populatePayDropdown(){const sel=document.getElementById('paySelect');sel.innerHTML='<option value="">— Select template —</option>';payTemplates.forEach((t,i)=>{const o=document.createElement('option');o.value=i;o.textContent=t.name;sel.appendChild(o);});}
 function applyPayTemplate(){const idx=document.getElementById('paySelect').value;if(idx==='')return;document.getElementById('quotePayment').value=payTemplates[parseInt(idx)].text;updatePreview();save();}
 
@@ -1634,12 +1891,12 @@ function buildAllPages(){
   let equipTotal=0,awTotal=0;
   const priceRows=lineItems.map(item=>{
     const e=equipmentLib[item.equipIdx];if(!e)return null;
-    const listedPrice=getListedPrice(item);
-    const purchasePrice=calcUnitPrice(item);
-    const hasDiscount=purchasePrice<listedPrice;
-    const lineTotal=purchasePrice*(item.qty||1);
+    const isSmart=getModifier(item).modType==='smartmarkup';
+    const unitPrice=isSmart?calcSmartInflatedPrice(item):calcUnitPrice(item);
+    const unit2=isSmart?calcUnitPrice(item):null;
+    const lineTotal=(isSmart?calcUnitPrice(item):unitPrice)*(item.qty||1);
     equipTotal+=lineTotal;
-    return{e,item,listedPrice,purchasePrice,hasDiscount,lineTotal};
+    return{e,item,unitPrice,unit2,lineTotal,isSmart};
   }).filter(Boolean);
   const awPriceRows=awItems.map(aw=>({aw,lineTotal:(parseFloat(aw.price)||0)*(aw.qty||1)}));
   awPriceRows.forEach(r=>awTotal+=r.lineTotal);
@@ -1653,55 +1910,49 @@ function buildAllPages(){
   p1+=`<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid ${c.primary}">`;
   if(logoDataUrl){p1+=`<img src="${logoDataUrl}" style="max-height:64px;max-width:200px;object-fit:contain"/>`;}
   else{p1+=`<div style="font-family:${fontFamily};font-size:22px;font-weight:700;color:${c.primary}">${companyName||'Your Company'}</div>`;}
-  p1+=`<div style="text-align:right;font-size:11px;color:#374151;line-height:1.7">${[companyTagline,companyAddress,companyPhone].filter(Boolean).join('<br/>')}</div>`;
+  p1+=`<div style="text-align:right;font-size:11px;color:#64748b;line-height:1.7">${[companyTagline,companyAddress,companyPhone].filter(Boolean).join('<br/>')}</div>`;
   p1+=`</div>`;
   // Quote info block
   p1+=`<div style="display:flex;justify-content:space-between;margin-bottom:36px">`;
-  p1+=`<div><div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:10px">Bill To</div>`;
+  p1+=`<div><div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px">Bill To</div>`;
   p1+=`<div style="font-size:14px;font-weight:700;color:${c.primary}">${custCompany||custName||'—'}</div>`;
-  if(custCompany&&custName)p1+=`<div style="font-size:13px;color:#1e293b;margin-top:2px">${custName}</div>`;
-  p1+=`<div style="font-size:12px;color:#374151;margin-top:6px;line-height:1.6">${[custPhone,custEmail,custAddress].filter(Boolean).join('<br/>')}</div></div>`;
+  if(custCompany&&custName)p1+=`<div style="font-size:13px;color:#374151;margin-top:2px">${custName}</div>`;
+  p1+=`<div style="font-size:12px;color:#64748b;margin-top:6px;line-height:1.6">${[custPhone,custEmail,custAddress].filter(Boolean).join('<br/>')}</div></div>`;
   p1+=`<div style="text-align:right"><div style="display:inline-block;background:${c.badge};color:${c.badgeText};padding:4px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">QUOTATION</div>`;
-  p1+=`<table style="font-size:12px;border-collapse:collapse;margin-left:auto"><tr><td style="color:#374151;padding:2px 10px 2px 0;text-align:right">Quote No.</td><td style="font-weight:700;color:${c.primary}">${quoteNo}</td></tr>`;
-  if(quoteDate)p1+=`<tr><td style="color:#374151;padding:2px 10px 2px 0;text-align:right">Date</td><td style="font-weight:600;color:#374151">${quoteDate}</td></tr>`;
-  if(validTill)p1+=`<tr><td style="color:#374151;padding:2px 10px 2px 0;text-align:right">Valid Until</td><td style="font-weight:600;color:#374151">${validTill}</td></tr>`;
-  if(salesName)p1+=`<tr><td style="color:#374151;padding:2px 10px 2px 0;text-align:right">Prepared by</td><td style="font-weight:600;color:#374151">${salesName}</td></tr>`;
+  p1+=`<table style="font-size:12px;border-collapse:collapse;margin-left:auto"><tr><td style="color:#94a3b8;padding:2px 10px 2px 0;text-align:right">Quote No.</td><td style="font-weight:700;color:${c.primary}">${quoteNo}</td></tr>`;
+  if(quoteDate)p1+=`<tr><td style="color:#94a3b8;padding:2px 10px 2px 0;text-align:right">Date</td><td style="font-weight:600;color:#374151">${quoteDate}</td></tr>`;
+  if(validTill)p1+=`<tr><td style="color:#94a3b8;padding:2px 10px 2px 0;text-align:right">Valid Until</td><td style="font-weight:600;color:#374151">${validTill}</td></tr>`;
+  if(salesName)p1+=`<tr><td style="color:#94a3b8;padding:2px 10px 2px 0;text-align:right">Prepared by</td><td style="font-weight:600;color:#374151">${salesName}</td></tr>`;
   p1+=`</table></div></div>`;
   // Equipment table
   p1+=`<table style="width:100%;border-collapse:collapse;margin-bottom:24px">`;
   p1+=`<thead><tr style="background:${c.primary}"><th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Item</th><th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Description</th><th style="padding:10px 8px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Qty</th><th style="padding:10px 12px;text-align:right;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Unit Price</th><th style="padding:10px 12px;text-align:right;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${c.badgeText}">Total</th></tr></thead><tbody>`;
   priceRows.forEach((row,i)=>{
     const bg=i%2===0?'#ffffff':c.light;
-    const label=row.e.model+(row.e.series?`<br/><span style="font-size:10px;color:#374151">${row.e.series}</span>`:'');
-    p1+=`<tr style="background:${bg}"><td style="padding:10px 12px;font-size:13px;font-weight:600;color:${c.primary}">${i+1}</td>`;
+    const label=row.e.model+(row.e.series?`<br/><span style="font-size:10px;color:#94a3b8">${row.e.series}</span>`:'');
+    p1+=`<tr style="background:${bg}"><td style="padding:10px 12px;font-size:13px;font-weight:600;color:${c.primary}">${String(i+1).padStart(2,'0')}</td>`;
     p1+=`<td style="padding:10px 12px;font-size:13px;color:#1e293b">${label}</td>`;
-    p1+=`<td style="padding:10px 8px;text-align:center;font-size:13px;color:#1e293b">${row.item.qty}</td>`;
-    if(row.hasDiscount){
-      const discPct=getModifier(row.item).modPct||0;
-      p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px"><span style="font-size:11px;color:#64748b;text-decoration:line-through">RM ${fmt(row.listedPrice)}</span><br/><strong style="color:#1e293b;font-size:13px">RM ${fmt(row.purchasePrice)}</strong><br/><span style="font-size:9px;color:#15803d;font-weight:700">${discPct}% discount</span></td>`;
-    } else {
-      p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;color:#1e293b;font-weight:500">RM ${fmt(row.listedPrice)}</td>`;
-    }
-    p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;font-weight:700;color:${c.primary}">RM ${fmt(row.lineTotal)}</td></tr>`;
+    p1+=`<td style="padding:10px 8px;text-align:center;font-size:13px;color:#374151">${row.item.qty}</td>`;
+    if(row.isSmart){p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;color:#374151"><span style="text-decoration:line-through;color:#94a3b8;font-size:11px">RM ${fmt(row.unitPrice)}</span><br/>RM ${fmt(row.unit2)}</td>`;}
+    else{p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;color:#374151">RM ${fmt(row.unitPrice)}</td>`;}
+    p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;font-weight:600;color:${c.primary}">RM ${fmt(row.lineTotal)}</td></tr>`;
   });
   // AW rows
   if(awItems.length){
     p1+=`<tr><td colspan="5" style="padding:8px 12px;font-size:11px;font-weight:700;color:${c.accent};text-transform:uppercase;letter-spacing:.08em;border-top:1px solid ${c.light}">${awTitle}</td></tr>`;
-    awPriceRows.forEach((r,i)=>{const bg=(priceRows.length+i)%2===0?'#fff':c.light;p1+=`<tr style="background:${bg}"><td style="padding:8px 12px;font-size:13px;font-weight:600;color:${c.accent}">${priceRows.length+i+1}</td><td style="padding:8px 12px;font-size:13px;color:#1e293b">${r.aw.desc||'—'}</td><td style="padding:8px 8px;text-align:center;font-size:13px;color:#1e293b">${r.aw.qty} ${r.aw.unit}</td><td style="padding:8px 12px;text-align:right;font-size:13px;color:#1e293b;font-weight:500">RM ${fmt(r.aw.price)}</td><td style="padding:8px 12px;text-align:right;font-size:13px;font-weight:600">RM ${fmt(r.lineTotal)}</td></tr>`;});
+    awPriceRows.forEach((r,i)=>{const bg=(priceRows.length+i)%2===0?'#fff':c.light;p1+=`<tr style="background:${bg}"><td style="padding:8px 12px;font-size:13px;font-weight:600;color:${c.accent}">${String(priceRows.length+i+1).padStart(2,'0')}</td><td style="padding:8px 12px;font-size:13px;color:#1e293b">${r.aw.desc||'—'}</td><td style="padding:8px 8px;text-align:center;font-size:13px">${r.aw.qty} ${r.aw.unit}</td><td style="padding:8px 12px;text-align:right;font-size:13px">RM ${fmt(r.aw.price)}</td><td style="padding:8px 12px;text-align:right;font-size:13px;font-weight:600">RM ${fmt(r.lineTotal)}</td></tr>`;});
   }
   p1+=`</tbody></table>`;
   // Grand total
-  p1+=`<div style="display:flex;justify-content:flex-end;margin-bottom:24px"><div style="min-width:300px"><div style="border-top:2px solid ${c.totalBorder};padding-top:14px;display:flex;justify-content:space-between;align-items:baseline;gap:32px"><span style="font-size:13px;font-weight:700;color:${c.totalText};letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">Grand Total (MYR)</span><span style="font-size:22px;font-weight:700;color:${c.totalText};white-space:nowrap">RM ${fmt(grandTotal)}</span></div></div></div>`;
+  p1+=`<div style="display:flex;justify-content:flex-end;margin-bottom:24px"><div style="min-width:260px"><div style="border-top:2px solid ${c.totalBorder};padding-top:12px;display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;font-weight:700;color:${c.totalText};letter-spacing:.04em;text-transform:uppercase">Grand Total (MYR)</span><span style="font-size:20px;font-weight:700;color:${c.totalText}">RM ${fmt(grandTotal)}</span></div></div></div>`;
   // Notes
-  if(notes)p1+=`<div style="background:${c.light};border-radius:8px;padding:14px 16px;margin-bottom:16px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Notes</p><p style="font-size:13px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${notes}</p></div>`;
-  if(payment)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Payment Terms</p><p style="font-size:12px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${payment}</p></div>`;
-  if(terms)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Terms &amp; Conditions</p><p style="font-size:12px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${terms}</p></div>`;
+  if(notes)p1+=`<div style="background:${c.light};border-radius:8px;padding:14px 16px;margin-bottom:16px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Notes</p><p style="font-size:13px;color:#374151;white-space:pre-wrap;line-height:1.6">${notes}</p></div>`;
+  if(payment)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Payment Terms</p><p style="font-size:12px;color:#374151;white-space:pre-wrap;line-height:1.6">${payment}</p></div>`;
+  if(terms)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px">Terms &amp; Conditions</p><p style="font-size:12px;color:#374151;white-space:pre-wrap;line-height:1.6">${terms}</p></div>`;
   // Footer
-  // Footer — always pinned to bottom of page
-  p1+=`<div style="margin-top:auto"></div>`;
-  p1+=`<div style="padding:14px 0 0;border-top:1.5px solid ${c.primary};display:flex;justify-content:space-between;align-items:center;flex-shrink:0">`;
-  p1+=`<div style="font-size:11px;color:#374151">${footer||'Thank you for your kind consideration.'}</div>`;
-  if(salesName||salesPhone||salesEmail)p1+=`<div style="text-align:right;font-size:11px;color:#374151">${[salesName,salesPhone,salesEmail].filter(Boolean).join(' · ')}</div>`;
+  p1+=`<div style="margin-top:auto;padding-top:24px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:flex-end">`;
+  p1+=`<div style="font-size:11px;color:#94a3b8">${footer||'Thank you for your kind consideration.'}</div>`;
+  if(salesName||salesPhone||salesEmail)p1+=`<div style="text-align:right;font-size:11px;color:#64748b">${[salesName,salesPhone,salesEmail].filter(Boolean).join(' · ')}</div>`;
   p1+=`</div>`;
   p1+=`</div>`; // end a4-page
   pages.push(p1);
@@ -1718,15 +1969,15 @@ function buildAllPages(){
     else if(st==='at'){specRows=[['Volume',e.tankVolume],['Material',e.tankMat],['Pressure',e.tankPres],['Dimension',e.tankDim],['Outlet',e.tankOutlet]].filter(r=>r[1]);}
     let sp=`<div class="a4-page" style="background:${bgPage};font-family:${fontFamily}">`;
     sp+=`<div style="padding-bottom:14px;margin-bottom:24px;border-bottom:2px solid ${c.primary};display:flex;align-items:center;justify-content:space-between">`;
-    sp+=`<div><div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#1e293b;margin-bottom:6px">Technical Specification</div><div style="font-size:20px;font-weight:800;color:${c.primary}">${e.model}</div>${e.series?`<div style="font-size:12px;color:#374151;font-weight:600;margin-top:3px">${e.series}</div>`:''}</div>`;
-    sp+=`<div style="text-align:right"><div style="font-size:11px;color:#374151">${quoteNo} · Item ${i+1}</div>${(item.ltMin||item.ltMax)?`<span style="display:inline-block;margin-top:7px;background:${c.primary};color:${c.badgeText};font-size:10px;font-weight:700;padding:3px 11px;border-radius:999px;letter-spacing:.03em">Lead Time: ${item.ltMin||0}–${item.ltMax||0} wks</span>`:''}</div></div>`;
+    sp+=`<div><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px">Technical Specification</div><div style="font-size:18px;font-weight:700;color:${c.primary}">${e.model}</div>${e.series?`<div style="font-size:11px;color:#64748b;margin-top:2px">${e.series}</div>`:''}</div>`;
+    sp+=`<div style="text-align:right;font-size:11px;color:#94a3b8">${quoteNo}<br/>Item ${String(i+1).padStart(2,'0')}</div></div>`;
     sp+=`<div style="flex:1;min-height:0">`;
     sp+=`<table class="spec-table" style="font-size:${fs}">`;
     specRows.forEach(([lbl,val])=>{sp+=`<tr><td>${lbl}</td><td>${val}</td></tr>`;});
     sp+=`</table>`;
-    // Lead time now shown as pill in header (top right)
+    if(item.ltMin||item.ltMax){sp+=`<div style="margin-top:20px;padding:12px 16px;background:${c.light};border-radius:8px"><span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em">Lead Time: </span><span style="font-size:13px;font-weight:600;color:${c.primary}">${item.ltMin||0}–${item.ltMax||0} weeks</span></div>`;}
     sp+=`</div>`;
-    sp+=`<div style="padding-top:14px;border-top:1.5px solid ${c.primary};display:flex;justify-content:space-between;font-size:11px;color:#374151"><span>${companyName||''}</span><span>${quoteNo}</span></div>`;
+    sp+=`<div style="padding-top:20px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:11px;color:#94a3b8"><span>${companyName||''}</span><span>${quoteNo}</span></div>`;
     sp+=`</div>`;
     pages.push(sp);
   });
