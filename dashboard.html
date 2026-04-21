@@ -20,8 +20,7 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .brand-page{font-size:12px;font-weight:600;color:#8B8176;letter-spacing:.04em;text-transform:uppercase}
 .topbar-right{display:flex;align-items:center;gap:10px}
 .tb-btn{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#374151;background:#f8fafc;border:1px solid #e2e8f0;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit}
-.tb-btn:hover{background:#f1f5f9;border-color:#cbd5e1}
-.tb-btn svg{width:14px;height:14px}
+.tb-btn:hover{background:#f1f5f9;border-color:#cbd5e1}.tb-btn svg{width:14px;height:14px}
 .tb-btn.primary{background:#2C2C2C;color:#F5F0E8;border-color:#2C2C2C}.tb-btn.primary:hover{background:#1a1a1a}
 .tb-btn.danger{background:#fef2f2;color:#dc2626;border-color:#fecaca}.tb-btn.danger:hover{background:#fee2e2}
 .user-chip{font-size:11px;font-weight:600;color:#64748b;background:#f1f5f9;border-radius:999px;padding:4px 12px}
@@ -49,22 +48,20 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .kpi-val{font-size:26px;font-weight:700;color:#1e293b;line-height:1}
 .kpi-sub{font-size:11px;color:#94a3b8;margin-top:4px;font-weight:500}
 
-/* ── Context panels (shown based on active KPI) ── */
-.ctx-panel{display:none}
-.ctx-panel.active{display:block}
+/* ── Context panels ── */
+.ctx-panel{display:none}.ctx-panel.active{display:block}
 
 /* ── Pipeline bar ── */
 .pipeline{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 24px;margin-bottom:24px}
 .pipeline-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px}
 .pipeline-track{height:12px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;margin-bottom:10px}
 .pipeline-seg{height:100%}
-.pipeline-seg:first-child{border-radius:999px 0 0 999px}
-.pipeline-seg:last-child{border-radius:0 999px 999px 0}
+.pipeline-seg:first-child{border-radius:999px 0 0 999px}.pipeline-seg:last-child{border-radius:0 999px 999px 0}
 .pipeline-legend{display:flex;gap:16px;flex-wrap:wrap}
 .pipeline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:#374151}
 
-/* ── Stat pills row ── */
+/* ── Stat pills ── */
 .stat-pills{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
 .stat-pill{display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid #e8e6e1;border-radius:12px;padding:14px 20px;min-width:120px}
 .stat-pill-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;text-align:center}
@@ -75,21 +72,23 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .stat-pill.green{border-color:#86efac;background:#f0fdf4}.stat-pill.green .stat-pill-val{color:#15803d}
 .stat-pill.red{border-color:#fca5a5;background:#fef2f2}.stat-pill.red .stat-pill-val{color:#dc2626}
 
-/* ── Loss analysis mini ── */
-.loss-mini{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
-.loss-card{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:18px 20px}
-.loss-card-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:12px}
-.loss-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.loss-bar-label{font-size:12px;font-weight:500;color:#374151;min-width:80px}
-.loss-bar-track{flex:1;height:7px;background:#fef2f2;border-radius:999px;overflow:hidden}
-.loss-bar-fill{height:100%;background:#ef4444;border-radius:999px}
-.loss-bar-count{font-size:11px;font-weight:600;color:#94a3b8;min-width:24px;text-align:right}
+/* ── Analysis grid (2 col) ── */
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.analysis-card{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:18px 20px}
+.analysis-card-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-row:last-child{margin-bottom:0}
+.bar-label{font-size:12px;font-weight:500;color:#374151;min-width:88px;flex-shrink:0}
+.bar-track{flex:1;height:8px;border-radius:999px;overflow:hidden;background:#f1f5f9}
+.bar-fill-green{height:100%;background:#22c55e;border-radius:999px}
+.bar-fill-red{height:100%;background:#ef4444;border-radius:999px}
+.bar-count{font-size:11px;font-weight:600;color:#94a3b8;min-width:24px;text-align:right;flex-shrink:0}
 .comp-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:12px}
 .comp-item:last-child{border-bottom:none}
 .comp-name{font-weight:600;color:#374151}
 .comp-count{font-size:11px;color:#94a3b8;font-weight:500}
 
-/* ── Quotation Summary Section ── */
+/* ── Quotation Summary ── */
 .qs-section{background:#fff;border:1px solid #e8e6e1;border-radius:14px;overflow:hidden;margin-bottom:24px}
 .qs-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;gap:10px}
 .qs-title{font-size:13px;font-weight:700;color:#1e293b}
@@ -97,6 +96,8 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .btn-all-quotes{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#2C2C2C;background:#F5F4F1;border:1px solid #e8e6e1;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
 .btn-all-quotes:hover{background:#ede8e0;border-color:#ccc8c2}
 .btn-all-quotes svg{width:14px;height:14px}
+
+/* ── Summary table ── */
 .summary-table-wrap{overflow-x:auto}
 table.summary-table{width:100%;border-collapse:collapse}
 table.summary-table thead tr{background:#faf9f7}
@@ -104,6 +105,9 @@ table.summary-table th{padding:9px 14px;text-align:left;font-size:10px;font-weig
 table.summary-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #faf9f7;color:#374151;vertical-align:middle}
 table.summary-table tr:last-child td{border-bottom:none}
 table.summary-table tr:hover td{background:#faf9f7;cursor:pointer}
+/* Yellow highlight for win rows missing details */
+table.summary-table tr.win-incomplete td{background:#fefce8!important}
+table.summary-table tr.win-incomplete:hover td{background:#fef9c3!important}
 .td-bold{font-weight:600;color:#1e293b}
 .td-mono{font-family:'SF Mono','Fira Mono',monospace;font-size:11px;font-weight:600;color:#2C2C2C}
 .td-value{font-weight:700;color:#1e293b;text-align:right;white-space:nowrap}
@@ -111,15 +115,14 @@ table.summary-table tr:hover td{background:#faf9f7;cursor:pointer}
 .td-upcoming{color:#0369a1;font-weight:600}
 .td-nodate{color:#cbd5e1}
 .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
-.badge.draft{background:#f1f5f9;color:#94a3b8}
-.badge.delivered{background:#eff6ff;color:#1d4ed8}
-.badge.negotiation{background:#fff7ed;color:#c2410c}
-.badge.win{background:#f0fdf4;color:#15803d}
+.badge.draft{background:#f1f5f9;color:#94a3b8}.badge.delivered{background:#eff6ff;color:#1d4ed8}
+.badge.negotiation{background:#fff7ed;color:#c2410c}.badge.win{background:#f0fdf4;color:#15803d}
 .badge.loss{background:#fef2f2;color:#dc2626}
+.badge-warn{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;font-size:9px;font-weight:700;background:#fef9c3;color:#854d0e;border:1px solid #fde047;margin-left:4px}
 .rev-pill{display:inline-flex;align-items:center;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;background:#f1f5f9;color:#64748b;margin-left:4px}
 
-/* ── Equipment hover tooltip ── */
-.equip-cell{position:relative;display:inline-flex;align-items:center;gap:5px;cursor:default}
+/* ── Equipment tooltip ── */
+.equip-cell{display:inline-flex;align-items:center;gap:5px;cursor:default}
 .equip-name{font-size:12px;font-weight:600;color:#1e293b;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .equip-badge{font-size:10px;background:#EDE8E0;color:#2C2C2C;padding:1px 6px;border-radius:4px;font-weight:600;flex-shrink:0}
 .equip-tooltip{display:none;position:fixed;z-index:9999;background:#fff;border:1px solid #e8e6e1;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.14);padding:12px 14px;min-width:220px;max-width:300px;pointer-events:none}
@@ -140,8 +143,7 @@ table.summary-table tr:hover td{background:#faf9f7;cursor:pointer}
 .aq-modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #f1f5f9;flex-shrink:0}
 .aq-modal-title{font-size:15px;font-weight:700;color:#0f172a}
 .aq-modal-close{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:4px;border-radius:6px;transition:color .15s;display:flex;align-items:center}
-.aq-modal-close:hover{color:#64748b}
-.aq-modal-close svg{width:20px;height:20px}
+.aq-modal-close:hover{color:#64748b}.aq-modal-close svg{width:20px;height:20px}
 .aq-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 24px;border-bottom:1px solid #f1f5f9;background:#faf9f7;flex-shrink:0}
 .filter-inp{border:1px solid #e2e8f0;border-radius:8px;padding:6px 11px;font-size:12px;color:#374151;outline:none;font-family:inherit;background:#fff}
 .filter-inp:focus{border-color:#8B8176;box-shadow:0 0 0 2px rgba(139,129,118,.1)}
@@ -154,11 +156,12 @@ table.summary-table tr:hover td{background:#faf9f7;cursor:pointer}
 table.aq-table{width:100%;border-collapse:collapse}
 table.aq-table thead tr{background:#faf9f7;position:sticky;top:0;z-index:2}
 table.aq-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #f1f5f9;cursor:pointer;user-select:none}
-table.aq-table th:hover{color:#374151}
-table.aq-table th.sorted{color:#2C2C2C}
+table.aq-table th:hover{color:#374151}.table.aq-table th.sorted{color:#2C2C2C}
 table.aq-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #faf9f7;color:#374151;vertical-align:middle}
 table.aq-table tr:last-child td{border-bottom:none}
 table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
+table.aq-table tr.win-incomplete td{background:#fefce8!important}
+table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 .aq-pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid #f1f5f9;background:#faf9f7;flex-shrink:0}
 .aq-page-info{font-size:12px;color:#64748b;font-weight:500}
 .aq-page-btns{display:flex;align-items:center;gap:6px}
@@ -174,14 +177,13 @@ table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
 
 /* ── Toast / Loading ── */
 #toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;background:#1e293b;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none}
-#toast.on{transform:translateY(0);opacity:1}
-#toast.ok{background:#15803d}
-#toast.err{background:#dc2626}
+#toast.on{transform:translateY(0);opacity:1}.#toast.ok{background:#15803d}.#toast.err{background:#dc2626}
+#toast.ok{background:#15803d}#toast.err{background:#dc2626}
 #loadingOverlay{position:fixed;inset:0;background:rgba(245,244,241,.85);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .spinner{width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#2C2C2C;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:13px;font-weight:600;color:#64748b}
-.empty-state{text-align:center;padding:32px;font-size:12px;color:#94a3b8}
+.empty-state{text-align:center;padding:28px;font-size:12px;color:#94a3b8}
 </style>
 </head>
 <body>
@@ -193,8 +195,7 @@ table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
 <div class="topbar">
   <div class="brand">
     <div class="brand-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
-    <div class="brand-name">Mitsumori</div>
-    <div class="brand-sep"></div>
+    <div class="brand-name">Mitsumori</div><div class="brand-sep"></div>
     <div class="brand-page">Dashboard</div>
   </div>
   <div class="topbar-right">
@@ -216,7 +217,7 @@ table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
 
 <div class="main">
 
-  <!-- KPI Strip — all clickable -->
+  <!-- KPI Strip -->
   <div class="kpi-strip">
     <div class="kpi all active" onclick="setActiveKPI('all')">
       <div class="kpi-label">Total Quotes</div>
@@ -259,7 +260,11 @@ table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>All Quotations
         </button>
       </div>
-      <div class="summary-table-wrap"><table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th>Status</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead><tbody id="summaryBody-all"></tbody></table><div id="summaryEmpty-all" class="empty-state" style="display:none">No quotations yet.</div></div>
+      <div class="summary-table-wrap">
+        <table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th>Status</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead>
+        <tbody id="summaryBody-all"></tbody></table>
+        <div id="summaryEmpty-all" class="empty-state" style="display:none">No quotations yet.</div>
+      </div>
     </div>
   </div>
 
@@ -268,12 +273,16 @@ table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
     <div class="stat-pills" id="pills-delivered"></div>
     <div class="qs-section">
       <div class="qs-header">
-        <div><div class="qs-title">Delivered — Quotation Summary</div><div class="qs-subtitle">Top 15 delivered · sorted by follow-up urgency</div></div>
+        <div><div class="qs-title">Delivered — Quotation Summary</div><div class="qs-subtitle">Top 15 · sorted by follow-up urgency</div></div>
         <button class="btn-all-quotes" onclick="openAllQuotesModal('delivered')">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>All Delivered
         </button>
       </div>
-      <div class="summary-table-wrap"><table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead><tbody id="summaryBody-delivered"></tbody></table><div id="summaryEmpty-delivered" class="empty-state" style="display:none">No delivered quotations.</div></div>
+      <div class="summary-table-wrap">
+        <table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead>
+        <tbody id="summaryBody-delivered"></tbody></table>
+        <div id="summaryEmpty-delivered" class="empty-state" style="display:none">No delivered quotations.</div>
+      </div>
     </div>
   </div>
 
@@ -282,48 +291,77 @@ table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
     <div class="stat-pills" id="pills-negotiation"></div>
     <div class="qs-section">
       <div class="qs-header">
-        <div><div class="qs-title">Negotiation — Quotation Summary</div><div class="qs-subtitle">Top 15 in negotiation · sorted by follow-up urgency</div></div>
+        <div><div class="qs-title">Negotiation — Quotation Summary</div><div class="qs-subtitle">Top 15 · sorted by follow-up urgency</div></div>
         <button class="btn-all-quotes" onclick="openAllQuotesModal('negotiation')">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>All Negotiation
         </button>
       </div>
-      <div class="summary-table-wrap"><table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead><tbody id="summaryBody-negotiation"></tbody></table><div id="summaryEmpty-negotiation" class="empty-state" style="display:none">No negotiation quotations.</div></div>
+      <div class="summary-table-wrap">
+        <table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead>
+        <tbody id="summaryBody-negotiation"></tbody></table>
+        <div id="summaryEmpty-negotiation" class="empty-state" style="display:none">No negotiation quotations.</div>
+      </div>
     </div>
   </div>
 
   <!-- ── WIN panel ── -->
   <div id="ctx-win" class="ctx-panel">
     <div class="stat-pills" id="pills-win"></div>
+    <!-- Win analysis: Win by Reason + Won Against -->
+    <div class="analysis-grid">
+      <div class="analysis-card">
+        <div class="analysis-card-title">Win by Reason</div>
+        <div id="winReasonChart"><div class="empty-state" style="padding:16px">No win data yet.</div></div>
+      </div>
+      <div class="analysis-card">
+        <div class="analysis-card-title">Won Against</div>
+        <div id="wonAgainstList"><div class="empty-state" style="padding:16px">No competitor data yet.</div></div>
+      </div>
+    </div>
     <div class="qs-section">
       <div class="qs-header">
-        <div><div class="qs-title">Win — Quotation Summary</div><div class="qs-subtitle">Top 15 wins · sorted by follow-up urgency</div></div>
+        <div><div class="qs-title">Win — Quotation Summary</div><div class="qs-subtitle">Top 15 · sorted by follow-up urgency · ⚠ yellow = win details incomplete</div></div>
         <button class="btn-all-quotes" onclick="openAllQuotesModal('win')">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>All Wins
         </button>
       </div>
-      <div class="summary-table-wrap"><table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead><tbody id="summaryBody-win"></tbody></table><div id="summaryEmpty-win" class="empty-state" style="display:none">No wins yet.</div></div>
+      <div class="summary-table-wrap">
+        <table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead>
+        <tbody id="summaryBody-win"></tbody></table>
+        <div id="summaryEmpty-win" class="empty-state" style="display:none">No wins yet.</div>
+      </div>
     </div>
   </div>
 
   <!-- ── LOSS panel ── -->
   <div id="ctx-loss" class="ctx-panel">
     <div class="stat-pills" id="pills-loss"></div>
-    <div class="loss-mini">
-      <div class="loss-card"><div class="loss-card-title">Loss by Reason</div><div id="lossReasonChart"><div class="empty-state">No loss data yet.</div></div></div>
-      <div class="loss-card"><div class="loss-card-title">Lost to Competitor</div><div id="competitorList"><div class="empty-state">No competitor data yet.</div></div></div>
+    <div class="analysis-grid">
+      <div class="analysis-card">
+        <div class="analysis-card-title">Loss by Reason</div>
+        <div id="lossReasonChart"><div class="empty-state" style="padding:16px">No loss data yet.</div></div>
+      </div>
+      <div class="analysis-card">
+        <div class="analysis-card-title">Lost to Competitor</div>
+        <div id="competitorList"><div class="empty-state" style="padding:16px">No competitor data yet.</div></div>
+      </div>
     </div>
     <div class="qs-section">
       <div class="qs-header">
-        <div><div class="qs-title">Loss — Quotation Summary</div><div class="qs-subtitle">Top 15 losses · sorted by follow-up urgency</div></div>
+        <div><div class="qs-title">Loss — Quotation Summary</div><div class="qs-subtitle">Top 15 · sorted by follow-up urgency</div></div>
         <button class="btn-all-quotes" onclick="openAllQuotesModal('loss')">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>All Losses
         </button>
       </div>
-      <div class="summary-table-wrap"><table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead><tbody id="summaryBody-loss"></tbody></table><div id="summaryEmpty-loss" class="empty-state" style="display:none">No losses recorded.</div></div>
+      <div class="summary-table-wrap">
+        <table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead>
+        <tbody id="summaryBody-loss"></tbody></table>
+        <div id="summaryEmpty-loss" class="empty-state" style="display:none">No losses recorded.</div>
+      </div>
     </div>
   </div>
 
-  <!-- Admin Tools — only visible to admin user -->
+  <!-- Admin Tools (admin only) -->
   <div class="admin" id="adminPanel" style="display:none">
     <div class="admin-title">Admin Tools</div>
     <div class="admin-row">
@@ -351,12 +389,9 @@ table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
     <div class="aq-filters">
       <input class="filter-inp" id="aqSearch" placeholder="Quote no., customer, company…" oninput="aqApplyFilters()" style="min-width:200px"/>
       <select class="filter-select" id="aqStatus" onchange="aqApplyFilters()">
-        <option value="">All Statuses</option>
-        <option value="draft">Draft</option>
-        <option value="delivered">Delivered</option>
-        <option value="negotiation">Negotiation</option>
-        <option value="win">Win</option>
-        <option value="loss">Loss</option>
+        <option value="">All Statuses</option><option value="draft">Draft</option>
+        <option value="delivered">Delivered</option><option value="negotiation">Negotiation</option>
+        <option value="win">Win</option><option value="loss">Loss</option>
       </select>
       <select class="filter-select" id="aqUser" onchange="aqApplyFilters()"><option value="">All Salespeople</option></select>
       <select class="filter-select" id="aqYear" onchange="aqApplyFilters()"><option value="">All Years</option></select>
@@ -392,24 +427,19 @@ table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
       <h3 style="font-size:15px;font-weight:700;color:#0f172a">My Profile</h3>
       <button onclick="closeProfileModal()" style="background:none;border:none;cursor:pointer;color:#cbd5e1"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
     </div>
-    <div style="margin-bottom:16px">
-      <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:10px">Salesperson Info</p>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <input id="profileName" placeholder="Your Name" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
-        <input id="profilePhone" placeholder="Contact Number" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
-        <input id="profileEmail" placeholder="Email" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
-      </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:2px">Salesperson Info</p>
+      <input id="profileName" placeholder="Your Name" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
+      <input id="profilePhone" placeholder="Contact Number" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
+      <input id="profileEmail" placeholder="Email" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
     </div>
-    <div style="margin-bottom:16px;padding-top:14px;border-top:1px solid #f1f5f9">
-      <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:10px">Company Info</p>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <input id="profileCompanyName" placeholder="Company Name" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
-        <input id="profileCompanyTagline" placeholder="Tagline / Slogan" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
-        <input id="profileCompanyAddress" placeholder="Address" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
-        <input id="profileCompanyPhone" placeholder="Phone / Email" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
-      </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;padding-top:14px;border-top:1px solid #f1f5f9">
+      <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:2px">Company Info</p>
+      <input id="profileCompanyName" placeholder="Company Name" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
+      <input id="profileCompanyTagline" placeholder="Tagline" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
+      <input id="profileCompanyAddress" placeholder="Address" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
+      <input id="profileCompanyPhone" placeholder="Phone / Email" style="width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:9px 13px;font-size:14px;outline:none;font-family:inherit;color:#1e293b"/>
     </div>
-    <p style="font-size:10px;color:#94a3b8;margin-bottom:12px">Saved to cloud. Auto-fills Salesperson &amp; Company fields in the quotation maker.</p>
     <div style="display:flex;gap:8px">
       <button onclick="closeProfileModal()" style="flex:1;border-radius:10px;border:1px solid #e2e8f0;color:#64748b;font-size:13px;font-weight:600;padding:10px;background:#fff;cursor:pointer;font-family:inherit">Cancel</button>
       <button onclick="saveProfile()" style="flex:2;border-radius:10px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;padding:10px;border:none;cursor:pointer;font-family:inherit">Save to Cloud</button>
@@ -424,254 +454,253 @@ table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════════════════════
-let auth, db, currentUser = null, isAdmin = false;
-let userProfile = {};
-let allQuotes = [];
-let activeKPI = 'all';
-
-// All-quotes modal
+const ADMIN_EMAIL = 'admin@mitsumori.app';
+let auth, db, currentUser = null, isAdmin = false, userProfile = {};
+let allQuotes = [], activeKPI = 'all';
 let aqFiltered = [], aqSortField = 'followUpDate', aqSortDir = 1, aqPage = 1;
 const AQ_PER_PAGE = 30;
-
-// Tooltip
 const tooltip = document.getElementById('equipTooltip');
 
-const ADMIN_EMAIL = 'admin@mitsumori.app';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// FIREBASE INIT
-// ═══════════════════════════════════════════════════════════════════════════
 window.addEventListener('load', () => {
-  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-  auth = firebase.auth();
-  db   = firebase.firestore();
-
+  if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  auth = firebase.auth(); db = firebase.firestore();
   auth.onAuthStateChanged(async user => {
-    if (!user) { window.location.href = 'index.html'; return; }
+    if(!user){ window.location.href='index.html'; return; }
     currentUser = user;
     isAdmin = (user.email === ADMIN_EMAIL);
-    try {
+    try{
       const uDoc = await db.collection(COL.USERS).doc(user.uid).get();
-      if (uDoc.exists) userProfile = uDoc.data();
+      if(uDoc.exists) userProfile = uDoc.data();
       document.getElementById('userChip').textContent = userProfile.displayName || user.email;
-    } catch(e) { document.getElementById('userChip').textContent = user.email; }
-    if (isAdmin) document.getElementById('adminPanel').style.display = '';
+    } catch(e){ document.getElementById('userChip').textContent = user.email; }
+    if(isAdmin) document.getElementById('adminPanel').style.display='';
     loadDashboard();
   });
 });
 
-function doLogout() { auth.signOut().then(() => window.location.href = 'index.html'); }
+function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// LOAD DASHBOARD
-// ═══════════════════════════════════════════════════════════════════════════
-async function loadDashboard() {
-  document.getElementById('loadingOverlay').style.display = 'flex';
-  try {
+// ── Load ──────────────────────────────────────────────────────────────────
+async function loadDashboard(){
+  document.getElementById('loadingOverlay').style.display='flex';
+  try{
     const snap = await db.collection(COL.QUOTATIONS).orderBy('updatedAt','desc').get();
-    allQuotes = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
-    renderKPIs();
-    renderPipeline();
-    renderAllSummaryTables();
-    renderLossAnalysis();
-    buildAqFilterOptions();
-  } catch(e) {
-    showToast('Failed to load data. Check connection.','err');
-    console.error(e);
-  }
-  document.getElementById('loadingOverlay').style.display = 'none';
+    allQuotes = snap.docs.map(d=>({_id:d.id,...d.data()}));
+    renderKPIs(); renderPipeline(); renderAllSummaryTables();
+    renderWinAnalysis(); renderLossAnalysis(); buildAqFilterOptions();
+  } catch(e){ showToast('Failed to load data.','err'); console.error(e); }
+  document.getElementById('loadingOverlay').style.display='none';
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// KPI ACTIVE STATE
-// ═══════════════════════════════════════════════════════════════════════════
-function setActiveKPI(kpi) {
+// ── KPI active ────────────────────────────────────────────────────────────
+function setActiveKPI(kpi){
   activeKPI = kpi;
-  // Toggle pill highlight
-  document.querySelectorAll('.kpi').forEach(el => el.classList.remove('active'));
-  document.querySelector(`.kpi.${kpi}`).classList.add('active');
-  // Toggle context panels
-  document.querySelectorAll('.ctx-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('ctx-' + kpi).classList.add('active');
+  document.querySelectorAll('.kpi').forEach(el=>el.classList.remove('active'));
+  document.querySelector('.kpi.'+kpi).classList.add('active');
+  document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('ctx-'+kpi).classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// KPIs
-// ═══════════════════════════════════════════════════════════════════════════
-function renderKPIs() {
-  const fmt = n => 'RM ' + Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:0,maximumFractionDigits:0});
-  const sum = arr => arr.reduce((a,q) => a + (q.totals?.grandTotal||0), 0);
-  const byStatus = s => allQuotes.filter(q => q.status === s);
-  document.getElementById('kpiTotal').textContent = allQuotes.length;
-  document.getElementById('kpiTotalVal').textContent = fmt(sum(allQuotes));
-  [['Delivered','delivered'],['Nego','negotiation'],['Win','win'],['Loss','loss']].forEach(([k,s]) => {
-    const arr = byStatus(s);
-    document.getElementById('kpi'+k).textContent = arr.length;
-    document.getElementById('kpi'+k+'Val').textContent = fmt(sum(arr));
+// ── KPIs ──────────────────────────────────────────────────────────────────
+function renderKPIs(){
+  const fmt=n=>'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:0});
+  const sum=arr=>arr.reduce((a,q)=>a+(q.totals?.grandTotal||0),0);
+  const by=s=>allQuotes.filter(q=>q.status===s);
+  document.getElementById('kpiTotal').textContent=allQuotes.length;
+  document.getElementById('kpiTotalVal').textContent=fmt(sum(allQuotes));
+  [['Delivered','delivered'],['Nego','negotiation'],['Win','win'],['Loss','loss']].forEach(([k,s])=>{
+    const arr=by(s);
+    document.getElementById('kpi'+k).textContent=arr.length;
+    document.getElementById('kpi'+k+'Val').textContent=fmt(sum(arr));
   });
   renderStatPills();
 }
 
-function renderStatPills() {
-  const now = new Date();
-  const thisYear = now.getFullYear();
-  const thisMonth = now.getMonth();
-  const inThisMonth = q => { const d = q.updatedAt?.toDate ? q.updatedAt.toDate() : new Date(q.updatedAt?.seconds*1000||0); return d.getFullYear()===thisYear && d.getMonth()===thisMonth; };
-  const inThisYear  = q => { const d = q.updatedAt?.toDate ? q.updatedAt.toDate() : new Date(q.updatedAt?.seconds*1000||0); return d.getFullYear()===thisYear; };
-  const monthName = now.toLocaleString('en-MY',{month:'long'});
-  const fmt = n => 'RM ' + Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:0,maximumFractionDigits:0});
-  const sum = arr => arr.reduce((a,q) => a+(q.totals?.grandTotal||0),0);
+function renderStatPills(){
+  const now=new Date(), yr=now.getFullYear(), mo=now.getMonth();
+  const monthName=now.toLocaleString('en-MY',{month:'long'});
+  const fmt=n=>'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:0});
+  const sum=arr=>arr.reduce((a,q)=>a+(q.totals?.grandTotal||0),0);
+  const isThisMo=q=>{const d=q.updatedAt?.toDate?q.updatedAt.toDate():new Date((q.updatedAt?.seconds||0)*1000);return d.getFullYear()===yr&&d.getMonth()===mo;};
+  const isThisYr=q=>{const d=q.updatedAt?.toDate?q.updatedAt.toDate():new Date((q.updatedAt?.seconds||0)*1000);return d.getFullYear()===yr;};
 
   // Delivered
-  const delivered = allQuotes.filter(q=>q.status==='delivered');
-  const deliveredMonth = delivered.filter(inThisMonth);
-  document.getElementById('pills-delivered').innerHTML = `
-    <div class="stat-pill blue"><div class="stat-pill-label">This Month (${monthName})</div><div class="stat-pill-val">${deliveredMonth.length}</div><div class="stat-pill-sub">Delivered</div></div>
-    <div class="stat-pill blue"><div class="stat-pill-label">Total Delivered</div><div class="stat-pill-val">${delivered.length}</div><div class="stat-pill-sub">${fmt(sum(delivered))}</div></div>`;
+  const del=allQuotes.filter(q=>q.status==='delivered');
+  document.getElementById('pills-delivered').innerHTML=`
+    <div class="stat-pill blue"><div class="stat-pill-label">This Month (${monthName})</div><div class="stat-pill-val">${del.filter(isThisMo).length}</div><div class="stat-pill-sub">Delivered</div></div>
+    <div class="stat-pill blue"><div class="stat-pill-label">Total Delivered</div><div class="stat-pill-val">${del.length}</div><div class="stat-pill-sub">${fmt(sum(del))}</div></div>`;
 
   // Negotiation
-  const nego = allQuotes.filter(q=>q.status==='negotiation');
-  const negoMonth = nego.filter(inThisMonth);
-  document.getElementById('pills-negotiation').innerHTML = `
-    <div class="stat-pill orange"><div class="stat-pill-label">This Month (${monthName})</div><div class="stat-pill-val">${negoMonth.length}</div><div class="stat-pill-sub">In Negotiation</div></div>
-    <div class="stat-pill orange"><div class="stat-pill-label">Total Negotiation</div><div class="stat-pill-val">${nego.length}</div><div class="stat-pill-sub">${fmt(sum(nego))}</div></div>`;
+  const neg=allQuotes.filter(q=>q.status==='negotiation');
+  document.getElementById('pills-negotiation').innerHTML=`
+    <div class="stat-pill orange"><div class="stat-pill-label">This Month (${monthName})</div><div class="stat-pill-val">${neg.filter(isThisMo).length}</div><div class="stat-pill-sub">In Negotiation</div></div>
+    <div class="stat-pill orange"><div class="stat-pill-label">Total</div><div class="stat-pill-val">${neg.length}</div><div class="stat-pill-sub">${fmt(sum(neg))}</div></div>`;
 
   // Win
-  const wins = allQuotes.filter(q=>q.status==='win');
-  const winsYear = wins.filter(inThisYear);
-  const losses = allQuotes.filter(q=>q.status==='loss');
-  const delivered2 = allQuotes.filter(q=>q.status==='delivered');
-  const nego2 = allQuotes.filter(q=>q.status==='negotiation');
-  const rateBase = wins.length + losses.length + delivered2.length + nego2.length;
-  const winRate = rateBase > 0 ? (wins.length / rateBase * 100).toFixed(1) : '0.0';
-  document.getElementById('pills-win').innerHTML = `
-    <div class="stat-pill green"><div class="stat-pill-label">Wins This Year (${thisYear})</div><div class="stat-pill-val">${winsYear.length}</div><div class="stat-pill-sub">Quotations</div></div>
+  const wins=allQuotes.filter(q=>q.status==='win');
+  const losses=allQuotes.filter(q=>q.status==='loss');
+  const rateBase=wins.length+losses.length+allQuotes.filter(q=>q.status==='delivered').length+neg.length;
+  const winRate=rateBase>0?(wins.length/rateBase*100).toFixed(1):'0.0';
+  document.getElementById('pills-win').innerHTML=`
+    <div class="stat-pill green"><div class="stat-pill-label">Wins ${yr}</div><div class="stat-pill-val">${wins.filter(isThisYr).length}</div><div class="stat-pill-sub">This year</div></div>
     <div class="stat-pill green"><div class="stat-pill-label">Total Win Value</div><div class="stat-pill-val" style="font-size:16px">${fmt(sum(wins))}</div><div class="stat-pill-sub">All time</div></div>
     <div class="stat-pill green"><div class="stat-pill-label">Win Rate</div><div class="stat-pill-val">${winRate}%</div><div class="stat-pill-sub">Win ÷ all active</div></div>`;
 
   // Loss
-  const lossMonth = losses.filter(inThisMonth);
-  document.getElementById('pills-loss').innerHTML = `
-    <div class="stat-pill red"><div class="stat-pill-label">This Month (${monthName})</div><div class="stat-pill-val">${lossMonth.length}</div><div class="stat-pill-sub">Losses</div></div>
+  document.getElementById('pills-loss').innerHTML=`
+    <div class="stat-pill red"><div class="stat-pill-label">This Month (${monthName})</div><div class="stat-pill-val">${losses.filter(isThisMo).length}</div><div class="stat-pill-sub">Losses</div></div>
     <div class="stat-pill red"><div class="stat-pill-label">Total Losses</div><div class="stat-pill-val">${losses.length}</div><div class="stat-pill-sub">${fmt(sum(losses))}</div></div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// PIPELINE
-// ═══════════════════════════════════════════════════════════════════════════
-function renderPipeline() {
-  const total = allQuotes.length || 1;
-  const segs = [{status:'delivered',label:'Delivered',color:'#3b82f6'},{status:'negotiation',label:'Negotiation',color:'#f97316'},{status:'win',label:'Win',color:'#22c55e'},{status:'loss',label:'Loss',color:'#ef4444'},{status:'draft',label:'Draft',color:'#cbd5e1'}];
-  const track = document.getElementById('pipelineTrack');
-  const legend = document.getElementById('pipelineLegend');
+// ── Pipeline ──────────────────────────────────────────────────────────────
+function renderPipeline(){
+  const total=allQuotes.length||1;
+  const segs=[{status:'delivered',label:'Delivered',color:'#3b82f6'},{status:'negotiation',label:'Negotiation',color:'#f97316'},{status:'win',label:'Win',color:'#22c55e'},{status:'loss',label:'Loss',color:'#ef4444'},{status:'draft',label:'Draft',color:'#cbd5e1'}];
+  const track=document.getElementById('pipelineTrack'), legend=document.getElementById('pipelineLegend');
   track.innerHTML=''; legend.innerHTML='';
-  segs.forEach(seg => {
-    const count = allQuotes.filter(q=>(q.status||'draft')===seg.status).length;
-    const pct = (count/total*100).toFixed(1);
-    if(count>0){ const el=document.createElement('div');el.className='pipeline-seg';el.style.cssText=`width:${pct}%;background:${seg.color}`;el.title=`${seg.label}: ${count}`;track.appendChild(el); }
+  segs.forEach(seg=>{
+    const count=allQuotes.filter(q=>(q.status||'draft')===seg.status).length;
+    const pct=(count/total*100).toFixed(1);
+    if(count>0){const el=document.createElement('div');el.className='pipeline-seg';el.style.cssText=`width:${pct}%;background:${seg.color}`;el.title=`${seg.label}: ${count}`;track.appendChild(el);}
     const li=document.createElement('div');li.className='legend-item';
     li.innerHTML=`<div class="pipeline-dot" style="background:${seg.color}"></div><span>${seg.label} (${count})</span>`;
     legend.appendChild(li);
   });
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// SUMMARY TABLES — render top 15 for each status
-// ═══════════════════════════════════════════════════════════════════════════
-function sortByFollowUp(quotes) {
-  const today = new Date().toISOString().slice(0,10);
-  return [...quotes].sort((a,b) => {
-    const fa=a.followUpDate||'', fb=b.followUpDate||'';
-    const aOver=fa&&fa<today, bOver=fb&&fb<today;
-    const aUp=fa&&fa>=today, bUp=fb&&fb>=today;
-    if(aOver&&bOver) return fa<fb?-1:fa>fb?1:0;
-    if(aUp&&bUp) return fa<fb?-1:fa>fb?1:0;
-    if(aOver&&!bOver) return -1;
-    if(!aOver&&bOver) return 1;
-    if(aUp&&!bUp) return -1;
-    if(!aUp&&bUp) return 1;
+// ── Win Analysis ──────────────────────────────────────────────────────────
+function renderWinAnalysis(){
+  const wins=allQuotes.filter(q=>q.status==='win');
+  const withDetails=wins.filter(q=>q.winDetails?.reason);
+
+  // Win by reason
+  const rEl=document.getElementById('winReasonChart');
+  if(!withDetails.length){ rEl.innerHTML='<div class="empty-state" style="padding:14px">No win reason data yet.</div>'; }
+  else{
+    const reasons={};
+    withDetails.forEach(q=>{const r=q.winDetails.reason;reasons[r]=(reasons[r]||0)+1;});
+    const max=Math.max(...Object.values(reasons));
+    rEl.innerHTML=Object.entries(reasons).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`
+      <div class="bar-row">
+        <span class="bar-label">${r}</span>
+        <div class="bar-track"><div class="bar-fill-green" style="width:${(n/max*100).toFixed(0)}%"></div></div>
+        <span class="bar-count">${n}</span>
+      </div>`).join('');
+  }
+
+  // Won against
+  const wEl=document.getElementById('wonAgainstList');
+  const comps={};
+  withDetails.forEach(q=>{const c=(q.winDetails.competitor||'').trim();if(c){comps[c]=(comps[c]||0)+1;}});
+  if(!Object.keys(comps).length){ wEl.innerHTML='<div class="empty-state" style="padding:14px">No competitor data yet.</div>'; }
+  else{
+    wEl.innerHTML=Object.entries(comps).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`
+      <div class="comp-item">
+        <span class="comp-name">${c}</span>
+        <span class="comp-count">${n} time${n>1?'s':''}</span>
+      </div>`).join('');
+  }
+}
+
+// ── Loss Analysis ─────────────────────────────────────────────────────────
+function renderLossAnalysis(){
+  const losses=allQuotes.filter(q=>q.status==='loss');
+  const rEl=document.getElementById('lossReasonChart');
+  if(!losses.length){ rEl.innerHTML='<div class="empty-state" style="padding:14px">No loss data yet.</div>'; }
+  else{
+    const reasons={};
+    losses.forEach(q=>{const r=q.lossDetails?.reason||'Unknown';reasons[r]=(reasons[r]||0)+1;});
+    const max=Math.max(...Object.values(reasons));
+    rEl.innerHTML=Object.entries(reasons).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`
+      <div class="bar-row">
+        <span class="bar-label">${r}</span>
+        <div class="bar-track"><div class="bar-fill-red" style="width:${(n/max*100).toFixed(0)}%"></div></div>
+        <span class="bar-count">${n}</span>
+      </div>`).join('');
+  }
+  const cEl=document.getElementById('competitorList');
+  const comps={};
+  losses.forEach(q=>{const c=(q.lossDetails?.competitor||'').trim();if(c){comps[c]=(comps[c]||0)+1;}});
+  if(!Object.keys(comps).length){ cEl.innerHTML='<div class="empty-state" style="padding:14px">No competitor data yet.</div>'; }
+  else{ cEl.innerHTML=Object.entries(comps).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`<div class="comp-item"><span class="comp-name">${c}</span><span class="comp-count">${n} time${n>1?'s':''}</span></div>`).join(''); }
+}
+
+// ── Summary tables ────────────────────────────────────────────────────────
+function sortByFollowUp(quotes){
+  const today=new Date().toISOString().slice(0,10);
+  return [...quotes].sort((a,b)=>{
+    const fa=a.followUpDate||'',fb=b.followUpDate||'';
+    const aO=fa&&fa<today,bO=fb&&fb<today,aU=fa&&fa>=today,bU=fb&&fb>=today;
+    if(aO&&bO) return fa<fb?-1:fa>fb?1:0;
+    if(aU&&bU) return fa<fb?-1:fa>fb?1:0;
+    if(aO&&!bO) return -1; if(!aO&&bO) return 1;
+    if(aU&&!bU) return -1; if(!aU&&bU) return 1;
     return 0;
   });
 }
 
-function renderAllSummaryTables() {
-  const groups = {
-    all: allQuotes,
-    delivered: allQuotes.filter(q=>q.status==='delivered'),
-    negotiation: allQuotes.filter(q=>q.status==='negotiation'),
-    win: allQuotes.filter(q=>q.status==='win'),
-    loss: allQuotes.filter(q=>q.status==='loss'),
-  };
-  // all table includes status column, others don't
-  Object.entries(groups).forEach(([key, quotes]) => {
-    renderSummaryTable(key, sortByFollowUp(quotes).slice(0,15), key==='all');
-  });
+function renderAllSummaryTables(){
+  const groups={all:allQuotes,delivered:allQuotes.filter(q=>q.status==='delivered'),negotiation:allQuotes.filter(q=>q.status==='negotiation'),win:allQuotes.filter(q=>q.status==='win'),loss:allQuotes.filter(q=>q.status==='loss')};
+  Object.entries(groups).forEach(([key,quotes])=>renderSummaryTable(key,sortByFollowUp(quotes).slice(0,15),key==='all'));
 }
 
-function renderSummaryTable(key, rows, showStatus) {
-  const tbody = document.getElementById('summaryBody-'+key);
-  const empty = document.getElementById('summaryEmpty-'+key);
-  const today = new Date().toISOString().slice(0,10);
-  if(!rows.length){ tbody.innerHTML=''; empty.style.display=''; return; }
+function renderSummaryTable(key,rows,showStatus){
+  const tbody=document.getElementById('summaryBody-'+key);
+  const empty=document.getElementById('summaryEmpty-'+key);
+  const today=new Date().toISOString().slice(0,10);
+  if(!rows.length){tbody.innerHTML='';empty.style.display='';return;}
   empty.style.display='none';
-  tbody.innerHTML = rows.map(q => {
-    const status = q.status||'draft';
-    const revPill = q.revision>0 ? `<span class="rev-pill">Rev.${q.revision}</span>` : '';
-    const total = (q.totals?.grandTotal||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const fu = q.followUpDate||'';
-    let fuHtml = '<span class="td-nodate">—</span>';
-    if(fu && fu<today) fuHtml=`<span class="td-overdue">⚠ ${fu}</span>`;
+  tbody.innerHTML=rows.map(q=>{
+    const status=q.status||'draft';
+    const revPill=q.revision>0?`<span class="rev-pill">Rev.${q.revision}</span>`:'';
+    const total=(q.totals?.grandTotal||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const fu=q.followUpDate||'';
+    let fuHtml='<span class="td-nodate">—</span>';
+    if(fu&&fu<today) fuHtml=`<span class="td-overdue">⚠ ${fu}</span>`;
     else if(fu) fuHtml=`<span class="td-upcoming">${fu}</span>`;
-    const topEquip = getTopEquipment(q);
-    const equipCell = topEquip
-      ? `<div class="equip-cell" data-qid="${q._id}"><span class="equip-name" title="${topEquip.model}">${topEquip.model}</span>${topEquip.qty>1?`<span class="equip-badge">×${topEquip.qty}</span>`:''}</div>`
-      : '<span class="td-nodate">—</span>';
-    const statusCell = showStatus ? `<td><span class="badge ${status}">${status}</span></td>` : '';
-    return `<tr onclick="openQuote('${q.quoteNo||''}','${q._id}')">
+    const topEquip=getTopEquipment(q);
+    const equipCell=topEquip?`<div class="equip-cell" data-qid="${q._id}"><span class="equip-name" title="${topEquip.model}">${topEquip.model}</span>${topEquip.qty>1?`<span class="equip-badge">×${topEquip.qty}</span>`:''}</div>`:'<span class="td-nodate">—</span>';
+    const statusCell=showStatus?`<td><span class="badge ${status}">${status}</span></td>`:'';
+    // Win incomplete = win status with no winDetails.reason
+    const winIncomplete=status==='win'&&(!q.winDetails?.reason);
+    const trClass=winIncomplete?' class="win-incomplete"':'';
+    const warnPill=winIncomplete?`<span class="badge-warn">⚠ Update</span>`:'';
+    return `<tr${trClass} onclick="openQuote('${q.quoteNo||''}')">
       <td>${q.createdByName||'—'}</td>
       <td><span class="td-mono">${q.displayQuoteNo||q.quoteNo||'—'}</span>${revPill}</td>
       <td>${q.quoteDate||'—'}</td>
       <td>${fuHtml}</td>
       <td><span class="td-bold">${q.customer?.company||q.customer?.name||'—'}</span>${q.customer?.company&&q.customer?.name?`<br/><span style="font-size:11px;color:#94a3b8">${q.customer.name}</span>`:''}</td>
       ${statusCell}
-      <td class="td-value">RM ${total}</td>
+      <td class="td-value">RM ${total}${warnPill}</td>
       <td onclick="event.stopPropagation()">${equipCell}</td>
     </tr>`;
   }).join('');
 
   // Attach tooltip events
-  tbody.querySelectorAll('.equip-cell').forEach(cell => {
-    const q = allQuotes.find(q=>q._id===cell.dataset.qid);
+  tbody.querySelectorAll('.equip-cell').forEach(cell=>{
+    const q=allQuotes.find(q=>q._id===cell.dataset.qid);
     if(!q) return;
-    cell.addEventListener('mouseenter', e => showEquipTooltip(q, e));
-    cell.addEventListener('mouseleave', hideEquipTooltip);
+    cell.addEventListener('mouseenter',e=>showEquipTooltip(q,e));
+    cell.addEventListener('mouseleave',hideEquipTooltip);
   });
 }
 
-function openQuote(quoteNo) {
-  window.location.href = `app.html?id=${encodeURIComponent(quoteNo)}`;
-}
+function openQuote(quoteNo){ window.location.href=`app.html?id=${encodeURIComponent(quoteNo)}`; }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// EQUIPMENT HELPERS & TOOLTIP
-// ═══════════════════════════════════════════════════════════════════════════
-function getTopEquipment(q) {
-  const lib = q.equipmentSnapshot||{};
-  let top=null, topVal=-1;
-  (q.lineItems||[]).forEach(item => {
-    const e=lib[String(item.equipIdx)]||lib[item.equipIdx];
-    if(!e) return;
+// ── Equipment tooltip ─────────────────────────────────────────────────────
+function getTopEquipment(q){
+  const lib=q.equipmentSnapshot||{};
+  let top=null,topVal=-1;
+  (q.lineItems||[]).forEach(item=>{
+    const e=lib[String(item.equipIdx)]||lib[item.equipIdx]; if(!e) return;
     const val=(parseFloat(item.unitPrice)||0)*(item.qty||1);
     if(val>topVal){topVal=val;top={model:e.model,qty:item.qty||1};}
   });
   if(!top&&(q.awItems||[]).length){const aw=q.awItems[0];top={model:aw.desc||'AW',qty:aw.qty||1};}
   return top;
 }
-
-function buildEquipTooltipHtml(q) {
+function buildEquipTooltipHtml(q){
   const lib=q.equipmentSnapshot||{};
   const main=(q.lineItems||[]).map(item=>{const e=lib[String(item.equipIdx)]||lib[item.equipIdx];return e?{model:e.model,qty:item.qty||1,isAW:false}:null;}).filter(Boolean);
   const aw=(q.awItems||[]).filter(a=>a.desc).map(a=>({model:a.desc,qty:`${a.qty||1} ${a.unit||''}`.trim(),isAW:true}));
@@ -681,75 +710,46 @@ function buildEquipTooltipHtml(q) {
   if(aw.length){html+='<div class="equip-tooltip-divider"></div><div class="equip-tooltip-aw-label">Additional Works</div>';aw.forEach(e=>{html+=`<div class="equip-tooltip-row aw-row"><span class="equip-tooltip-model">${e.model}</span><span class="equip-tooltip-qty">${e.qty}</span></div>`;});}
   return html;
 }
-
-function showEquipTooltip(q, event) {
-  tooltip.innerHTML = buildEquipTooltipHtml(q);
-  tooltip.classList.add('visible');
-  positionTooltip(event);
+function showEquipTooltip(q,event){tooltip.innerHTML=buildEquipTooltipHtml(q);tooltip.classList.add('visible');positionTooltip(event);}
+function hideEquipTooltip(){tooltip.classList.remove('visible');}
+function positionTooltip(event){
+  const TW=tooltip.offsetWidth||240,TH=tooltip.offsetHeight||120;
+  let x=event.clientX+14,y=event.clientY+14;
+  if(x+TW>window.innerWidth-8)x=event.clientX-TW-14;
+  if(y+TH>window.innerHeight-8)y=event.clientY-TH-14;
+  tooltip.style.left=x+'px';tooltip.style.top=y+'px';
 }
-function hideEquipTooltip() { tooltip.classList.remove('visible'); }
-function positionTooltip(event) {
-  const TW=tooltip.offsetWidth||240, TH=tooltip.offsetHeight||120;
-  let x=event.clientX+14, y=event.clientY+14;
-  if(x+TW>window.innerWidth-8) x=event.clientX-TW-14;
-  if(y+TH>window.innerHeight-8) y=event.clientY-TH-14;
-  tooltip.style.left=x+'px'; tooltip.style.top=y+'px';
-}
-document.addEventListener('mousemove', e=>{ if(tooltip.classList.contains('visible')) positionTooltip(e); });
+document.addEventListener('mousemove',e=>{if(tooltip.classList.contains('visible'))positionTooltip(e);});
 
-// ═══════════════════════════════════════════════════════════════════════════
-// LOSS ANALYSIS
-// ═══════════════════════════════════════════════════════════════════════════
-function renderLossAnalysis() {
-  const losses = allQuotes.filter(q=>q.status==='loss');
-  const reasonEl = document.getElementById('lossReasonChart');
-  if(!losses.length){ reasonEl.innerHTML='<div class="empty-state" style="padding:16px">No loss data yet.</div>'; }
-  else {
-    const reasons={};
-    losses.forEach(q=>{const r=q.lossDetails?.reason||'Unknown';reasons[r]=(reasons[r]||0)+1;});
-    const max=Math.max(...Object.values(reasons));
-    reasonEl.innerHTML=Object.entries(reasons).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div class="loss-bar-row"><span class="loss-bar-label">${r}</span><div class="loss-bar-track"><div class="loss-bar-fill" style="width:${(n/max*100).toFixed(0)}%"></div></div><span class="loss-bar-count">${n}</span></div>`).join('');
-  }
-  const compEl=document.getElementById('competitorList');
-  const comps={};
-  losses.forEach(q=>{const c=(q.lossDetails?.competitor||'').trim();if(c){comps[c]=(comps[c]||0)+1;}});
-  if(!Object.keys(comps).length){ compEl.innerHTML='<div class="empty-state" style="padding:16px">No competitor data yet.</div>'; }
-  else { compEl.innerHTML=Object.entries(comps).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`<div class="comp-item"><span class="comp-name">${c}</span><span class="comp-count">${n} time${n>1?'s':''}</span></div>`).join(''); }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ALL QUOTATIONS MODAL
-// ═══════════════════════════════════════════════════════════════════════════
-function openAllQuotesModal(statusFilter) {
+// ── All Quotations Modal ──────────────────────────────────────────────────
+function openAllQuotesModal(statusFilter){
   const titles={all:'All Quotations',delivered:'All Delivered',negotiation:'All Negotiation',win:'All Wins',loss:'All Losses'};
-  document.getElementById('aqModalTitle').textContent = titles[statusFilter]||'All Quotations';
-  document.getElementById('aqStatus').value = statusFilter==='all' ? '' : statusFilter;
+  document.getElementById('aqModalTitle').textContent=titles[statusFilter]||'All Quotations';
+  document.getElementById('aqStatus').value=statusFilter==='all'?'':statusFilter;
   document.getElementById('allQuotesModal').classList.add('open');
   aqApplyFilters();
 }
-function closeAllQuotesModal() { document.getElementById('allQuotesModal').classList.remove('open'); }
-function aqModalBackdropClick(e) { if(e.target===document.getElementById('allQuotesModal')) closeAllQuotesModal(); }
+function closeAllQuotesModal(){document.getElementById('allQuotesModal').classList.remove('open');}
+function aqModalBackdropClick(e){if(e.target===document.getElementById('allQuotesModal'))closeAllQuotesModal();}
 
-function buildAqFilterOptions() {
+function buildAqFilterOptions(){
   const users=[...new Set(allQuotes.map(q=>q.createdByName).filter(Boolean))].sort();
-  const userSel=document.getElementById('aqUser');
-  userSel.innerHTML='<option value="">All Salespeople</option>';
-  users.forEach(u=>{const o=document.createElement('option');o.value=u;o.textContent=u;userSel.appendChild(o);});
+  const us=document.getElementById('aqUser');us.innerHTML='<option value="">All Salespeople</option>';
+  users.forEach(u=>{const o=document.createElement('option');o.value=u;o.textContent=u;us.appendChild(o);});
   const years=[...new Set(allQuotes.map(q=>q.quoteDate?.slice(0,4)).filter(Boolean))].sort().reverse();
-  const yearSel=document.getElementById('aqYear');
-  yearSel.innerHTML='<option value="">All Years</option>';
-  years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o);});
+  const ys=document.getElementById('aqYear');ys.innerHTML='<option value="">All Years</option>';
+  years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;ys.appendChild(o);});
 }
 
-function aqApplyFilters() {
+function aqApplyFilters(){
   const q=document.getElementById('aqSearch').value.toLowerCase();
   const st=document.getElementById('aqStatus').value;
   const usr=document.getElementById('aqUser').value;
   const yr=document.getElementById('aqYear').value;
   aqFiltered=allQuotes.filter(d=>{
-    if(st&&(d.status||'draft')!==st) return false;
-    if(usr&&d.createdByName!==usr) return false;
-    if(yr&&!d.quoteDate?.startsWith(yr)) return false;
+    if(st&&(d.status||'draft')!==st)return false;
+    if(usr&&d.createdByName!==usr)return false;
+    if(yr&&!d.quoteDate?.startsWith(yr))return false;
     if(q){const hay=[d.displayQuoteNo,d.quoteNo,d.customer?.company,d.customer?.name,d.createdByName].join(' ').toLowerCase();if(!hay.includes(q))return false;}
     return true;
   });
@@ -757,108 +757,96 @@ function aqApplyFilters() {
   document.getElementById('aqFilterCount').textContent=`${aqFiltered.length} of ${allQuotes.length} quotes`;
   aqPage=1; aqRenderTable();
 }
-
-function aqClearFilters() {
-  document.getElementById('aqSearch').value='';
-  document.getElementById('aqStatus').value='';
-  document.getElementById('aqUser').value='';
-  document.getElementById('aqYear').value='';
+function aqClearFilters(){
+  document.getElementById('aqSearch').value='';document.getElementById('aqStatus').value='';
+  document.getElementById('aqUser').value='';document.getElementById('aqYear').value='';
   aqApplyFilters();
 }
-
-function aqSortBy(field) {
-  if(aqSortField===field) aqSortDir*=-1; else{aqSortField=field;aqSortDir=-1;}
+function aqSortBy(field){
+  if(aqSortField===field)aqSortDir*=-1;else{aqSortField=field;aqSortDir=-1;}
   document.querySelectorAll('th[id^="aqth-"]').forEach(th=>th.classList.remove('sorted'));
-  const el=document.getElementById('aqth-'+field); if(el) el.classList.add('sorted');
+  const el=document.getElementById('aqth-'+field);if(el)el.classList.add('sorted');
   aqApplyFilters();
 }
-
-function aqRenderTable() {
-  const tbody=document.getElementById('aqTableBody'), empty=document.getElementById('aqEmpty');
+function aqRenderTable(){
+  const tbody=document.getElementById('aqTableBody'),empty=document.getElementById('aqEmpty');
   const today=new Date().toISOString().slice(0,10);
   const totalPages=Math.max(1,Math.ceil(aqFiltered.length/AQ_PER_PAGE));
   aqPage=Math.min(aqPage,totalPages);
   const start=(aqPage-1)*AQ_PER_PAGE;
-  const pageItems=aqFiltered.slice(start,start+AQ_PER_PAGE);
+  const items=aqFiltered.slice(start,start+AQ_PER_PAGE);
   if(!aqFiltered.length){tbody.innerHTML='';empty.style.display='';}
   else{
     empty.style.display='none';
-    tbody.innerHTML=pageItems.map(d=>{
+    tbody.innerHTML=items.map(d=>{
       const revPill=d.revision>0?`<span class="rev-pill">Rev.${d.revision}</span>`:'';
       const status=d.status||'draft';
       const total=(d.totals?.grandTotal||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
       const fu=d.followUpDate||'';
       let fuHtml='<span class="td-nodate">—</span>';
-      if(fu&&fu<today) fuHtml=`<span class="td-overdue">⚠ ${fu}</span>`;
-      else if(fu) fuHtml=`<span class="td-upcoming">${fu}</span>`;
-      return `<tr onclick="openQuote('${d.quoteNo||''}','${d._id}')">
+      if(fu&&fu<today)fuHtml=`<span class="td-overdue">⚠ ${fu}</span>`;
+      else if(fu)fuHtml=`<span class="td-upcoming">${fu}</span>`;
+      const winIncomplete=status==='win'&&(!d.winDetails?.reason);
+      const trClass=winIncomplete?' class="win-incomplete"':'';
+      const warnPill=winIncomplete?`<span class="badge-warn">⚠ Update</span>`:'';
+      return `<tr${trClass} onclick="openQuote('${d.quoteNo||''}')">
         <td>${d.createdByName||'—'}</td>
         <td><span class="td-mono">${d.displayQuoteNo||d.quoteNo||'—'}</span>${revPill}</td>
         <td>${d.quoteDate||'—'}</td>
         <td>${fuHtml}</td>
         <td><span class="td-bold">${d.customer?.company||d.customer?.name||'—'}</span>${d.customer?.company&&d.customer?.name?`<br/><span style="font-size:11px;color:#94a3b8">${d.customer.name}</span>`:''}</td>
-        <td><span class="badge ${status}">${status}</span></td>
+        <td><span class="badge ${status}">${status}</span>${warnPill}</td>
         <td class="td-value">RM ${total}</td>
       </tr>`;
     }).join('');
   }
-  // Pagination
-  const pageInfo=document.getElementById('aqPageInfo'), pageBtns=document.getElementById('aqPageBtns');
-  if(!aqFiltered.length){pageInfo.textContent='';pageBtns.innerHTML='';return;}
-  const endIdx=Math.min(start+AQ_PER_PAGE,aqFiltered.length);
-  pageInfo.textContent=`Showing ${start+1}–${endIdx} of ${aqFiltered.length} quotations`;
+  const pi=document.getElementById('aqPageInfo'),pb=document.getElementById('aqPageBtns');
+  if(!aqFiltered.length){pi.textContent='';pb.innerHTML='';return;}
+  pi.textContent=`Showing ${start+1}–${Math.min(start+AQ_PER_PAGE,aqFiltered.length)} of ${aqFiltered.length}`;
   let btns=`<button class="page-btn" onclick="aqGoPage(${aqPage-1})" ${aqPage===1?'disabled':''}>‹ Prev</button>`;
-  const maxBtns=7;let startP=Math.max(1,aqPage-Math.floor(maxBtns/2));let endP=Math.min(totalPages,startP+maxBtns-1);if(endP-startP<maxBtns-1)startP=Math.max(1,endP-maxBtns+1);
-  if(startP>1) btns+=`<button class="page-btn" onclick="aqGoPage(1)">1</button>${startP>2?'<span style="padding:0 4px;color:#94a3b8">…</span>':''}`;
-  for(let p=startP;p<=endP;p++) btns+=`<button class="page-btn${p===aqPage?' active':''}" onclick="aqGoPage(${p})">${p}</button>`;
-  if(endP<totalPages) btns+=`${endP<totalPages-1?'<span style="padding:0 4px;color:#94a3b8">…</span>':''}<button class="page-btn" onclick="aqGoPage(${totalPages})">${totalPages}</button>`;
+  const maxB=7;let sP=Math.max(1,aqPage-Math.floor(maxB/2));let eP=Math.min(totalPages,sP+maxB-1);if(eP-sP<maxB-1)sP=Math.max(1,eP-maxB+1);
+  if(sP>1)btns+=`<button class="page-btn" onclick="aqGoPage(1)">1</button>${sP>2?'<span style="padding:0 4px;color:#94a3b8">…</span>':''}`;
+  for(let p=sP;p<=eP;p++)btns+=`<button class="page-btn${p===aqPage?' active':''}" onclick="aqGoPage(${p})">${p}</button>`;
+  if(eP<totalPages)btns+=`${eP<totalPages-1?'<span style="padding:0 4px;color:#94a3b8">…</span>':''}<button class="page-btn" onclick="aqGoPage(${totalPages})">${totalPages}</button>`;
   btns+=`<button class="page-btn" onclick="aqGoPage(${aqPage+1})" ${aqPage===totalPages?'disabled':''}>Next ›</button>`;
-  pageBtns.innerHTML=btns;
+  pb.innerHTML=btns;
 }
-
-function aqGoPage(p) {
-  const totalPages=Math.max(1,Math.ceil(aqFiltered.length/AQ_PER_PAGE));
-  aqPage=Math.max(1,Math.min(totalPages,p));
-  aqRenderTable();
+function aqGoPage(p){
+  const t=Math.max(1,Math.ceil(aqFiltered.length/AQ_PER_PAGE));
+  aqPage=Math.max(1,Math.min(t,p));aqRenderTable();
   document.querySelector('.aq-modal-body').scrollTop=0;
 }
+function getNestedVal(obj,path){return path.split('.').reduce((o,k)=>o?.[k],obj)||'';}
 
-function getNestedVal(obj,path){ return path.split('.').reduce((o,k)=>o?.[k],obj)||''; }
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ADMIN TOOLS
-// ═══════════════════════════════════════════════════════════════════════════
-async function exportFullDB() {
+// ── Admin ─────────────────────────────────────────────────────────────────
+async function exportFullDB(){
   showToast('Preparing export…');
-  try {
+  try{
     const snap=await db.collection(COL.QUOTATIONS).get();
     const data=snap.docs.map(d=>({_id:d.id,...d.data()}));
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;a.download=`Mitsumori_Export_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download=`Mitsumori_Export_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);
     showToast(`Exported ${data.length} quotes`,'ok');
   } catch(e){showToast('Export failed.','err');console.error(e);}
 }
-
-async function manualBackup() {
-  const statusEl=document.getElementById('backupStatus');statusEl.textContent='Running backup…';
-  try {
+async function manualBackup(){
+  const sEl=document.getElementById('backupStatus');sEl.textContent='Running…';
+  try{
     const snap=await db.collection(COL.QUOTATIONS).get();
     const allData=snap.docs.map(d=>({_id:d.id,...d.data()}));
-    const todayKey=new Date().toISOString().slice(0,10);
-    await db.collection(COL.BACKUPS).doc(todayKey).set({createdAt:firebase.firestore.FieldValue.serverTimestamp(),recordCount:allData.length,data:JSON.stringify(allData)});
-    const cutoff=new Date();cutoff.setDate(cutoff.getDate()-BACKUP_RETAIN);const cutoffKey=cutoff.toISOString().slice(0,10);
+    const key=new Date().toISOString().slice(0,10);
+    await db.collection(COL.BACKUPS).doc(key).set({createdAt:firebase.firestore.FieldValue.serverTimestamp(),recordCount:allData.length,data:JSON.stringify(allData)});
+    const cutoff=new Date();cutoff.setDate(cutoff.getDate()-BACKUP_RETAIN);
+    const cutoffKey=cutoff.toISOString().slice(0,10);
     const old=await db.collection(COL.BACKUPS).where(firebase.firestore.FieldPath.documentId(),'<',cutoffKey).get();
     const batch=db.batch();old.docs.forEach(d=>batch.delete(d.ref));if(!old.empty)await batch.commit();
-    statusEl.textContent=`✓ Backup complete — ${allData.length} records, ${old.size} old snapshots pruned`;
-    showToast('Backup complete','ok');
-  } catch(e){statusEl.textContent='Backup failed.';showToast('Backup failed.','err');console.error(e);}
+    sEl.textContent=`✓ ${allData.length} records, ${old.size} old pruned`;showToast('Backup complete','ok');
+  } catch(e){sEl.textContent='Failed.';showToast('Backup failed.','err');console.error(e);}
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// PROFILE MODAL
-// ═══════════════════════════════════════════════════════════════════════════
-function openProfileModal() {
+// ── Profile ───────────────────────────────────────────────────────────────
+function openProfileModal(){
   document.getElementById('profileName').value=userProfile.displayName||'';
   document.getElementById('profilePhone').value=userProfile.phone||'';
   document.getElementById('profileEmail').value=userProfile.email||currentUser?.email||'';
@@ -868,18 +856,16 @@ function openProfileModal() {
   document.getElementById('profileCompanyPhone').value=userProfile.companyPhone||'';
   document.getElementById('profileModal').style.display='flex';
 }
-function closeProfileModal(){ document.getElementById('profileModal').style.display='none'; }
-async function saveProfile() {
+function closeProfileModal(){document.getElementById('profileModal').style.display='none';}
+async function saveProfile(){
   if(!currentUser){showToast('Not signed in.','err');return;}
-  const profile={displayName:document.getElementById('profileName').value.trim(),phone:document.getElementById('profilePhone').value.trim(),email:document.getElementById('profileEmail').value.trim(),companyName:document.getElementById('profileCompanyName').value.trim(),companyTagline:document.getElementById('profileCompanyTagline').value.trim(),companyAddress:document.getElementById('profileCompanyAddress').value.trim(),companyPhone:document.getElementById('profileCompanyPhone').value.trim(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
-  try{await db.collection(COL.USERS).doc(currentUser.uid).set(profile,{merge:true});userProfile={...userProfile,...profile};document.getElementById('userChip').textContent=profile.displayName||currentUser.email;closeProfileModal();showToast('Profile saved to cloud','ok');}
-  catch(e){showToast('Save failed: '+(e.message||e.code),'err');console.error(e);}
+  const p={displayName:document.getElementById('profileName').value.trim(),phone:document.getElementById('profilePhone').value.trim(),email:document.getElementById('profileEmail').value.trim(),companyName:document.getElementById('profileCompanyName').value.trim(),companyTagline:document.getElementById('profileCompanyTagline').value.trim(),companyAddress:document.getElementById('profileCompanyAddress').value.trim(),companyPhone:document.getElementById('profileCompanyPhone').value.trim(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+  try{await db.collection(COL.USERS).doc(currentUser.uid).set(p,{merge:true});userProfile={...userProfile,...p};document.getElementById('userChip').textContent=p.displayName||currentUser.email;closeProfileModal();showToast('Profile saved','ok');}
+  catch(e){showToast('Save failed.','err');console.error(e);}
 }
 document.addEventListener('click',e=>{const m=document.getElementById('profileModal');if(e.target===m)closeProfileModal();});
 
-// ═══════════════════════════════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════════════════════════════
+// ── Toast ─────────────────────────────────────────────────────────────────
 let _tt;
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='on '+(type||'');clearTimeout(_tt);_tt=setTimeout(()=>t.className='',3000);}
 </script>
