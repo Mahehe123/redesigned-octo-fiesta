@@ -29,24 +29,26 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .main{padding:24px 28px;max-width:1400px;margin:0 auto}
 
 /* ── KPI Strip ── */
-.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
 .kpi{background:#fff;border:2px solid transparent;border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;transition:height .2s}
 .kpi.all::before{background:linear-gradient(90deg,#2C2C2C,#8B8176)}
+.kpi.draft::before{background:#94a3b8}
 .kpi.delivered::before{background:#3b82f6}
 .kpi.negotiation::before{background:#f97316}
 .kpi.win::before{background:#22c55e}
 .kpi.loss::before{background:#ef4444}
 .kpi:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
 .kpi.active.all{border-color:#2C2C2C;background:#f8f7f4}
+.kpi.active.draft{border-color:#64748b;background:#f8fafc}
 .kpi.active.delivered{border-color:#3b82f6;background:#eff6ff}
 .kpi.active.negotiation{border-color:#f97316;background:#fff7ed}
 .kpi.active.win{border-color:#22c55e;background:#f0fdf4}
 .kpi.active.loss{border-color:#ef4444;background:#fef2f2}
 .kpi.active::before{height:4px}
-.kpi-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
 .kpi-val{font-size:26px;font-weight:700;color:#1e293b;line-height:1}
-.kpi-sub{font-size:11px;color:#94a3b8;margin-top:4px;font-weight:500}
+.kpi-sub{font-size:11px;color:#64748b;margin-top:4px;font-weight:500}
 
 /* ── Context panels ── */
 .ctx-panel{display:none}.ctx-panel.active{display:block}
@@ -64,9 +66,9 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 /* ── Stat pills ── */
 .stat-pills{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
 .stat-pill{display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid #e8e6e1;border-radius:12px;padding:14px 20px;min-width:120px}
-.stat-pill-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;text-align:center}
+.stat-pill-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:4px;text-align:center}
 .stat-pill-val{font-size:22px;font-weight:700;color:#1e293b;line-height:1}
-.stat-pill-sub{font-size:10px;color:#94a3b8;margin-top:3px;font-weight:500}
+.stat-pill-sub{font-size:10px;color:#64748b;margin-top:3px;font-weight:500}
 .stat-pill.blue{border-color:#93c5fd;background:#eff6ff}.stat-pill.blue .stat-pill-val{color:#1d4ed8}
 .stat-pill.orange{border-color:#fdba74;background:#fff7ed}.stat-pill.orange .stat-pill-val{color:#c2410c}
 .stat-pill.green{border-color:#86efac;background:#f0fdf4}.stat-pill.green .stat-pill-val{color:#15803d}
@@ -82,17 +84,17 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .bar-track{flex:1;height:8px;border-radius:999px;overflow:hidden;background:#f1f5f9}
 .bar-fill-green{height:100%;background:#22c55e;border-radius:999px}
 .bar-fill-red{height:100%;background:#ef4444;border-radius:999px}
-.bar-count{font-size:11px;font-weight:600;color:#94a3b8;min-width:24px;text-align:right;flex-shrink:0}
+.bar-count{font-size:11px;font-weight:600;color:#374151;min-width:24px;text-align:right;flex-shrink:0}
 .comp-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:12px}
 .comp-item:last-child{border-bottom:none}
 .comp-name{font-weight:600;color:#374151}
-.comp-count{font-size:11px;color:#94a3b8;font-weight:500}
+.comp-count{font-size:11px;color:#374151;font-weight:500}
 
 /* ── Quotation Summary ── */
 .qs-section{background:#fff;border:1px solid #e8e6e1;border-radius:14px;overflow:hidden;margin-bottom:24px}
 .qs-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;gap:10px}
 .qs-title{font-size:13px;font-weight:700;color:#1e293b}
-.qs-subtitle{font-size:11px;color:#94a3b8;margin-top:2px}
+.qs-subtitle{font-size:11px;color:#64748b;margin-top:2px}
 .btn-all-quotes{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#2C2C2C;background:#F5F4F1;border:1px solid #e8e6e1;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
 .btn-all-quotes:hover{background:#ede8e0;border-color:#ccc8c2}
 .btn-all-quotes svg{width:14px;height:14px}
@@ -101,15 +103,15 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .summary-table-wrap{overflow-x:auto}
 table.summary-table{width:100%;border-collapse:collapse}
 table.summary-table thead tr{background:#faf9f7}
-table.summary-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #f1f5f9}
-table.summary-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #faf9f7;color:#374151;vertical-align:middle}
+table.summary-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#374151;white-space:nowrap;border-bottom:1px solid #f1f5f9}
+table.summary-table td{padding:10px 14px;font-size:13px;border-bottom:1px solid #faf9f7;color:#1e293b;vertical-align:middle}
 table.summary-table tr:last-child td{border-bottom:none}
 table.summary-table tr:hover td{background:#faf9f7;cursor:pointer}
 /* Yellow highlight for win rows missing details */
 table.summary-table tr.win-incomplete td{background:#fefce8!important}
 table.summary-table tr.win-incomplete:hover td{background:#fef9c3!important}
-.td-bold{font-weight:600;color:#1e293b}
-.td-mono{font-family:'SF Mono','Fira Mono',monospace;font-size:11px;font-weight:600;color:#2C2C2C}
+.td-bold{font-weight:700;color:#1e293b}
+.td-mono{font-family:'SF Mono','Fira Mono',monospace;font-size:12px;font-weight:700;color:#1e293b}
 .td-value{font-weight:700;color:#1e293b;text-align:right;white-space:nowrap}
 .td-overdue{color:#dc2626!important;font-weight:700}
 .td-upcoming{color:#0369a1;font-weight:600}
@@ -155,9 +157,9 @@ table.summary-table tr.win-incomplete:hover td{background:#fef9c3!important}
 .aq-modal-body{flex:1;overflow-y:auto;min-height:200px}
 table.aq-table{width:100%;border-collapse:collapse}
 table.aq-table thead tr{background:#faf9f7;position:sticky;top:0;z-index:2}
-table.aq-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;white-space:nowrap;border-bottom:1px solid #f1f5f9;cursor:pointer;user-select:none}
-table.aq-table th:hover{color:#374151}.table.aq-table th.sorted{color:#2C2C2C}
-table.aq-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #faf9f7;color:#374151;vertical-align:middle}
+table.aq-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#374151;white-space:nowrap;border-bottom:1px solid #f1f5f9;cursor:pointer;user-select:none}
+table.aq-table th:hover{color:#1e293b}.table.aq-table th.sorted{color:#2C2C2C}
+table.aq-table td{padding:10px 14px;font-size:13px;border-bottom:1px solid #faf9f7;color:#1e293b;vertical-align:middle}
 table.aq-table tr:last-child td{border-bottom:none}
 table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
 table.aq-table tr.win-incomplete td{background:#fefce8!important}
@@ -182,8 +184,56 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 #loadingOverlay{position:fixed;inset:0;background:rgba(245,244,241,.85);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .spinner{width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#2C2C2C;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:13px;font-weight:600;color:#64748b}
-.empty-state{text-align:center;padding:28px;font-size:12px;color:#94a3b8}
+.loading-text{font-size:13px;font-weight:600;color:#374151}
+.empty-state{text-align:center;padding:28px;font-size:12px;color:#64748b}
+
+/* ── Settings Modal ── */
+#settingsModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:400;align-items:center;justify-content:center}
+#settingsModal.open{display:flex}
+.settings-panel{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);width:380px;max-width:95vw;padding:24px}
+.settings-panel h3{font-size:15px;font-weight:700;color:#0f172a;margin-bottom:20px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.settings-label{font-size:13px;font-weight:600;color:#1e293b}
+.settings-hint{font-size:11px;color:#64748b;margin-top:2px}
+.settings-val{font-size:12px;font-weight:700;color:#1e293b;min-width:32px;text-align:right}
+.settings-slider-wrap{display:flex;align-items:center;gap:8px;flex:1;margin-left:16px}
+.settings-slider-wrap input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:#e2e8f0;outline:none;cursor:pointer}
+.settings-slider-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#2C2C2C;cursor:pointer}
+
+/* ── New Quote Modal ── */
+#newQuoteModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:500;align-items:center;justify-content:center}
+#newQuoteModal.open{display:flex}
+.nq-panel{background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.22);width:480px;max-width:95vw;padding:28px}
+.nq-title{font-size:17px;font-weight:700;color:#0f172a;margin-bottom:6px;font-family:'Cormorant Garamond',serif;letter-spacing:.01em}
+.nq-sub{font-size:12px;color:#64748b;margin-bottom:22px}
+.nq-cards{display:flex;gap:12px;margin-bottom:20px}
+.nq-card{flex:1;border:2px solid #e8e6e1;border-radius:14px;padding:18px 16px;cursor:pointer;transition:all .2s;text-align:center;background:#faf9f7}
+.nq-card:hover{border-color:#8B8176;background:#f5f4f1;transform:translateY(-1px)}
+.nq-card.selected{border-color:#2C2C2C;background:#F5F4F1}
+.nq-card-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.nq-card-icon svg{width:20px;height:20px}
+.nq-card-title{font-size:13px;font-weight:700;color:#1e293b;margin-bottom:3px}
+.nq-card-desc{font-size:11px;color:#64748b;line-height:1.4}
+.nq-load-search{display:flex;gap:8px;margin-bottom:10px}
+.nq-load-search input{flex:1;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:12px;color:#1e293b;outline:none;font-family:inherit}
+.nq-load-search input:focus{border-color:#8B8176}
+.nq-load-results{max-height:220px;overflow-y:auto;margin-bottom:16px;border:1px solid #f1f5f9;border-radius:10px}
+.nq-load-card{padding:10px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid #f1f5f9}
+.nq-load-card:last-child{border-bottom:none}
+.nq-load-card:hover{background:#f8f7f4}
+.nq-load-card.selected{background:#F5F4F1}
+.nq-load-top{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.nq-load-no{font-size:12px;font-weight:700;color:#1e293b}
+.nq-load-status{font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px}
+.nq-load-cust{font-size:11px;color:#374151;font-weight:500}
+.nq-load-meta{font-size:10px;color:#64748b;margin-top:1px}
+.nq-actions{display:flex;gap:8px}
+.nq-btn-primary{flex:2;border-radius:10px;background:#2C2C2C;color:#F5F0E8;font-size:13px;font-weight:600;padding:11px;border:none;cursor:pointer;font-family:inherit;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.nq-btn-primary:hover{opacity:.88}.nq-btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.nq-btn-cancel{flex:1;border-radius:10px;border:1px solid #e2e8f0;color:#374151;font-size:13px;font-weight:600;padding:11px;background:#fff;cursor:pointer;font-family:inherit;transition:background .15s}
+.nq-btn-cancel:hover{background:#f8f7f4}
+.nq-spinner{width:14px;height:14px;border:2px solid rgba(245,240,232,.3);border-top-color:#F5F0E8;border-radius:50%;animation:spin .6s linear infinite;display:none}
+.nq-spinner.on{display:inline-block}
 </style>
 </head>
 <body>
@@ -200,10 +250,14 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
   </div>
   <div class="topbar-right">
     <span class="user-chip" id="userChip">Loading…</span>
+    <button class="tb-btn" onclick="openSettingsModal()" title="Dashboard Settings">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      Settings
+    </button>
     <button class="tb-btn" onclick="openProfileModal()" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>Profile
     </button>
-    <button class="tb-btn primary" onclick="window.location.href='app.html'">
+    <button class="tb-btn primary" onclick="openNewQuoteModal()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Quote
     </button>
     <button class="tb-btn" onclick="loadDashboard()">
@@ -223,6 +277,11 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
       <div class="kpi-label">Total Quotes</div>
       <div class="kpi-val" id="kpiTotal">—</div>
       <div class="kpi-sub" id="kpiTotalVal">RM —</div>
+    </div>
+    <div class="kpi draft" onclick="setActiveKPI('draft')" style="cursor:pointer">
+      <div class="kpi-label">Draft</div>
+      <div class="kpi-val" id="kpiDraft">—</div>
+      <div class="kpi-sub" id="kpiDraftVal" style="font-size:10px">Unsaved / In Progress</div>
     </div>
     <div class="kpi delivered" onclick="setActiveKPI('delivered')">
       <div class="kpi-label">Delivered</div>
@@ -264,6 +323,27 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
         <table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th>Status</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead>
         <tbody id="summaryBody-all"></tbody></table>
         <div id="summaryEmpty-all" class="empty-state" style="display:none">No quotations yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DRAFT panel ── -->
+  <div id="ctx-draft" class="ctx-panel">
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:10px">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;color:#64748b;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span style="font-size:12px;color:#374151;font-weight:500">Draft quotes are saved but not yet delivered to a customer. They are counted separately from the pipeline.</span>
+    </div>
+    <div class="qs-section">
+      <div class="qs-header">
+        <div><div class="qs-title">Draft Quotations</div><div class="qs-subtitle">All in-progress / unsent quotes</div></div>
+        <button class="btn-all-quotes" onclick="openAllQuotesModal('draft')">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>All Drafts
+        </button>
+      </div>
+      <div class="summary-table-wrap">
+        <table class="summary-table"><thead><tr><th>Salesperson</th><th>Quote No.</th><th>Quote Date</th><th>Follow-up</th><th>Customer</th><th style="text-align:right">Value</th><th>Equipment</th></tr></thead>
+        <tbody id="summaryBody-draft"></tbody></table>
+        <div id="summaryEmpty-draft" class="empty-state" style="display:none">No draft quotations.</div>
       </div>
     </div>
   </div>
@@ -447,6 +527,91 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
   </div>
 </div>
 
+<!-- Settings Modal -->
+<div id="settingsModal" onclick="if(event.target===this)closeSettingsModal()">
+  <div class="settings-panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h3 style="margin-bottom:0">Dashboard Settings</h3>
+      <button onclick="closeSettingsModal()" style="background:none;border:none;cursor:pointer;color:#cbd5e1"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div style="border-bottom:1px solid #f1f5f9;margin-bottom:16px;padding-bottom:16px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px">Display</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">Dashboard Font Size</div>
+          <div class="settings-hint">Affects all text in tables and cards</div>
+        </div>
+        <div class="settings-slider-wrap">
+          <span style="font-size:10px;color:#94a3b8">A</span>
+          <input type="range" id="dashFontSlider" min="11" max="17" step="1" value="13" oninput="applyDashFontSize(this.value)"/>
+          <span style="font-size:14px;color:#94a3b8">A</span>
+          <span class="settings-val" id="dashFontVal">13px</span>
+        </div>
+      </div>
+      <div class="settings-row" style="margin-bottom:0">
+        <div>
+          <div class="settings-label">Table Row Density</div>
+          <div class="settings-hint">Compact or spacious rows</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-left:16px">
+          <button id="densityCompact" onclick="setDensity('compact')" style="padding:5px 12px;border-radius:7px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:11px;font-weight:600;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s">Compact</button>
+          <button id="densityComfy" onclick="setDensity('comfy')" style="padding:5px 12px;border-radius:7px;border:1.5px solid #2C2C2C;background:#2C2C2C;font-size:11px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;transition:all .15s">Comfy</button>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px">About</div>
+    <div style="font-size:12px;color:#374151;line-height:1.7">
+      <div><strong>Version:</strong> Mitsumori Dashboard v2</div>
+      <div><strong>Project:</strong> qmaker-e2033</div>
+      <div><strong>Storage:</strong> Firebase Firestore</div>
+    </div>
+    <button onclick="closeSettingsModal()" style="margin-top:20px;width:100%;border-radius:10px;background:#2C2C2C;color:#F5F0E8;font-size:13px;font-weight:600;padding:10px;border:none;cursor:pointer;font-family:inherit">Done</button>
+  </div>
+</div>
+
+<!-- New Quote Modal -->
+<div id="newQuoteModal" onclick="if(event.target===this)closeNewQuoteModal()">
+  <div class="nq-panel">
+    <div class="nq-title">Start Quotation</div>
+    <div class="nq-sub">Create a new quote with an auto-assigned number, or open and continue an existing one.</div>
+    <div class="nq-cards">
+      <div class="nq-card selected" id="nqCardNew" onclick="selectNQMode('new')">
+        <div class="nq-card-icon" style="background:#f0fdf4">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:#15803d"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        </div>
+        <div class="nq-card-title">New Quotation</div>
+        <div class="nq-card-desc">Auto-generates the next quote number and opens a blank form</div>
+      </div>
+      <div class="nq-card" id="nqCardLoad" onclick="selectNQMode('load')">
+        <div class="nq-card-icon" style="background:#eff6ff">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:#1d4ed8"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        </div>
+        <div class="nq-card-title">Load Existing</div>
+        <div class="nq-card-desc">Search and open a previously saved quotation to continue editing</div>
+      </div>
+    </div>
+
+    <!-- Load section (hidden by default) -->
+    <div id="nqLoadSection" style="display:none">
+      <div class="nq-load-search">
+        <input id="nqSearchInp" placeholder="Search quote no., customer, company…" oninput="nqFilterQuotes()"/>
+      </div>
+      <div class="nq-load-results" id="nqLoadResults">
+        <div style="padding:14px;text-align:center;font-size:12px;color:#94a3b8">Loading quotes…</div>
+      </div>
+    </div>
+
+    <div class="nq-actions">
+      <button class="nq-btn-primary" id="nqGoBtn" onclick="nqProceed()">
+        <span class="nq-spinner" id="nqSpinner"></span>
+        <span id="nqBtnLabel">Open New Quote</span>
+      </button>
+      <button class="nq-btn-cancel" onclick="closeNewQuoteModal()">Cancel</button>
+    </div>
+    <p id="nqError" style="font-size:11px;color:#dc2626;margin-top:8px;display:none"></p>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -474,6 +639,7 @@ window.addEventListener('load', () => {
       document.getElementById('userChip').textContent = userProfile.displayName || user.email;
     } catch(e){ document.getElementById('userChip').textContent = user.email; }
     if(isAdmin) document.getElementById('adminPanel').style.display='';
+    loadDashSettings();
     loadDashboard();
   });
 });
@@ -505,9 +671,11 @@ function setActiveKPI(kpi){
 function renderKPIs(){
   const fmt=n=>'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:0});
   const sum=arr=>arr.reduce((a,q)=>a+(q.totals?.grandTotal||0),0);
-  const by=s=>allQuotes.filter(q=>q.status===s);
+  const by=s=>allQuotes.filter(q=>(q.status||'draft')===s);
+  const drafts=by('draft');
   document.getElementById('kpiTotal').textContent=allQuotes.length;
   document.getElementById('kpiTotalVal').textContent=fmt(sum(allQuotes));
+  document.getElementById('kpiDraft').textContent=drafts.length;
   [['Delivered','delivered'],['Nego','negotiation'],['Win','win'],['Loss','loss']].forEach(([k,s])=>{
     const arr=by(s);
     document.getElementById('kpi'+k).textContent=arr.length;
@@ -640,7 +808,7 @@ function sortByFollowUp(quotes){
 }
 
 function renderAllSummaryTables(){
-  const groups={all:allQuotes,delivered:allQuotes.filter(q=>q.status==='delivered'),negotiation:allQuotes.filter(q=>q.status==='negotiation'),win:allQuotes.filter(q=>q.status==='win'),loss:allQuotes.filter(q=>q.status==='loss')};
+  const groups={all:allQuotes,draft:allQuotes.filter(q=>(q.status||'draft')==='draft'),delivered:allQuotes.filter(q=>q.status==='delivered'),negotiation:allQuotes.filter(q=>q.status==='negotiation'),win:allQuotes.filter(q=>q.status==='win'),loss:allQuotes.filter(q=>q.status==='loss')};
   Object.entries(groups).forEach(([key,quotes])=>renderSummaryTable(key,sortByFollowUp(quotes).slice(0,15),key==='all'));
 }
 
@@ -686,7 +854,10 @@ function renderSummaryTable(key,rows,showStatus){
   });
 }
 
-function openQuote(quoteNo){ window.location.href=`app.html?id=${encodeURIComponent(quoteNo)}`; }
+function openQuote(quoteNo){ 
+  try{ localStorage.removeItem('qt_draft_v1'); } catch(e){}
+  window.location.href=`app.html?id=${encodeURIComponent(quoteNo)}`; 
+}
 
 // ── Equipment tooltip ─────────────────────────────────────────────────────
 function getTopEquipment(q){
@@ -817,6 +988,173 @@ function aqGoPage(p){
   document.querySelector('.aq-modal-body').scrollTop=0;
 }
 function getNestedVal(obj,path){return path.split('.').reduce((o,k)=>o?.[k],obj)||'';}
+
+// ── Settings Modal ────────────────────────────────────────────────────────
+const DASH_SETTINGS_KEY = 'mitsumori_dash_settings';
+let dashSettings = { fontSize: 13, density: 'comfy' };
+
+function loadDashSettings(){
+  try{ const s=JSON.parse(localStorage.getItem(DASH_SETTINGS_KEY)||'{}'); dashSettings={...dashSettings,...s}; } catch(e){}
+  applyDashFontSize(dashSettings.fontSize, true);
+  setDensity(dashSettings.density, true);
+}
+function saveDashSettings(){ try{ localStorage.setItem(DASH_SETTINGS_KEY, JSON.stringify(dashSettings)); } catch(e){} }
+
+function openSettingsModal(){
+  document.getElementById('dashFontSlider').value = dashSettings.fontSize;
+  document.getElementById('dashFontVal').textContent = dashSettings.fontSize+'px';
+  updateDensityBtns(dashSettings.density);
+  document.getElementById('settingsModal').classList.add('open');
+}
+function closeSettingsModal(){ document.getElementById('settingsModal').classList.remove('open'); }
+
+function applyDashFontSize(v, silent){
+  dashSettings.fontSize = parseInt(v);
+  document.querySelector('.main').style.fontSize = v+'px';
+  const lbl = document.getElementById('dashFontVal');
+  if(lbl) lbl.textContent = v+'px';
+  const slider = document.getElementById('dashFontSlider');
+  if(slider) slider.value = v;
+  if(!silent) saveDashSettings();
+}
+
+function setDensity(mode, silent){
+  dashSettings.density = mode;
+  const pad = mode==='compact' ? '6px 14px' : '10px 14px';
+  document.querySelectorAll('table.summary-table td, table.aq-table td').forEach(td => td.style.padding = pad);
+  updateDensityBtns(mode);
+  if(!silent) saveDashSettings();
+}
+function updateDensityBtns(mode){
+  const compact = document.getElementById('densityCompact');
+  const comfy   = document.getElementById('densityComfy');
+  if(!compact||!comfy) return;
+  if(mode==='compact'){
+    compact.style.cssText='padding:5px 12px;border-radius:7px;border:1.5px solid #2C2C2C;background:#2C2C2C;font-size:11px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;transition:all .15s';
+    comfy.style.cssText='padding:5px 12px;border-radius:7px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:11px;font-weight:600;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s';
+  } else {
+    comfy.style.cssText='padding:5px 12px;border-radius:7px;border:1.5px solid #2C2C2C;background:#2C2C2C;font-size:11px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;transition:all .15s';
+    compact.style.cssText='padding:5px 12px;border-radius:7px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:11px;font-weight:600;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s';
+  }
+}
+
+// ── New Quote Modal ───────────────────────────────────────────────────────
+let nqMode = 'new';           // 'new' | 'load'
+let nqSelectedDoc = null;     // selected existing quote doc
+let nqAllQuotes = [];         // local copy for search
+
+function openNewQuoteModal(){
+  nqMode = 'new';
+  nqSelectedDoc = null;
+  nqAllQuotes = [...allQuotes];
+  document.getElementById('newQuoteModal').classList.add('open');
+  document.getElementById('nqBtnLabel').textContent = 'Open New Quote';
+  document.getElementById('nqLoadSection').style.display = 'none';
+  document.getElementById('nqError').style.display = 'none';
+  document.getElementById('nqSearchInp').value = '';
+  selectNQMode('new');
+}
+function closeNewQuoteModal(){ document.getElementById('newQuoteModal').classList.remove('open'); }
+
+function selectNQMode(mode){
+  nqMode = mode;
+  nqSelectedDoc = null;
+  const cardNew  = document.getElementById('nqCardNew');
+  const cardLoad = document.getElementById('nqCardLoad');
+  const loadSec  = document.getElementById('nqLoadSection');
+  const btnLbl   = document.getElementById('nqBtnLabel');
+  const errEl    = document.getElementById('nqError');
+  errEl.style.display = 'none';
+
+  if(mode === 'new'){
+    cardNew.classList.add('selected');
+    cardLoad.classList.remove('selected');
+    loadSec.style.display = 'none';
+    btnLbl.textContent = 'Open New Quote';
+  } else {
+    cardLoad.classList.add('selected');
+    cardNew.classList.remove('selected');
+    loadSec.style.display = 'block';
+    btnLbl.textContent = 'Load Selected Quote';
+    nqRenderQuotes(nqAllQuotes.slice(0, 50));
+  }
+}
+
+function nqFilterQuotes(){
+  const q = document.getElementById('nqSearchInp').value.toLowerCase();
+  if(!q){ nqRenderQuotes(nqAllQuotes.slice(0,50)); return; }
+  const filtered = nqAllQuotes.filter(d => {
+    const hay = [d.displayQuoteNo, d.quoteNo, d.customer?.company, d.customer?.name, d.createdByName].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  nqRenderQuotes(filtered);
+}
+
+const statusColors = { draft:'#64748b', delivered:'#1d4ed8', negotiation:'#c2410c', win:'#15803d', loss:'#dc2626' };
+
+function nqRenderQuotes(docs){
+  const area = document.getElementById('nqLoadResults');
+  if(!docs.length){ area.innerHTML='<div style="padding:14px;text-align:center;font-size:12px;color:#94a3b8">No quotes found.</div>'; return; }
+  area.innerHTML = docs.map(d => {
+    const st = d.status||'draft';
+    const col = statusColors[st]||'#94a3b8';
+    return `<div class="nq-load-card" id="nqDoc_${d._id}" onclick="nqSelectDoc('${d._id}')">
+      <div class="nq-load-top">
+        <span class="nq-load-no">${d.displayQuoteNo||d.quoteNo||'—'}</span>
+        <span class="nq-load-status" style="background:${col}20;color:${col}">${st}</span>
+      </div>
+      <div class="nq-load-cust">${d.customer?.company||d.customer?.name||'Unknown customer'}</div>
+      <div class="nq-load-meta">${d.quoteDate||'No date'} · ${d.createdByName||'—'} · RM ${((d.totals?.grandTotal||0)).toLocaleString('en-MY',{minimumFractionDigits:2})}</div>
+    </div>`;
+  }).join('');
+}
+
+function nqSelectDoc(docId){
+  nqSelectedDoc = nqAllQuotes.find(d => d._id === docId);
+  document.querySelectorAll('.nq-load-card').forEach(el => el.classList.remove('selected'));
+  const el = document.getElementById('nqDoc_'+docId);
+  if(el) el.classList.add('selected');
+  document.getElementById('nqError').style.display = 'none';
+}
+
+async function nqProceed(){
+  const btn    = document.getElementById('nqGoBtn');
+  const spin   = document.getElementById('nqSpinner');
+  const lbl    = document.getElementById('nqBtnLabel');
+  const errEl  = document.getElementById('nqError');
+  errEl.style.display = 'none';
+
+  if(nqMode === 'load'){
+    if(!nqSelectedDoc){ errEl.textContent='Please select a quote to load.'; errEl.style.display='block'; return; }
+    window.location.href = `app.html?id=${encodeURIComponent(nqSelectedDoc.quoteNo||'')}`;
+    return;
+  }
+
+  // NEW quote — pre-generate quote number atomically via Firestore counter
+  btn.disabled = true; spin.classList.add('on'); lbl.textContent = 'Generating…';
+  try {
+    const year = new Date().getFullYear().toString();
+    const counterRef = db.collection(COL.META).doc(META_DOC_ID);
+    const newNo = await db.runTransaction(async t => {
+      const doc = await t.get(counterRef);
+      const data = doc.exists ? doc.data() : {};
+      const cur  = data[year] || 0;
+      const next = cur + 1;
+      t.set(counterRef, { [year]: next, lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      return next;
+    });
+    const padded = String(newNo).padStart(4,'0');
+    const qNo = `QT-${year}-${padded}`;
+    // Clear local draft so app.html doesn't restore previous session
+    try { localStorage.removeItem('qt_draft_v1'); } catch(e){}
+    window.location.href = `app.html?new=${encodeURIComponent(qNo)}`;
+  } catch(e){
+    errEl.textContent = 'Failed to generate quote number. Check your connection and try again.';
+    errEl.style.display = 'block';
+    btn.disabled = false; spin.classList.remove('on'); lbl.textContent = 'Open New Quote';
+    console.error(e);
+  }
+}
 
 // ── Admin ─────────────────────────────────────────────────────────────────
 async function exportFullDB(){
