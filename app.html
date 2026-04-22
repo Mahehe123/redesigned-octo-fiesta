@@ -2197,8 +2197,25 @@ function buildAllPages(){
   p1+=`</tbody></table>`;
   // Grand total
   p1+=`<div style="display:flex;justify-content:flex-end;margin-bottom:24px"><div style="min-width:300px"><div style="border-top:2px solid ${c.totalBorder};padding-top:14px;display:flex;justify-content:space-between;align-items:baseline;gap:32px"><span style="font-size:13px;font-weight:700;color:${c.totalText};letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">Grand Total (MYR)</span><span style="font-size:22px;font-weight:700;color:${c.totalText};white-space:nowrap">RM ${fmt(grandTotal)}</span></div></div></div>`;
+  // Delivery lead time pill
+  (()=>{
+    let bestRow=null, bestMax=-1;
+    priceRows.forEach(row=>{
+      const lt=parseFloat(row.item.ltMax||0);
+      if(lt>bestMax){bestMax=lt;bestRow=row;}
+    });
+    if(bestRow&&(bestRow.item.ltMin||bestRow.item.ltMax)){
+      const ltMin=bestRow.item.ltMin||0, ltMax=bestRow.item.ltMax||0;
+      const ltModel=bestRow.e.model||'Equipment';
+      const ltRange=(ltMin&&ltMax&&ltMin!==ltMax)?`${ltMin}\u2013${ltMax} weeks`:`${ltMax||ltMin} weeks`;
+      p1+=`<div style="margin-bottom:14px;display:inline-flex;align-items:center;gap:8px;background:${c.light};border-radius:999px;padding:5px 14px 5px 8px">`;
+      p1+=`<span style="background:${c.primary};color:${c.badgeText};border-radius:999px;padding:2px 10px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">Lead Time</span>`;
+      p1+=`<span style="font-size:12px;color:#374151;font-weight:500">Based on <strong style="color:${c.primary}">${ltModel}</strong>: <strong>${ltRange}</strong></span>`;
+      p1+=`</div>`;
+    }
+  })();
   // Notes
-  if(notes)p1+=`<div style="background:${c.light};border-radius:8px;padding:14px 16px;margin-bottom:16px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Notes</p><p style="font-size:13px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${notes}</p></div>`;
+  if(notes)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Notes</p><p style="font-size:12px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${notes}</p></div>`;
   if(payment)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Payment Terms</p><p style="font-size:12px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${payment}</p></div>`;
   if(terms)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Terms &amp; Conditions</p><p style="font-size:12px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${terms}</p></div>`;
   // Footer
@@ -2231,6 +2248,7 @@ function buildAllPages(){
     sp+=`</table>`;
     // Lead time now shown as pill in header (top right)
     sp+=`</div>`;
+    sp+=`<div style="margin-top:auto"></div>`;
     sp+=`<div style="padding-top:14px;border-top:1.5px solid ${c.primary};display:flex;justify-content:space-between;font-size:11px;color:#374151"><span>${companyName||''}</span><span>${quoteNo}</span></div>`;
     sp+=`</div>`;
     pages.push(sp);
