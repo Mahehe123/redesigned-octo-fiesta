@@ -1086,11 +1086,11 @@ function renderActivityPills(){
 
   document.getElementById('pillWeekLabel').textContent = `This Week (${weekLabel})`;
   document.getElementById('pillWeekCount').textContent = weekQuotes.length;
-  document.getElementById('pillWeekVal').textContent = `${fmt(sum(weekQuotes))}`;
+  document.getElementById('pillWeekVal').textContent  = fmt(sum(weekQuotes));
 
   document.getElementById('pillMonthLabel').textContent = `${monthName} ${yr}`;
   document.getElementById('pillMonthCount').textContent = monthQuotes.length;
-  document.getElementById('pillMonthVal').textContent = `${fmt(sum(monthQuotes))}`;
+  document.getElementById('pillMonthVal').textContent = fmt(sum(monthQuotes));
 }
 
 function openSettingsModal(){
