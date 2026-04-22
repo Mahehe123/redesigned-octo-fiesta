@@ -312,7 +312,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;color:#94a3b8;margin:0 auto 6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         <p style="font-size:11px;color:#94a3b8">Click to upload logo</p>
         <input id="logoInput" type="file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)"/>
-      </div></div>
+      </div>
+      <p style="font-size:10px;color:#94a3b8;margin-top:5px">Logo is automatically synced to cloud and loads on every device.</p></div>
     <div class="sec">
       <p class="sec-title">Equipment Library</p>
       <div id="equipAdminPanel" style="display:none;margin-bottom:10px">
@@ -573,20 +574,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   <div class="m-actions"><button onclick="saveNewCustomer()" class="btn-dark">Save Customer</button><button onclick="document.getElementById('custModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
 </div></div>
 
-<!-- Terms modal -->
-<div id="termsModal" class="modal-bg"><div class="modal" style="width:380px">
-  <div class="mhdr"><h3>Terms Template</h3><button class="mx" onclick="document.getElementById('termsModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
-  <div class="vy2"><input id="newTermsName" placeholder="Template name" class="inp"/><textarea id="newTermsText" placeholder="Terms text…" rows="5" class="inp"></textarea></div>
-  <div class="m-actions"><button onclick="saveTermsTemplate()" class="btn-dark">Save Template</button><button onclick="document.getElementById('termsModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
-</div></div>
-
-<!-- Payment modal -->
-<div id="payModal" class="modal-bg"><div class="modal" style="width:380px">
-  <div class="mhdr"><h3>Payment Template</h3><button class="mx" onclick="document.getElementById('payModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
-  <div class="vy2"><input id="newPayName" placeholder="Template name" class="inp"/><textarea id="newPayText" placeholder="Payment terms…" rows="4" class="inp"></textarea></div>
-  <div class="m-actions"><button onclick="savePayTemplate()" class="btn-dark">Save Template</button><button onclick="document.getElementById('payModal').classList.remove('on')" class="btn-outline">Cancel</button></div>
-</div></div>
-
 <!-- Email draft modal -->
 <div id="emailModal" class="modal-bg"><div class="modal" style="width:460px;max-width:95vw">
   <div class="mhdr"><h3>Email Draft</h3><button class="mx" onclick="document.getElementById('emailModal').classList.remove('on')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
@@ -805,6 +792,7 @@ auth.onAuthStateChanged(async user => {
   await loadTemplatesFromCloud();
   await loadCompetitorsFromCloud();
   await loadEquipmentFromCloud();
+  await loadLogoFromCloud();
 
   // Run daily backup
   runDailyBackup();
@@ -813,8 +801,28 @@ auth.onAuthStateChanged(async user => {
   const params = new URLSearchParams(window.location.search);
   const loadId = params.get('id');
   const loadRev = params.get('rev');
-  if(loadId){ await loadQuoteById(loadId, loadRev ? parseInt(loadRev) : null); }
-  else {
+  const newQNo = params.get('new'); // pre-generated quote number from dashboard
+
+  if(loadId){
+    await loadQuoteById(loadId, loadRev ? parseInt(loadRev) : null);
+  } else if(newQNo && newQNo.startsWith('QT-')){
+    // Fresh new quote — do NOT restore from localStorage draft
+    if(!document.getElementById('quoteDate').value) document.getElementById('quoteDate').value=today();
+    if(!document.getElementById('followUpDate').value) document.getElementById('followUpDate').value=todayPlus7();
+    applyProfileToForm();
+    await loadCustomersFromCloud();
+    currentBaseNo = newQNo;
+    currentRevision = 0;
+    currentStatus = 'draft';
+    currentQuoteId = null;
+    isLocked = false;
+    document.getElementById('quoteNumber').value = newQNo;
+    updateStatusBar();
+    updatePreview();
+    save();
+    showToast(`New quote started: ${newQNo}`,'ok');
+    switchTab('info');
+  } else {
     load();
     if(!document.getElementById('quoteDate').value) document.getElementById('quoteDate').value=today();
     if(!document.getElementById('followUpDate').value) document.getElementById('followUpDate').value=todayPlus7();
@@ -1339,6 +1347,10 @@ function loadQuoteData(data){
   save();
   showToast(`Loaded: ${data.displayQuoteNo || data.quoteNo}`,'ok');
   switchTab('info');
+  // Clean URL params so page refresh doesn't reload the same quote
+  if(window.history && window.history.replaceState){
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
   // Force repaint so right panel renders after async Firebase load
   requestAnimationFrame(()=>{
     const pw=document.getElementById('pagesWrapper');
@@ -1379,6 +1391,10 @@ function newQuote(){
   updatePreview();
   save();
   switchTab('info');
+  // Clean URL so page refresh doesn't re-apply old params
+  if(window.history && window.history.replaceState){
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1723,18 +1739,43 @@ async function saveCustomersToCloud(){
   } catch(e){ showToast('Customer sync failed: '+(e.message||e.code),'err'); console.error(e); }
 }
 // ═══════════════════════════════════════════════════════════════════════════
+// LOGO — local + cloud sync
+// ═══════════════════════════════════════════════════════════════════════════
 function handleLogoUpload(input){
   const file=input.files[0];if(!file)return;
   const r=new FileReader();
-  r.onload=e=>{logoDataUrl=e.target.result;restoreLogo(logoDataUrl);updatePreview();save();};
+  r.onload=async e=>{
+    logoDataUrl=e.target.result;
+    restoreLogo(logoDataUrl);
+    updatePreview();save();
+    await syncLogoToCloud(logoDataUrl);
+  };
   r.readAsDataURL(file);
 }
 function restoreLogo(url){
   logoDataUrl=url;
   const area=document.getElementById('logoUploadArea');
-  area.innerHTML=`<div class="logo-preview-wrap"><img src="${url}" class="logo-preview-img"/><button class="logo-remove-btn" onclick="removeLogo()">Remove</button></div>`;
+  area.innerHTML=`<div class="logo-preview-wrap"><img src="${url}" class="logo-preview-img"/><div style="display:flex;flex-direction:column;gap:4px"><button class="logo-remove-btn" onclick="removeLogo()">Remove</button><span style="font-size:10px;color:#94a3b8">Synced to cloud ☁️</span></div></div>`;
 }
-function removeLogo(){logoDataUrl='';document.getElementById('logoUploadArea').innerHTML=`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;color:#94a3b8;margin:0 auto 6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p style="font-size:11px;color:#94a3b8">Click to upload logo</p><input id="logoInput" type="file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)"/>`;updatePreview();save();}
+function removeLogo(){logoDataUrl='';document.getElementById('logoUploadArea').innerHTML=`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;color:#94a3b8;margin:0 auto 6px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p style="font-size:11px;color:#94a3b8">Click to upload logo</p><input id="logoInput" type="file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)"/>`;updatePreview();save();syncLogoToCloud('');}
+
+async function syncLogoToCloud(logoB64){
+  if(!currentUser) return;
+  try{
+    await db.collection(COL.USERS).doc(currentUser.uid).set({logoBase64: logoB64||'', logoUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+  } catch(e){ console.warn('Logo cloud sync failed:',e); }
+}
+
+async function loadLogoFromCloud(){
+  if(!currentUser) return;
+  try{
+    const doc=await db.collection(COL.USERS).doc(currentUser.uid).get();
+    if(doc.exists && doc.data().logoBase64 && !logoDataUrl){
+      restoreLogo(doc.data().logoBase64);
+      updatePreview();
+    }
+  } catch(e){ console.warn('Logo load failed:',e); }
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TAB SWITCHING
@@ -2266,7 +2307,8 @@ async function downloadPDF(){
 // EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════════════════════
 document.getElementById('leftPanel').addEventListener('input',e=>{const tag=e.target.tagName.toLowerCase();if(tag==='input'&&e.target.type==='range')return;if(tag==='input'||tag==='textarea'){updatePreview();save();}});
-['custModal','termsModal','payModal','emailModal','profileModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
+['custModal','emailModal','profileModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
+['payModal','termsModal','competitorModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
 document.getElementById('loadModal').addEventListener('click',e=>{if(e.target===document.getElementById('loadModal'))closeLoadModal();});
 document.getElementById('statusModal').addEventListener('click',e=>{if(e.target===document.getElementById('statusModal'))document.getElementById('statusModal').classList.remove('on');});
 
