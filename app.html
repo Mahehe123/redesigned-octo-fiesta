@@ -2130,7 +2130,7 @@ function buildAllPages(){
   const fs=specFontSize+'px';
 
   const tp=currentTheme;
-  const colors={default:{primary:'#0f172a',accent:'#334155',light:'#f1f5f9',badge:'#0f172a',badgeText:'#fff',tag:'#f1f5f9',tagText:'#475569',totalBorder:'#0f172a',totalText:'#0f172a'},industrial:{primary:'#1B365D',accent:'#708090',light:'#E6F0FA',badge:'#1B365D',badgeText:'#fff',tag:'#E6F0FA',tagText:'#1B365D',totalBorder:'#1B365D',totalText:'#1B365D'},japandi:{primary:'#2C2C2C',accent:'#8B8176',light:'#F2EDE6',badge:'#2C2C2C',badgeText:'#F5F0E8',tag:'#EDE8E0',tagText:'#2C2C2C',totalBorder:'#2C2C2C',totalText:'#2C2C2C'}};
+  const colors={default:{primary:'#0f172a',accent:'#334155',light:'#f1f5f9',badge:'#0f172a',badgeText:'#fff',tag:'#f1f5f9',tagText:'#475569',totalBorder:'#0f172a',totalText:'#0f172a',tagBg:'#f1f5f9'},industrial:{primary:'#1B365D',accent:'#708090',light:'#E6F0FA',badge:'#1B365D',badgeText:'#fff',tag:'#E6F0FA',tagText:'#1B365D',totalBorder:'#1B365D',totalText:'#1B365D',tagBg:'#E6F0FA'},japandi:{primary:'#2C2C2C',accent:'#8B8176',light:'#F2EDE6',badge:'#2C2C2C',badgeText:'#F5F0E8',tag:'#EDE8E0',tagText:'#2C2C2C',totalBorder:'#2C2C2C',totalText:'#2C2C2C',tagBg:'#EDE8E0'}};
   const c=colors[tp]||colors.default;
   const bgPage=tp==='japandi'?'#FAF7F2':'#fff';
   const fontFamily=tp==='japandi'?"'Cormorant Garamond',serif":"'Inter',sans-serif";
@@ -2197,30 +2197,15 @@ function buildAllPages(){
   p1+=`</tbody></table>`;
   // Grand total
   p1+=`<div style="display:flex;justify-content:flex-end;margin-bottom:24px"><div style="min-width:300px"><div style="border-top:2px solid ${c.totalBorder};padding-top:14px;display:flex;justify-content:space-between;align-items:baseline;gap:32px"><span style="font-size:13px;font-weight:700;color:${c.totalText};letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">Grand Total (MYR)</span><span style="font-size:22px;font-weight:700;color:${c.totalText};white-space:nowrap">RM ${fmt(grandTotal)}</span></div></div></div>`;
-  // Delivery lead time pill
-  (()=>{
-    let bestRow=null, bestMax=-1;
-    priceRows.forEach(row=>{
-      const lt=parseFloat(row.item.ltMax||0);
-      if(lt>bestMax){bestMax=lt;bestRow=row;}
-    });
-    if(bestRow&&(bestRow.item.ltMin||bestRow.item.ltMax)){
-      const ltMin=bestRow.item.ltMin||0, ltMax=bestRow.item.ltMax||0;
-      const ltModel=bestRow.e.model||'Equipment';
-      const ltRange=(ltMin&&ltMax&&ltMin!==ltMax)?`${ltMin}\u2013${ltMax} weeks`:`${ltMax||ltMin} weeks`;
-      p1+=`<div style="margin-bottom:14px;display:inline-flex;align-items:center;gap:8px;background:${c.light};border-radius:999px;padding:5px 14px 5px 8px">`;
-      p1+=`<span style="background:${c.primary};color:${c.badgeText};border-radius:999px;padding:2px 10px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">Lead Time</span>`;
-      p1+=`<span style="font-size:12px;color:#374151;font-weight:500">Based on <strong style="color:${c.primary}">${ltModel}</strong>: <strong>${ltRange}</strong></span>`;
-      p1+=`</div>`;
-    }
-  })();
+  // Overall delivery lead time banner
+  (()=>{const ltItems=priceRows.filter(r=>(r.item.ltMin||r.item.ltMax));if(ltItems.length){let best=ltItems[0];ltItems.forEach(r=>{if((r.item.ltMax||0)>(best.item.ltMax||0)||((r.item.ltMax||0)===(best.item.ltMax||0)&&(r.item.ltMin||0)>(best.item.ltMin||0)))best=r;});const lt=best.item.ltMin&&best.item.ltMax?`${best.item.ltMin} – ${best.item.ltMax} weeks`:best.item.ltMax?`${best.item.ltMax} weeks`:`${best.item.ltMin} weeks`;p1+=`<div style="margin-bottom:16px;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;display:flex;align-items:center;justify-content:space-between"><div><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:3px">Overall Delivery Lead Time</p><p style="font-size:11px;color:#475569">Based on <span style="font-weight:600">${best.e.model}</span></p></div><p style="font-size:14px;font-weight:700;color:${c.primary}">${lt}</p></div>`;}})();
   // Notes
-  if(notes)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Notes</p><p style="font-size:12px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${notes}</p></div>`;
+  if(notes)p1+=`<div style="background:${c.light};border-radius:8px;padding:14px 16px;margin-bottom:16px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Notes</p><p style="font-size:13px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${notes}</p></div>`;
   if(payment)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Payment Terms</p><p style="font-size:12px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${payment}</p></div>`;
   if(terms)p1+=`<div style="margin-bottom:12px"><p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;font-size:11px;margin-bottom:6px">Terms &amp; Conditions</p><p style="font-size:12px;color:#1e293b;white-space:pre-wrap;line-height:1.6">${terms}</p></div>`;
   // Footer
   // Footer — always pinned to bottom of page
-  p1+=`<div style="margin-top:auto"></div>`;
+  p1+=`<div style="margin-top:auto;flex-shrink:0"></div>`;
   p1+=`<div style="padding:14px 0 0;border-top:1.5px solid ${c.primary};display:flex;justify-content:space-between;align-items:center;flex-shrink:0">`;
   p1+=`<div style="font-size:11px;color:#374151">${footer||'Thank you for your kind consideration.'}</div>`;
   if(salesName||salesPhone||salesEmail)p1+=`<div style="text-align:right;font-size:11px;color:#374151">${[salesName,salesPhone,salesEmail].filter(Boolean).join(' · ')}</div>`;
@@ -2238,18 +2223,58 @@ function buildAllPages(){
     else if(st==='dryer'){specRows=[['Refrigerant',e.refrigerant],['Min Flow',e.minM3?e.minM3+' m³/min':''],['Max Flow',e.maxM3?e.maxM3+' m³/min':''],['Min CFM',e.minCFM],['Max CFM',e.maxCFM],['Power Supply',e.power],['Dimension',e.dimension],['Weight',e.weight]].filter(r=>r[1]);}
     else if(st==='af'){specRows=[['Flow Rate',e.filterM3?e.filterM3+' m³/min':''],['CFM',e.filterCFM],['Oil Carry Over',e.filterOil],['Particle Removal',e.filterPart],['Dimension',e.filterDim],['Outlet',e.filterOutlet],['Weight',e.filterWeight]].filter(r=>r[1]);}
     else if(st==='at'){specRows=[['Volume',e.tankVolume],['Material',e.tankMat],['Pressure',e.tankPres],['Dimension',e.tankDim],['Outlet',e.tankOutlet]].filter(r=>r[1]);}
+
+    // Series pill colour — matches brand/type
+    const seriesPillColor=st==='dryer'?'#1e40af':st==='af'?'#065f46':st==='at'?'#92400e':c.primary;
+
+    // Pricing block for top-right
+    const listedPr=row.listedPrice,payPr=row.purchasePrice,qty=item.qty||1;
+    const lineTotal=row.lineTotal;
+    const hasDisc=row.hasDiscount;
+    const discPct=hasDisc?(getModifier(item).modPct||0):0;
+    let priceHTML='';
+    if(hasDisc){
+      priceHTML+=`<p style="font-size:12px;color:#94a3b8;text-decoration:line-through;text-align:right">RM ${fmt(listedPr*qty)}</p>`;
+      priceHTML+=`<p style="font-size:11px;color:#374151;margin-top:1px;text-align:right">Pays: <span style="font-weight:700;color:#15803d">RM ${fmt(lineTotal)}</span> <span style="color:#16a34a;font-size:10px">(−${discPct.toFixed(1)}%)</span></p>`;
+    } else {
+      priceHTML+=`<p style="font-size:11px;color:#374151;text-align:right">Pays: <span style="font-weight:700;color:#1e293b">RM ${fmt(lineTotal)}</span></p>`;
+    }
+    priceHTML+=`<p style="font-size:18px;font-weight:700;color:${c.primary};text-align:right;margin-top:4px">RM ${fmt(lineTotal)}</p>`;
+
+    // Lead time delivery box
+    const ltStr=(item.ltMin||item.ltMax)?`${item.ltMin||0} – ${item.ltMax||0} weeks`:'';
+    const deliveryHTML=ltStr?`<div style="margin-top:10px;padding:7px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;text-align:right"><p style="font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6B7280;margin-bottom:2px">Est. Delivery</p><p style="font-size:13px;font-weight:700;color:${c.primary}">${ltStr}</p></div>`:'';
+
     let sp=`<div class="a4-page" style="background:${bgPage};font-family:${fontFamily}">`;
-    sp+=`<div style="padding-bottom:14px;margin-bottom:24px;border-bottom:2px solid ${c.primary};display:flex;align-items:center;justify-content:space-between">`;
-    sp+=`<div><div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#1e293b;margin-bottom:6px">Technical Specification</div><div style="font-size:20px;font-weight:800;color:${c.primary}">${e.model}</div>${e.series?`<div style="font-size:12px;color:#374151;font-weight:600;margin-top:3px">${e.series}</div>`:''}</div>`;
-    sp+=`<div style="text-align:right"><div style="font-size:11px;color:#374151">${quoteNo} · Item ${i+1}</div>${(item.ltMin||item.ltMax)?`<span style="display:inline-block;margin-top:7px;background:${c.primary};color:${c.badgeText};font-size:10px;font-weight:700;padding:3px 11px;border-radius:999px;letter-spacing:.03em">Lead Time: ${item.ltMin||0}–${item.ltMax||0} wks</span>`:''}</div></div>`;
+    // ── Header block ─────────────────────────────────────────────────────
+    sp+=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">`;
+    // Left: label + model + series pill
+    sp+=`<div>`;
+    sp+=`<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B7280;margin-bottom:6px">Equipment Detail</div>`;
+    sp+=`<div style="font-size:22px;font-weight:700;color:${c.primary}">${e.model}</div>`;
+    if(e.type)sp+=`<div style="font-size:12px;color:#6B7280;margin-top:2px">${e.type}</div>`;
+    if(e.series)sp+=`<span style="display:inline-block;margin-top:10px;background:${seriesPillColor};color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;padding:4px 14px;border-radius:999px">${e.series}</span>`;
+    sp+=`</div>`;
+    // Right: item badge, qty, pricing, delivery
+    sp+=`<div style="text-align:right">`;
+    sp+=`<span style="display:inline-block;background:${c.tag};color:${c.tagText};font-size:10px;font-weight:700;padding:4px 12px;border-radius:999px">Item ${i+1}</span>`;
+    sp+=`<p style="font-size:11px;color:#6B7280;margin-top:8px">Qty: <span style="font-weight:600;color:#334155">${qty}</span></p>`;
+    sp+=priceHTML;
+    sp+=deliveryHTML;
+    sp+=`</div>`;
+    sp+=`</div>`;
+    // ── Divider ───────────────────────────────────────────────────────────
+    sp+=`<div style="border-top:2px solid ${c.primary};margin-bottom:24px"></div>`;
+    // ── Spec label ────────────────────────────────────────────────────────
+    sp+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px"><p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${c.primary};white-space:nowrap">Specifications</p><div style="flex:1;height:1px;background:${c.primary};opacity:.15"></div></div>`;
+    // ── Spec table ────────────────────────────────────────────────────────
     sp+=`<div style="flex:1;min-height:0">`;
     sp+=`<table class="spec-table" style="font-size:${fs}">`;
     specRows.forEach(([lbl,val])=>{sp+=`<tr><td>${lbl}</td><td>${val}</td></tr>`;});
     sp+=`</table>`;
-    // Lead time now shown as pill in header (top right)
     sp+=`</div>`;
-    sp+=`<div style="margin-top:auto"></div>`;
-    sp+=`<div style="padding-top:14px;border-top:1.5px solid ${c.primary};display:flex;justify-content:space-between;font-size:11px;color:#374151"><span>${companyName||''}</span><span>${quoteNo}</span></div>`;
+    // ── Footer ────────────────────────────────────────────────────────────
+    sp+=`<div style="margin-top:auto;padding-top:14px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;font-size:10px;color:#a0aec0;flex-shrink:0"><span>${companyName||'Your Company'} · ${quoteNo||''}</span><span>Page ${i+2} of ${priceRows.filter(r=>['compressor','dryer','af','at'].includes(seriesType(r.e.series))).length+1}</span></div>`;
     sp+=`</div>`;
     pages.push(sp);
   });
