@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
-body{background:#F5F4F1;color:#1e293b;min-height:100vh}
+body{background:#F5F4F1;color:#1e293b;min-height:100vh;--dash-font-size:15px;--dash-kpi-val:28px;--dash-stat-val:23px;--dash-table-td:15px}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:#f1f5f9}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
 
 /* ── Topbar ── */
@@ -47,8 +47,8 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .kpi.active.loss{border-color:#ef4444;background:#fef2f2}
 .kpi.active::before{height:4px}
 .kpi-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
-.kpi-val{font-size:26px;font-weight:700;color:#1e293b;line-height:1}
-.kpi-sub{font-size:11px;color:#64748b;margin-top:4px;font-weight:500}
+.kpi-val{font-size:var(--dash-kpi-val,28px);font-weight:700;color:#1e293b;line-height:1}
+.kpi-sub{font-size:var(--dash-font-size,15px);color:#64748b;margin-top:4px;font-weight:500}
 
 /* ── Context panels ── */
 .ctx-panel{display:none}.ctx-panel.active{display:block}
@@ -67,8 +67,8 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 .stat-pills{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
 .stat-pill{display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid #e8e6e1;border-radius:12px;padding:14px 20px;min-width:120px}
 .stat-pill-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;margin-bottom:4px;text-align:center}
-.stat-pill-val{font-size:22px;font-weight:700;color:#1e293b;line-height:1}
-.stat-pill-sub{font-size:10px;color:#64748b;margin-top:3px;font-weight:500}
+.stat-pill-val{font-size:var(--dash-stat-val,23px);font-weight:700;color:#1e293b;line-height:1}
+.stat-pill-sub{font-size:var(--dash-font-size,15px);color:#64748b;margin-top:3px;font-weight:500}
 .stat-pill.blue{border-color:#93c5fd;background:#eff6ff}.stat-pill.blue .stat-pill-val{color:#1d4ed8}
 .stat-pill.orange{border-color:#fdba74;background:#fff7ed}.stat-pill.orange .stat-pill-val{color:#c2410c}
 .stat-pill.green{border-color:#86efac;background:#f0fdf4}.stat-pill.green .stat-pill-val{color:#15803d}
@@ -104,7 +104,7 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh}
 table.summary-table{width:100%;border-collapse:collapse}
 table.summary-table thead tr{background:#faf9f7}
 table.summary-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#374151;white-space:nowrap;border-bottom:1px solid #f1f5f9}
-table.summary-table td{padding:10px 14px;font-size:13px;border-bottom:1px solid #faf9f7;color:#1e293b;vertical-align:middle}
+table.summary-table td{padding:10px 14px;font-size:var(--dash-table-td,15px);border-bottom:1px solid #faf9f7;color:#1e293b;vertical-align:middle}
 table.summary-table tr:last-child td{border-bottom:none}
 table.summary-table tr:hover td{background:#faf9f7;cursor:pointer}
 /* Yellow highlight for win rows missing details */
@@ -159,7 +159,7 @@ table.aq-table{width:100%;border-collapse:collapse}
 table.aq-table thead tr{background:#faf9f7;position:sticky;top:0;z-index:2}
 table.aq-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#374151;white-space:nowrap;border-bottom:1px solid #f1f5f9;cursor:pointer;user-select:none}
 table.aq-table th:hover{color:#1e293b}.table.aq-table th.sorted{color:#2C2C2C}
-table.aq-table td{padding:10px 14px;font-size:13px;border-bottom:1px solid #faf9f7;color:#1e293b;vertical-align:middle}
+table.aq-table td{padding:10px 14px;font-size:var(--dash-table-td,15px);border-bottom:1px solid #faf9f7;color:#1e293b;vertical-align:middle}
 table.aq-table tr:last-child td{border-bottom:none}
 table.aq-table tr:hover td{background:#faf9f7;cursor:pointer}
 table.aq-table tr.win-incomplete td{background:#fefce8!important}
@@ -302,6 +302,20 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
       <div class="kpi-label">Loss</div>
       <div class="kpi-val" id="kpiLoss">—</div>
       <div class="kpi-sub" id="kpiLossVal">RM —</div>
+    </div>
+  </div>
+
+  <!-- ── Activity Pills (week + month) — shown only on All/Total Quotes panel ── -->
+  <div id="activityPillsRow" class="stat-pills" style="margin-bottom:20px;display:none">
+    <div class="stat-pill" id="pillWeek" style="border-color:#c4b5fd;background:#f5f3ff;min-width:180px">
+      <div class="stat-pill-label" id="pillWeekLabel">This Week</div>
+      <div class="stat-pill-val" id="pillWeekCount" style="color:#6d28d9">—</div>
+      <div class="stat-pill-sub" id="pillWeekVal">RM —</div>
+    </div>
+    <div class="stat-pill" id="pillMonth" style="border-color:#93c5fd;background:#eff6ff;min-width:180px">
+      <div class="stat-pill-label" id="pillMonthLabel">This Month</div>
+      <div class="stat-pill-val" id="pillMonthCount" style="color:#1d4ed8">—</div>
+      <div class="stat-pill-sub" id="pillMonthVal">RM —</div>
     </div>
   </div>
 
@@ -543,9 +557,9 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
         </div>
         <div class="settings-slider-wrap">
           <span style="font-size:10px;color:#94a3b8">A</span>
-          <input type="range" id="dashFontSlider" min="11" max="17" step="1" value="13" oninput="applyDashFontSize(this.value)"/>
+          <input type="range" id="dashFontSlider" min="11" max="17" step="1" value="15" oninput="applyDashFontSize(this.value)"/>
           <span style="font-size:14px;color:#94a3b8">A</span>
-          <span class="settings-val" id="dashFontVal">13px</span>
+          <span class="settings-val" id="dashFontVal">15px</span>
         </div>
       </div>
       <div class="settings-row" style="margin-bottom:0">
@@ -556,6 +570,26 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
         <div style="display:flex;gap:6px;margin-left:16px">
           <button id="densityCompact" onclick="setDensity('compact')" style="padding:5px 12px;border-radius:7px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:11px;font-weight:600;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s">Compact</button>
           <button id="densityComfy" onclick="setDensity('comfy')" style="padding:5px 12px;border-radius:7px;border:1.5px solid #2C2C2C;background:#2C2C2C;font-size:11px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;transition:all .15s">Comfy</button>
+        </div>
+      </div>
+    </div>
+    <div style="border-bottom:1px solid #f1f5f9;margin-bottom:16px;padding-bottom:16px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px">Work Week</div>
+      <div class="settings-row" style="margin-bottom:0">
+        <div>
+          <div class="settings-label">First Day of Week</div>
+          <div class="settings-hint">Determines work week for dashboard stats</div>
+        </div>
+        <div style="margin-left:16px">
+          <select id="weekStartDaySelect" onchange="applyWeekStartDay(this.value)" style="border:1px solid #e2e8f0;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600;color:#374151;outline:none;font-family:inherit;background:#fff;cursor:pointer">
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+            <option value="0">Sunday</option>
+          </select>
         </div>
       </div>
     </div>
@@ -665,6 +699,7 @@ function setActiveKPI(kpi){
   document.querySelector('.kpi.'+kpi).classList.add('active');
   document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('ctx-'+kpi).classList.add('active');
+  renderActivityPills();
 }
 
 // ── KPIs ──────────────────────────────────────────────────────────────────
@@ -682,6 +717,7 @@ function renderKPIs(){
     document.getElementById('kpi'+k+'Val').textContent=fmt(sum(arr));
   });
   renderStatPills();
+  renderActivityPills();
 }
 
 function renderStatPills(){
@@ -991,26 +1027,89 @@ function getNestedVal(obj,path){return path.split('.').reduce((o,k)=>o?.[k],obj)
 
 // ── Settings Modal ────────────────────────────────────────────────────────
 const DASH_SETTINGS_KEY = 'mitsumori_dash_settings';
-let dashSettings = { fontSize: 13, density: 'comfy' };
+let dashSettings = { fontSize: 15, density: 'comfy', weekStartDay: 1 };
 
 function loadDashSettings(){
   try{ const s=JSON.parse(localStorage.getItem(DASH_SETTINGS_KEY)||'{}'); dashSettings={...dashSettings,...s}; } catch(e){}
   applyDashFontSize(dashSettings.fontSize, true);
   setDensity(dashSettings.density, true);
+  applyWeekStartDay(dashSettings.weekStartDay, true);
 }
 function saveDashSettings(){ try{ localStorage.setItem(DASH_SETTINGS_KEY, JSON.stringify(dashSettings)); } catch(e){} }
+
+function applyWeekStartDay(v, silent){
+  dashSettings.weekStartDay = parseInt(v);
+  const sel = document.getElementById('weekStartDaySelect');
+  if(sel) sel.value = String(dashSettings.weekStartDay);
+  if(!silent){ saveDashSettings(); renderActivityPills(); }
+}
+
+function getWorkWeekRange(startDay){
+  // startDay: 0=Sun,1=Mon,...,6=Sat
+  const now = new Date();
+  const todayDay = now.getDay(); // 0=Sun
+  let diff = (todayDay - startDay + 7) % 7;
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - diff); weekStart.setHours(0,0,0,0);
+  const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6); weekEnd.setHours(23,59,59,999);
+  return { weekStart, weekEnd };
+}
+
+function renderActivityPills(){
+  const row = document.getElementById('activityPillsRow');
+  if(!row) return;
+  // Only show on 'all' KPI panel
+  if(activeKPI !== 'all'){ row.style.display='none'; return; }
+  row.style.display='flex';
+
+  const now = new Date();
+  const yr = now.getFullYear(), mo = now.getMonth();
+  const monthName = now.toLocaleString('en-MY',{month:'long'});
+  const fmt = n => 'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:0});
+  const sum = arr => arr.reduce((a,q)=>a+(q.totals?.grandTotal||0),0);
+
+  const getDate = q => {
+    if(q.quoteDate) return new Date(q.quoteDate);
+    const ts = q.updatedAt;
+    return ts?.toDate ? ts.toDate() : new Date((ts?.seconds||0)*1000);
+  };
+
+  // Week
+  const { weekStart, weekEnd } = getWorkWeekRange(dashSettings.weekStartDay ?? 1);
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const weekLabel = `${dayNames[weekStart.getDay()]} ${weekStart.getDate()}/${weekStart.getMonth()+1} – ${dayNames[weekEnd.getDay()]} ${weekEnd.getDate()}/${weekEnd.getMonth()+1}`;
+  const weekQuotes = allQuotes.filter(q=>{ const d=getDate(q); return d>=weekStart && d<=weekEnd; });
+
+  // Month
+  const monthStart = new Date(yr, mo, 1);
+  const monthEnd   = new Date(yr, mo+1, 0, 23, 59, 59);
+  const monthQuotes = allQuotes.filter(q=>{ const d=getDate(q); return d>=monthStart && d<=monthEnd; });
+
+  document.getElementById('pillWeekLabel').textContent = `This Week (${weekLabel})`;
+  document.getElementById('pillWeekCount').textContent = weekQuotes.length;
+  document.getElementById('pillWeekVal').textContent = `${weekQuotes.length} quote${weekQuotes.length!==1?'s':''} · ${fmt(sum(weekQuotes))}`;
+
+  document.getElementById('pillMonthLabel').textContent = `${monthName} ${yr}`;
+  document.getElementById('pillMonthCount').textContent = monthQuotes.length;
+  document.getElementById('pillMonthVal').textContent = `${monthQuotes.length} quote${monthQuotes.length!==1?'s':''} · ${fmt(sum(monthQuotes))}`;
+}
 
 function openSettingsModal(){
   document.getElementById('dashFontSlider').value = dashSettings.fontSize;
   document.getElementById('dashFontVal').textContent = dashSettings.fontSize+'px';
   updateDensityBtns(dashSettings.density);
+  const wsd = document.getElementById('weekStartDaySelect');
+  if(wsd) wsd.value = String(dashSettings.weekStartDay ?? 1);
   document.getElementById('settingsModal').classList.add('open');
 }
 function closeSettingsModal(){ document.getElementById('settingsModal').classList.remove('open'); }
 
 function applyDashFontSize(v, silent){
   dashSettings.fontSize = parseInt(v);
-  document.querySelector('.main').style.fontSize = v+'px';
+  // Apply to body so all elements inherit; override hardcoded sizes via CSS vars
+  document.body.style.setProperty('--dash-font-size', v+'px');
+  document.body.style.setProperty('--dash-kpi-val', Math.round(parseInt(v)*1.85)+'px');
+  document.body.style.setProperty('--dash-stat-val', Math.round(parseInt(v)*1.5)+'px');
+  document.body.style.setProperty('--dash-table-td', v+'px');
   const lbl = document.getElementById('dashFontVal');
   if(lbl) lbl.textContent = v+'px';
   const slider = document.getElementById('dashFontSlider');
