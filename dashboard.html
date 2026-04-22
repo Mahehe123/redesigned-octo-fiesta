@@ -307,12 +307,12 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 
   <!-- ── Activity Pills (week + month) — shown only on All/Total Quotes panel ── -->
   <div id="activityPillsRow" class="stat-pills" style="margin-bottom:20px;display:none">
-    <div class="stat-pill" id="pillWeek" style="border-color:#c4b5fd;background:#f5f3ff;min-width:180px">
+    <div class="stat-pill" id="pillWeek" style="border-color:#c4b5fd;background:#f5f3ff;min-width:200px">
       <div class="stat-pill-label" id="pillWeekLabel">This Week</div>
       <div class="stat-pill-val" id="pillWeekCount" style="color:#6d28d9">—</div>
       <div class="stat-pill-sub" id="pillWeekVal">RM —</div>
     </div>
-    <div class="stat-pill" id="pillMonth" style="border-color:#93c5fd;background:#eff6ff;min-width:180px">
+    <div class="stat-pill" id="pillMonth" style="border-color:#93c5fd;background:#eff6ff;min-width:200px">
       <div class="stat-pill-label" id="pillMonthLabel">This Month</div>
       <div class="stat-pill-val" id="pillMonthCount" style="color:#1d4ed8">—</div>
       <div class="stat-pill-sub" id="pillMonthVal">RM —</div>
@@ -557,7 +557,7 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
         </div>
         <div class="settings-slider-wrap">
           <span style="font-size:10px;color:#94a3b8">A</span>
-          <input type="range" id="dashFontSlider" min="11" max="17" step="1" value="15" oninput="applyDashFontSize(this.value)"/>
+          <input type="range" id="dashFontSlider" min="11" max="20" step="1" value="15" oninput="applyDashFontSize(this.value)"/>
           <span style="font-size:14px;color:#94a3b8">A</span>
           <span class="settings-val" id="dashFontVal">15px</span>
         </div>
@@ -1086,11 +1086,11 @@ function renderActivityPills(){
 
   document.getElementById('pillWeekLabel').textContent = `This Week (${weekLabel})`;
   document.getElementById('pillWeekCount').textContent = weekQuotes.length;
-  document.getElementById('pillWeekVal').textContent = `${weekQuotes.length} quote${weekQuotes.length!==1?'s':''} · ${fmt(sum(weekQuotes))}`;
+  document.getElementById('pillWeekVal').textContent = `RM ${fmt(sum(weekQuotes))}`;
 
   document.getElementById('pillMonthLabel').textContent = `${monthName} ${yr}`;
   document.getElementById('pillMonthCount').textContent = monthQuotes.length;
-  document.getElementById('pillMonthVal').textContent = `${monthQuotes.length} quote${monthQuotes.length!==1?'s':''} · ${fmt(sum(monthQuotes))}`;
+  document.getElementById('pillMonthVal').textContent = `RM ${fmt(sum(monthQuotes))}`;
 }
 
 function openSettingsModal(){
