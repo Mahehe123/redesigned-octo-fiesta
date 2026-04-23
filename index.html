@@ -98,6 +98,49 @@ body::before{
   font-size:11px;color:#B0AAA4;line-height:1.6;
 }
 
+.ok-box{
+  display:none;margin-top:14px;padding:10px 14px;
+  background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;
+  font-size:12px;color:#15803D;font-weight:500;
+}
+.ok-box.on{display:block}
+
+.forgot-wrap{text-align:center;margin-top:14px}
+.btn-forgot{
+  background:none;border:none;cursor:pointer;
+  font-size:12px;font-weight:500;color:#8B8176;
+  font-family:'Inter',sans-serif;
+  text-decoration:underline;text-underline-offset:3px;
+  transition:color .15s;
+}
+.btn-forgot:hover{color:#2C2C2C}
+
+.forgot-panel{
+  display:none;margin-top:16px;
+  animation:fadeUp .3s ease both;
+}
+.forgot-panel.on{display:block}
+.forgot-sep{height:1px;background:linear-gradient(90deg,transparent,rgba(44,44,44,.1),transparent);margin-bottom:18px}
+.forgot-title{font-size:13px;font-weight:700;color:#2C2C2C;margin-bottom:4px}
+.forgot-hint{font-size:11px;color:#8B8176;line-height:1.5;margin-bottom:14px}
+.btn-reset{
+  width:100%;
+  background:linear-gradient(135deg,#8B8176,#6b6560);
+  color:#F5F0E8;border:none;border-radius:10px;
+  padding:11px;font-size:13px;font-weight:600;
+  font-family:'Inter',sans-serif;letter-spacing:.03em;
+  cursor:pointer;transition:opacity .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-reset:hover{opacity:.88}
+.btn-reset:disabled{opacity:.45;cursor:not-allowed}
+.forgot-err{
+  display:none;margin-top:10px;padding:8px 12px;
+  background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;
+  font-size:11px;color:#DC2626;font-weight:500;
+}
+.forgot-err.on{display:block}
+
 /* Loading spinner */
 .spinner{
   width:16px;height:16px;border:2px solid rgba(245,240,232,.3);
@@ -143,6 +186,28 @@ body::before{
   </button>
 
   <div class="err-box" id="errBox"></div>
+  <div class="ok-box" id="okBox"></div>
+
+  <div class="forgot-wrap">
+    <button class="btn-forgot" onclick="toggleForgot()">Forgot password?</button>
+  </div>
+
+  <!-- Forgot password inline panel -->
+  <div class="forgot-panel" id="forgotPanel">
+    <div class="forgot-sep"></div>
+    <div class="forgot-title">Reset Password</div>
+    <div class="forgot-hint">Enter your username and we'll send a reset link to your registered email address.</div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Username</label>
+      <input id="inpForgotUser" type="text" placeholder="your.name" autocomplete="off"
+        onkeydown="if(event.key==='Enter')doForgot()"/>
+    </div>
+    <button class="btn-reset" id="btnReset" onclick="doForgot()">
+      <span class="spinner" id="spinnerReset"></span>
+      <span id="btnResetLabel">Send Reset Link</span>
+    </button>
+    <div class="forgot-err" id="forgotErr"></div>
+  </div>
 
   <div class="footer-note">
     Access is restricted to authorised team members.<br/>
@@ -181,6 +246,7 @@ async function doLogin(){
   const lbl  = document.getElementById('btnLabel');
 
   document.getElementById('errBox').classList.remove('on');
+  document.getElementById('okBox').classList.remove('on');
   if(!raw){ showErr('Please enter your username.'); return; }
   if(!pass){ showErr('Please enter your password.'); return; }
 
@@ -207,11 +273,63 @@ async function doLogin(){
   }
 }
 
-// ── Error display (global scope) ──────────────────────────────────────────────
+// ── Error display ─────────────────────────────────────────────────────────────
 function showErr(msg){
   const b = document.getElementById('errBox');
   b.textContent = msg;
   b.classList.add('on');
+  document.getElementById('okBox').classList.remove('on');
+}
+
+// ── Success display ───────────────────────────────────────────────────────────
+function showOk(msg){
+  const b = document.getElementById('okBox');
+  b.textContent = msg;
+  b.classList.add('on');
+  document.getElementById('errBox').classList.remove('on');
+}
+
+// ── Forgot password toggle ────────────────────────────────────────────────────
+function toggleForgot(){
+  const panel = document.getElementById('forgotPanel');
+  panel.classList.toggle('on');
+  if(panel.classList.contains('on')){
+    document.getElementById('inpForgotUser').focus();
+  }
+  // Clear any previous forgot state
+  document.getElementById('forgotErr').classList.remove('on');
+}
+
+// ── Send password reset ───────────────────────────────────────────────────────
+async function doForgot(){
+  if(!auth){ document.getElementById('forgotErr').textContent='App not ready yet.'; document.getElementById('forgotErr').classList.add('on'); return; }
+  const raw = document.getElementById('inpForgotUser').value.trim().toLowerCase();
+  const btn = document.getElementById('btnReset');
+  const spin = document.getElementById('spinnerReset');
+  const lbl = document.getElementById('btnResetLabel');
+  const errEl = document.getElementById('forgotErr');
+  errEl.classList.remove('on');
+
+  if(!raw){ errEl.textContent='Please enter your username.'; errEl.classList.add('on'); return; }
+
+  const email = raw.includes('@') ? raw : `${raw}@mitsumori.app`;
+
+  btn.disabled = true; spin.classList.add('on'); lbl.textContent = 'Sending…';
+  try {
+    await auth.sendPasswordResetEmail(email);
+    // On success — hide the panel, show a top-level ok message
+    document.getElementById('forgotPanel').classList.remove('on');
+    showOk('Reset link sent! Check the email registered to this account.');
+  } catch(e) {
+    const msg = (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-email')
+      ? 'No account found for that username.'
+      : e.code === 'auth/too-many-requests'
+      ? 'Too many attempts. Please wait before trying again.'
+      : 'Could not send reset email. Try again.';
+    errEl.textContent = msg; errEl.classList.add('on');
+  } finally {
+    btn.disabled = false; spin.classList.remove('on'); lbl.textContent = 'Send Reset Link';
+  }
 }
 </script>
 </body>
