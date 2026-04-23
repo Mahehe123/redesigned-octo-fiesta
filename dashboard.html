@@ -185,6 +185,7 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 .spinner{width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#2C2C2C;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:13px;font-weight:600;color:#374151}
+.cache-age{font-size:10px;font-weight:600;color:#94a3b8;margin-left:4px}
 .empty-state{text-align:center;padding:28px;font-size:12px;color:#64748b}
 
 /* ── Settings Modal ── */
@@ -260,8 +261,8 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
     <button class="tb-btn primary" onclick="openNewQuoteModal()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Quote
     </button>
-    <button class="tb-btn" onclick="loadDashboard()">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Refresh
+    <button class="tb-btn" onclick="refreshDashboard()" title="Force refresh all data" id="refreshBtn">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Refresh<span class="cache-age" id="cacheAgeLabel"></span>
     </button>
     <button class="tb-btn danger" onclick="doLogout()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Sign Out
@@ -660,6 +661,30 @@ let aqFiltered = [], aqSortField = 'followUpDate', aqSortDir = 1, aqPage = 1;
 const AQ_PER_PAGE = 30;
 const tooltip = document.getElementById('equipTooltip');
 
+// ── Lazy-load cache ───────────────────────────────────────────────────────
+// Each status bucket is fetched on first tab click, then cached for 5 minutes.
+// 'all' is always fetched on load (for KPI counts + pipeline overview).
+// Subsequent tab switches within the TTL window use the cache.
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const _tabCache = {}; // { status: { quotes: [], fetchedAt: timestamp } }
+
+function _cacheValid(status){
+  const c = _tabCache[status];
+  return c && (Date.now() - c.fetchedAt) < CACHE_TTL_MS;
+}
+function _cacheSet(status, quotes){
+  _tabCache[status] = { quotes, fetchedAt: Date.now() };
+}
+function _cacheGet(status){ return _tabCache[status]?.quotes || []; }
+function _cacheInvalidate(){ Object.keys(_tabCache).forEach(k => delete _tabCache[k]); }
+
+// Merge a freshly-fetched status bucket into allQuotes, replacing existing entries
+function _mergeIntoAllQuotes(status, freshDocs){
+  // Remove existing entries for this status
+  allQuotes = allQuotes.filter(q => (q.status || 'draft') !== status);
+  allQuotes = allQuotes.concat(freshDocs);
+}
+
 window.addEventListener('load', () => {
   if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   auth = firebase.auth(); db = firebase.firestore();
@@ -680,19 +705,46 @@ window.addEventListener('load', () => {
 
 function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
 
-// ── Load ──────────────────────────────────────────────────────────────────
+// ── Initial load — fetch ALL quotes once for KPI strip + pipeline ─────────
 async function loadDashboard(){
   document.getElementById('loadingOverlay').style.display='flex';
   try{
     const snap = await db.collection(COL.QUOTATIONS).orderBy('updatedAt','desc').get();
     allQuotes = snap.docs.map(d=>({_id:d.id,...d.data()}));
+    // Prime the cache for all statuses from this full fetch
+    ['draft','delivered','negotiation','win','loss'].forEach(st=>{
+      _cacheSet(st, allQuotes.filter(q=>(q.status||'draft')===st));
+    });
+    _cacheSet('all', allQuotes);
     renderKPIs(); renderPipeline(); renderAllSummaryTables();
     renderWinAnalysis(); renderLossAnalysis(); buildAqFilterOptions();
+    _updateCacheAge();
   } catch(e){ showToast('Failed to load data.','err'); console.error(e); }
   document.getElementById('loadingOverlay').style.display='none';
 }
 
-// ── KPI active ────────────────────────────────────────────────────────────
+// ── Manual refresh button ─────────────────────────────────────────────────
+async function refreshDashboard(){
+  _cacheInvalidate();
+  await loadDashboard();
+  showToast('Dashboard refreshed','ok');
+}
+
+// ── Cache age label ───────────────────────────────────────────────────────
+let _lastFetchedAt = null;
+function _updateCacheAge(){
+  _lastFetchedAt = Date.now();
+  _tickCacheAge();
+}
+function _tickCacheAge(){
+  const el = document.getElementById('cacheAgeLabel');
+  if(!el || !_lastFetchedAt) return;
+  const mins = Math.floor((Date.now() - _lastFetchedAt) / 60000);
+  el.textContent = mins < 1 ? '· just now' : `· ${mins}m ago`;
+  setTimeout(_tickCacheAge, 30000); // update every 30s
+}
+
+// ── KPI active — lazy-fetch on tab switch ─────────────────────────────────
 function setActiveKPI(kpi){
   activeKPI = kpi;
   document.querySelectorAll('.kpi').forEach(el=>el.classList.remove('active'));
@@ -700,6 +752,32 @@ function setActiveKPI(kpi){
   document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('ctx-'+kpi).classList.add('active');
   renderActivityPills();
+
+  // Lazy-fetch this status bucket if cache is stale
+  const statusMap = { all:null, draft:'draft', delivered:'delivered',
+                      negotiation:'negotiation', win:'win', loss:'loss' };
+  const status = statusMap[kpi];
+  if(status && !_cacheValid(status)){
+    _lazyFetchStatus(status);
+  }
+}
+
+async function _lazyFetchStatus(status){
+  try{
+    const snap = await db.collection(COL.QUOTATIONS)
+      .where('status','==',status)
+      .orderBy('updatedAt','desc')
+      .get();
+    const fresh = snap.docs.map(d=>({_id:d.id,...d.data()}));
+    _cacheSet(status, fresh);
+    _mergeIntoAllQuotes(status, fresh);
+    // Re-render just what's visible
+    renderKPIs();
+    renderSummaryTable(status, sortByFollowUp(fresh).slice(0,15), false);
+    if(status==='win') renderWinAnalysis();
+    if(status==='loss') renderLossAnalysis();
+    buildAqFilterOptions();
+  } catch(e){ console.warn('Lazy fetch failed for', status, e); }
 }
 
 // ── KPIs ──────────────────────────────────────────────────────────────────
@@ -743,12 +821,12 @@ function renderStatPills(){
   // Win
   const wins=allQuotes.filter(q=>q.status==='win');
   const losses=allQuotes.filter(q=>q.status==='loss');
-  const rateBase=wins.length+losses.length+allQuotes.filter(q=>q.status==='delivered').length+neg.length;
-  const winRate=rateBase>0?(wins.length/rateBase*100).toFixed(1):'0.0';
+  const closedBase=wins.length+losses.length;
+  const winRate=closedBase>0?(wins.length/closedBase*100).toFixed(1):'—';
   document.getElementById('pills-win').innerHTML=`
     <div class="stat-pill green"><div class="stat-pill-label">Wins ${yr}</div><div class="stat-pill-val">${wins.filter(isThisYr).length}</div><div class="stat-pill-sub">This year</div></div>
     <div class="stat-pill green"><div class="stat-pill-label">Total Win Value</div><div class="stat-pill-val" style="font-size:16px">${fmt(sum(wins))}</div><div class="stat-pill-sub">All time</div></div>
-    <div class="stat-pill green"><div class="stat-pill-label">Win Rate</div><div class="stat-pill-val">${winRate}%</div><div class="stat-pill-sub">Win ÷ all active</div></div>`;
+    <div class="stat-pill green"><div class="stat-pill-label">Closed Win Rate</div><div class="stat-pill-val">${winRate}${closedBase>0?'%':''}</div><div class="stat-pill-sub">Wins ÷ (Wins + Losses)</div></div>`;
 
   // Loss
   document.getElementById('pills-loss').innerHTML=`
@@ -901,7 +979,11 @@ function getTopEquipment(q){
   let top=null,topVal=-1;
   (q.lineItems||[]).forEach(item=>{
     const e=lib[String(item.equipIdx)]||lib[item.equipIdx]; if(!e) return;
-    const val=(parseFloat(item.unitPrice)||0)*(item.qty||1);
+    // unitPrice not stored on lineItems — derive from snapshot rmUnit + discountPct
+    const basePrice=parseFloat(e.rmUnit)||0;
+    const disc=parseFloat(item.discountPct)||0;
+    const unitPrice=disc>0?basePrice*(1-disc/100):basePrice;
+    const val=unitPrice*(item.qty||1);
     if(val>topVal){topVal=val;top={model:e.model,qty:item.qty||1};}
   });
   if(!top&&(q.awItems||[]).length){const aw=q.awItems[0];top={model:aw.desc||'AW',qty:aw.qty||1};}
@@ -1086,7 +1168,7 @@ function renderActivityPills(){
 
   document.getElementById('pillWeekLabel').textContent = `This Week (${weekLabel})`;
   document.getElementById('pillWeekCount').textContent = weekQuotes.length;
-  document.getElementById('pillWeekVal').textContent  = fmt(sum(weekQuotes));
+  document.getElementById('pillWeekVal').textContent = fmt(sum(weekQuotes));
 
   document.getElementById('pillMonthLabel').textContent = `${monthName} ${yr}`;
   document.getElementById('pillMonthCount').textContent = monthQuotes.length;
