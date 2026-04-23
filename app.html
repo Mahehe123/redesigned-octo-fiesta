@@ -84,7 +84,7 @@ textarea.inp{resize:none}
 .toggle-pill button.active{background:#1e293b;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)}
 input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:#e2e8f0;outline:none}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#1e293b;cursor:pointer}
-.a4-page{background:#fff;width:794px;height:1123px;flex-shrink:0;padding:56px 64px;box-shadow:0 4px 24px rgba(0,0,0,.13);position:relative;display:flex;flex-direction:column}
+.a4-page{background:#fff;width:794px;height:1123px;flex-shrink:0;padding:56px 64px;box-shadow:0 4px 24px rgba(0,0,0,.13);position:relative;display:flex;flex-direction:column;overflow:hidden}
 .spec-table{width:100%;border-collapse:collapse}
 .spec-table td{padding:5px 10px;vertical-align:top;border-bottom:1px solid #eef0f3}
 .spec-table tr:nth-child(even) td{background:#f4f6f9}
@@ -245,13 +245,23 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
       <button class="tb-btn" onclick="goToDashboard()" title="Back to Dashboard">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
       </button>
-      <button class="tb-btn danger" onclick="doLogout()" title="Sign out">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-      </button>
-      <button class="tb-btn" onclick="openProfileModal()" title="My Profile" style="background:#f0fdf4;color:#15803d">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-        Profile
-      </button>
+      <!-- ⋯ overflow menu -->
+      <div style="position:relative">
+        <button class="tb-btn" id="moreMenuBtn" onclick="toggleMoreMenu()" title="More options" style="padding:5px 7px">
+          <svg fill="currentColor" viewBox="0 0 24 24" style="width:15px;height:15px"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </button>
+        <div id="moreMenuDropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:160px;z-index:200;overflow:hidden">
+          <button onclick="openProfileModal();closeMoreMenu()" style="width:100%;display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:12px;font-weight:600;color:#374151;background:none;border:none;cursor:pointer;font-family:inherit;transition:background .12s;text-align:left" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='none'">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Profile
+          </button>
+          <div style="height:1px;background:#f1f5f9;margin:0 10px"></div>
+          <button onclick="doLogout()" style="width:100%;display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:12px;font-weight:600;color:#dc2626;background:none;border:none;cursor:pointer;font-family:inherit;transition:background .12s;text-align:left" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Sign Out
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -847,6 +857,16 @@ let overallModPct=0;
 let specFontSize=11;let itemsFontSize=14;let menuFontSize=14;let currentPage=0;let mobilePage=0;
 let validityDays=0;let showOilCarryOver=false;let attachments=[];
 let termsTemplates=[];let payTemplates=[];
+
+// -- Global formatter (single source of truth) --
+function fmtRM(n){return'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+// -- Debounced updatePreview (300ms) --
+let _previewTimer=null;
+function schedulePreview(){clearTimeout(_previewTimer);_previewTimer=setTimeout(()=>updatePreview(),300);}
+
+// -- Items font size (missing function) --
+function updateItemsFontSize(v){itemsFontSize=parseInt(v);renderLineItems();save();}
 
 // CRM state
 let currentQuoteId   = null; // Firestore doc ID
@@ -2117,40 +2137,17 @@ function updatePreview(){
   if(isMobile()&&document.getElementById('tab-preview').classList.contains('active'))renderMobilePreview();
 }
 
-function buildAllPages(){
-  // Gather all inputs
-  const companyName=v('companyName'),companyTagline=v('companyTagline'),companyAddress=v('companyAddress'),companyPhone=v('companyPhone');
-  const custName=v('custName'),custCompany=v('custCompany'),custPhone=v('custPhone'),custEmail=v('custEmail'),custAddress=v('custAddress');
-  const quoteNo=getDisplayQuoteNo()||v('quoteNumber');
-  const quoteDate=v('quoteDate')?new Date(v('quoteDate')).toLocaleDateString('en-MY',{day:'numeric',month:'long',year:'numeric'}):'';
-  const validTill=computeValidTill();
-  const salesName=v('salesName'),salesPhone=v('salesPhone'),salesEmail=v('salesEmail');
-  const notes=v('quoteNotes'),payment=v('quotePayment'),terms=v('quoteTerms'),footer=v('quoteFooter');
-  const awTitle=v('awTitle')||'Additional Works';
-  const fs=specFontSize+'px';
+// ── buildMainPage — cover/pricing page ──────────────────────────────────────
+function _buildMainPage(ctx){
+  const {companyName,companyTagline,companyAddress,companyPhone,custName,custCompany,
+    custPhone,custEmail,custAddress,quoteNo,quoteDate,validTill,salesName,salesPhone,
+    salesEmail,notes,payment,terms,footer,priceRows,awPriceRows,grandTotal,c,bgPage,
+    fontFamily,awTitle,awItems,pages,discountMode,overallModPct:oMP}=ctx;
+  function getModifierCtx(item){
+    if(discountMode==='overall'){const pct=oMP||0;return{modType:pct>0?'discount':'none',modPct:pct};}
+    const pct=item.discountPct||0;return{modType:pct>0?'discount':'none',modPct:pct};
+  }
 
-  const tp=currentTheme;
-  const colors={default:{primary:'#0f172a',accent:'#334155',light:'#f1f5f9',badge:'#0f172a',badgeText:'#fff',tag:'#f1f5f9',tagText:'#475569',totalBorder:'#0f172a',totalText:'#0f172a',tagBg:'#f1f5f9'},industrial:{primary:'#1B365D',accent:'#708090',light:'#E6F0FA',badge:'#1B365D',badgeText:'#fff',tag:'#E6F0FA',tagText:'#1B365D',totalBorder:'#1B365D',totalText:'#1B365D',tagBg:'#E6F0FA'},japandi:{primary:'#2C2C2C',accent:'#8B8176',light:'#F2EDE6',badge:'#2C2C2C',badgeText:'#F5F0E8',tag:'#EDE8E0',tagText:'#2C2C2C',totalBorder:'#2C2C2C',totalText:'#2C2C2C',tagBg:'#EDE8E0'}};
-  const c=colors[tp]||colors.default;
-  const bgPage=tp==='japandi'?'#FAF7F2':'#fff';
-  const fontFamily=tp==='japandi'?"'Cormorant Garamond',serif":"'Inter',sans-serif";
-
-  // Compute pricing
-  let equipTotal=0,awTotal=0;
-  const priceRows=lineItems.map(item=>{
-    const e=equipmentLib[item.equipIdx];if(!e)return null;
-    const listedPrice=getListedPrice(item);
-    const purchasePrice=calcUnitPrice(item);
-    const hasDiscount=purchasePrice<listedPrice;
-    const lineTotal=purchasePrice*(item.qty||1);
-    equipTotal+=lineTotal;
-    return{e,item,listedPrice,purchasePrice,hasDiscount,lineTotal};
-  }).filter(Boolean);
-  const awPriceRows=awItems.map(aw=>({aw,lineTotal:(parseFloat(aw.price)||0)*(aw.qty||1)}));
-  awPriceRows.forEach(r=>awTotal+=r.lineTotal);
-  const grandTotal=equipTotal+awTotal;
-
-  const pages=[];
 
   // ── Page 1: Cover ───────────────────────────────────────────────────────
   let p1=`<div class="a4-page" style="background:${bgPage};font-family:${fontFamily}">`;
@@ -2182,7 +2179,7 @@ function buildAllPages(){
     p1+=`<td style="padding:10px 12px;font-size:13px;color:#1e293b">${label}</td>`;
     p1+=`<td style="padding:10px 8px;text-align:center;font-size:13px;color:#1e293b">${row.item.qty}</td>`;
     if(row.hasDiscount){
-      const discPct=getModifier(row.item).modPct||0;
+      const discPct=getModifierCtx(row.item).modPct||0;
       p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px"><span style="font-size:11px;color:#64748b;text-decoration:line-through">RM ${fmt(row.listedPrice)}</span><br/><strong style="color:#1e293b;font-size:13px">RM ${fmt(row.purchasePrice)}</strong><br/><span style="font-size:9px;color:#15803d;font-weight:700">${discPct}% discount</span></td>`;
     } else {
       p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;color:#1e293b;font-weight:500">RM ${fmt(row.listedPrice)}</td>`;
@@ -2212,6 +2209,15 @@ function buildAllPages(){
   p1+=`</div>`;
   p1+=`</div>`; // end a4-page
   pages.push(p1);
+}
+
+// ── _buildSpecPages — one page per line item ─────────────────────────────────
+function _buildSpecPages(ctx){
+  const {priceRows,quoteNo,companyName,c,bgPage,fontFamily,fs,showOilCarryOver,pages,discountMode,overallModPct:oMP}=ctx;
+  function getModifierCtx(item){
+    if(discountMode==='overall'){const pct=oMP||0;return{modType:pct>0?'discount':'none',modPct:pct};}
+    const pct=item.discountPct||0;return{modType:pct>0?'discount':'none',modPct:pct};
+  }
 
   // ── Tech spec pages ──────────────────────────────────────────────────────
   priceRows.forEach((row,i)=>{
@@ -2231,7 +2237,7 @@ function buildAllPages(){
     const listedPr=row.listedPrice,payPr=row.purchasePrice,qty=item.qty||1;
     const lineTotal=row.lineTotal;
     const hasDisc=row.hasDiscount;
-    const discPct=hasDisc?(getModifier(item).modPct||0):0;
+    const discPct=hasDisc?(getModifierCtx(item).modPct||0):0;
     let priceHTML='';
     if(hasDisc){
       priceHTML+=`<p style="font-size:12px;color:#94a3b8;text-decoration:line-through;text-align:right">RM ${fmt(listedPr*qty)}</p>`;
@@ -2279,6 +2285,49 @@ function buildAllPages(){
     pages.push(sp);
   });
 
+}
+
+// ── buildAllPages — orchestrator ─────────────────────────────────────────────
+function buildAllPages(){
+  // Gather all inputs
+  const companyName=v('companyName'),companyTagline=v('companyTagline'),companyAddress=v('companyAddress'),companyPhone=v('companyPhone');
+  const custName=v('custName'),custCompany=v('custCompany'),custPhone=v('custPhone'),custEmail=v('custEmail'),custAddress=v('custAddress');
+  const quoteNo=getDisplayQuoteNo()||v('quoteNumber');
+  const quoteDate=v('quoteDate')?new Date(v('quoteDate')).toLocaleDateString('en-MY',{day:'numeric',month:'long',year:'numeric'}):'';
+  const validTill=computeValidTill();
+  const salesName=v('salesName'),salesPhone=v('salesPhone'),salesEmail=v('salesEmail');
+  const notes=v('quoteNotes'),payment=v('quotePayment'),terms=v('quoteTerms'),footer=v('quoteFooter');
+  const awTitle=v('awTitle')||'Additional Works';
+  const fs=specFontSize+'px';
+
+  const tp=currentTheme;
+  const colors={default:{primary:'#0f172a',accent:'#334155',light:'#f1f5f9',badge:'#0f172a',badgeText:'#fff',tag:'#f1f5f9',tagText:'#475569',totalBorder:'#0f172a',totalText:'#0f172a',tagBg:'#f1f5f9'},industrial:{primary:'#1B365D',accent:'#708090',light:'#E6F0FA',badge:'#1B365D',badgeText:'#fff',tag:'#E6F0FA',tagText:'#1B365D',totalBorder:'#1B365D',totalText:'#1B365D',tagBg:'#E6F0FA'},japandi:{primary:'#2C2C2C',accent:'#8B8176',light:'#F2EDE6',badge:'#2C2C2C',badgeText:'#F5F0E8',tag:'#EDE8E0',tagText:'#2C2C2C',totalBorder:'#2C2C2C',totalText:'#2C2C2C',tagBg:'#EDE8E0'}};
+  const c=colors[tp]||colors.default;
+  const bgPage=tp==='japandi'?'#FAF7F2':'#fff';
+  const fontFamily=tp==='japandi'?"'Cormorant Garamond',serif":"'Inter',sans-serif";
+
+  // Compute pricing
+  let equipTotal=0,awTotal=0;
+  const priceRows=lineItems.map(item=>{
+    const e=equipmentLib[item.equipIdx];if(!e)return null;
+    const listedPrice=getListedPrice(item);
+    const purchasePrice=calcUnitPrice(item);
+    const hasDiscount=purchasePrice<listedPrice;
+    const lineTotal=purchasePrice*(item.qty||1);
+    equipTotal+=lineTotal;
+    return{e,item,listedPrice,purchasePrice,hasDiscount,lineTotal};
+  }).filter(Boolean);
+  const awPriceRows=awItems.map(aw=>({aw,lineTotal:(parseFloat(aw.price)||0)*(aw.qty||1)}));
+  awPriceRows.forEach(r=>awTotal+=r.lineTotal);
+  const grandTotal=equipTotal+awTotal;
+
+  const pages=[];
+  const ctx={companyName,companyTagline,companyAddress,companyPhone,custName,custCompany,
+    custPhone,custEmail,custAddress,quoteNo,quoteDate,validTill,salesName,salesPhone,
+    salesEmail,notes,payment,terms,footer,priceRows,awPriceRows,grandTotal,c,bgPage,
+    fontFamily,awTitle,awItems,pages,fs,showOilCarryOver,discountMode,overallModPct};
+  _buildMainPage(ctx);
+  _buildSpecPages(ctx);
   return pages;
 }
 
@@ -2349,11 +2398,16 @@ async function downloadPDF(){
 // ═══════════════════════════════════════════════════════════════════════════
 // EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════════════════════
-document.getElementById('leftPanel').addEventListener('input',e=>{const tag=e.target.tagName.toLowerCase();if(tag==='input'&&e.target.type==='range')return;if(tag==='input'||tag==='textarea'){updatePreview();save();}});
+document.getElementById('leftPanel').addEventListener('input',e=>{const tag=e.target.tagName.toLowerCase();if(tag==='input'&&e.target.type==='range')return;if(tag==='input'||tag==='textarea'){schedulePreview();save();}});
 ['custModal','emailModal','profileModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
 ['payModal','termsModal','competitorModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('on');});});
 document.getElementById('loadModal').addEventListener('click',e=>{if(e.target===document.getElementById('loadModal'))closeLoadModal();});
 document.getElementById('statusModal').addEventListener('click',e=>{if(e.target===document.getElementById('statusModal'))document.getElementById('statusModal').classList.remove('on');});
+
+// ── More menu (topbar overflow) ──────────────────────────────────────────
+function toggleMoreMenu(){const d=document.getElementById('moreMenuDropdown');d.style.display=d.style.display==='none'?'block':'none';}
+function closeMoreMenu(){const d=document.getElementById('moreMenuDropdown');if(d)d.style.display='none';}
+document.addEventListener('click',e=>{if(!document.getElementById('moreMenuBtn')?.contains(e.target))closeMoreMenu();});
 
 // Resizer
 (function(){const resizer=document.getElementById('resizer'),left=document.getElementById('leftPanel');let d=false,sx=0,sw=0;resizer.addEventListener('mousedown',e=>{d=true;sx=e.clientX;sw=left.offsetWidth;resizer.classList.add('dragging');document.body.style.cursor='col-resize';document.body.style.userSelect='none';});document.addEventListener('mousemove',e=>{if(!d)return;left.style.width=Math.min(680,Math.max(280,sw+(e.clientX-sx)))+'px';});document.addEventListener('mouseup',()=>{if(!d)return;d=false;resizer.classList.remove('dragging');document.body.style.cursor='';document.body.style.userSelect='';});})();
