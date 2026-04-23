@@ -172,10 +172,56 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 .page-btn:disabled{opacity:.35;cursor:not-allowed}
 .page-btn.active{background:#2C2C2C;color:#fff;border-color:#2C2C2C}
 
+/* ── KPI responsive ── */
+@media (max-width:1100px){
+  .kpi-strip{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:640px){
+  .kpi-strip{grid-template-columns:repeat(2,1fr)}
+}
+
 /* ── Admin panel ── */
 .admin{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 22px;margin-bottom:24px}
 .admin-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px}
 .admin-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* ── User Management Modal ── */
+#userMgmtModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:400;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+#userMgmtModal.open{display:flex}
+.um-panel{background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.2);width:100%;max-width:600px;overflow:hidden}
+.um-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #f1f5f9}
+.um-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#2C2C2C;letter-spacing:.01em}
+.um-close{background:none;border:none;cursor:pointer;color:#cbd5e1;padding:4px;border-radius:6px;transition:color .15s;display:flex;align-items:center}.um-close:hover{color:#64748b}.um-close svg{width:20px;height:20px}
+.um-body{padding:20px 24px}
+.um-section-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:12px;margin-top:20px}
+.um-section-title:first-child{margin-top:0}
+.um-user-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #f1f5f9;border-radius:10px;margin-bottom:8px;background:#faf9f7;transition:border-color .15s}
+.um-user-card:hover{border-color:#e8e6e1}
+.um-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2C2C2C,#4a4a4a);display:flex;align-items:center;justify-content:center;color:#F5F0E8;font-size:13px;font-weight:700;flex-shrink:0}
+.um-user-info{flex:1;min-width:0}
+.um-user-name{font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.um-user-email{font-size:11px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.um-user-meta{font-size:10px;color:#94a3b8;margin-top:1px}
+.um-badge-admin{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:.05em;background:#fef3c7;color:#92400e;margin-left:6px;text-transform:uppercase}
+.um-actions{display:flex;gap:6px;flex-shrink:0}
+.um-btn{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;border:1px solid #e2e8f0;background:#fff;color:#374151}
+.um-btn:hover{background:#f1f5f9;border-color:#cbd5e1}
+.um-btn.reset{border-color:#bfdbfe;background:#eff6ff;color:#1d4ed8}.um-btn.reset:hover{background:#dbeafe}
+.um-btn.danger{border-color:#fca5a5;background:#fef2f2;color:#dc2626}.um-btn.danger:hover{background:#fee2e2}
+.um-empty{text-align:center;padding:24px;font-size:12px;color:#94a3b8}
+.um-add-form{border:1.5px dashed #e2e8f0;border-radius:10px;padding:16px;margin-top:4px}
+.um-add-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.um-inp{width:100%;border-radius:8px;border:1px solid #e2e8f0;padding:8px 12px;font-size:13px;outline:none;font-family:inherit;color:#1e293b;background:#fff}
+.um-inp:focus{border-color:#8B8176;box-shadow:0 0 0 2px rgba(139,129,118,.1)}
+.um-inp::placeholder{color:#C4BDB6}
+.um-add-hint{font-size:10px;color:#94a3b8;margin-bottom:10px;line-height:1.5}
+.um-btn-add{width:100%;border-radius:8px;background:#2C2C2C;color:#F5F0E8;font-size:12px;font-weight:600;padding:9px;border:none;cursor:pointer;font-family:inherit;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.um-btn-add:hover{opacity:.88}.um-btn-add:disabled{opacity:.4;cursor:not-allowed}
+.um-msg{font-size:11px;font-weight:500;margin-top:8px;padding:8px 12px;border-radius:7px;display:none}
+.um-msg.ok{display:block;background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d}
+.um-msg.err{display:block;background:#fef2f2;border:1px solid #fca5a5;color:#dc2626}
+.um-spinner{width:12px;height:12px;border:2px solid rgba(245,240,232,.3);border-top-color:#F5F0E8;border-radius:50%;animation:spin .6s linear infinite;display:none}
+.um-spinner.on{display:inline-block}
 
 /* ── Toast / Loading ── */
 #toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;background:#1e293b;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none}
@@ -460,6 +506,10 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
   <div class="admin" id="adminPanel" style="display:none">
     <div class="admin-title">Admin Tools</div>
     <div class="admin-row">
+      <button class="tb-btn" onclick="openUserMgmt()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Manage Users
+      </button>
       <button class="tb-btn" onclick="exportFullDB()">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         Export Full Database (JSON)
@@ -473,6 +523,44 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
   </div>
 
 </div><!-- /main -->
+
+<!-- ── User Management Modal ─────────────────────────────────────────────── -->
+<div id="userMgmtModal" onclick="if(event.target===this)closeUserMgmt()">
+  <div class="um-panel">
+    <div class="um-header">
+      <div class="um-title">User Management</div>
+      <button class="um-close" onclick="closeUserMgmt()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="um-body">
+      <!-- User list -->
+      <div class="um-section-title">Registered Users</div>
+      <div id="umUserList"><div class="um-empty">Loading users…</div></div>
+
+      <!-- Add user -->
+      <div class="um-section-title">Add New User</div>
+      <div class="um-add-form">
+        <div class="um-add-hint">
+          Username becomes their login (e.g. <strong>john</strong> → signs in as <strong>john</strong>, resets to their personal email).<br/>
+          A temporary password is set here — share it with the user via WhatsApp or email, and ask them to reset it.
+        </div>
+        <div class="um-add-grid">
+          <input class="um-inp" id="umNewName" placeholder="Full Name" autocomplete="off"/>
+          <input class="um-inp" id="umNewUsername" placeholder="Username (e.g. john)" autocomplete="off"/>
+          <input class="um-inp" id="umNewEmail" placeholder="Personal Email (for resets)" type="email" autocomplete="off"/>
+          <input class="um-inp" id="umNewPhone" placeholder="Contact No. (optional)" autocomplete="off"/>
+          <input class="um-inp" id="umNewPassword" placeholder="Temporary Password" type="password" autocomplete="off"/>
+          <input class="um-inp" id="umNewCompany" placeholder="Company Name" autocomplete="off"/>
+        </div>
+        <button class="um-btn-add" id="umAddBtn" onclick="umAddUser()">
+          <span class="um-spinner" id="umAddSpinner"></span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+          Create User
+        </button>
+        <div class="um-msg" id="umAddMsg"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- All Quotations Modal -->
 <div id="allQuotesModal" onclick="aqModalBackdropClick(event)">
@@ -1383,6 +1471,163 @@ async function saveProfile(){
   catch(e){showToast('Save failed.','err');console.error(e);}
 }
 document.addEventListener('click',e=>{const m=document.getElementById('profileModal');if(e.target===m)closeProfileModal();});
+
+// ── User Management ───────────────────────────────────────────────────────
+function openUserMgmt(){
+  document.getElementById('userMgmtModal').classList.add('open');
+  umLoadUsers();
+}
+function closeUserMgmt(){
+  document.getElementById('userMgmtModal').classList.remove('open');
+  // Clear add form
+  ['umNewName','umNewUsername','umNewEmail','umNewPhone','umNewPassword','umNewCompany']
+    .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const msg=document.getElementById('umAddMsg');
+  msg.className='um-msg'; msg.textContent='';
+}
+
+async function umLoadUsers(){
+  const list=document.getElementById('umUserList');
+  list.innerHTML='<div class="um-empty">Loading…</div>';
+  try{
+    const snap=await db.collection(COL.USERS).orderBy('displayName').get();
+    if(snap.empty){ list.innerHTML='<div class="um-empty">No users found. Add one below.</div>'; return; }
+    list.innerHTML='';
+    snap.docs.forEach(doc=>{
+      const u=doc.data();
+      const uid=doc.id;
+      const isAdminUser=(u.email===ADMIN_EMAIL || (u.loginEmail||'')===ADMIN_EMAIL);
+      const initial=(u.displayName||u.email||'?').charAt(0).toUpperCase();
+      const card=document.createElement('div');
+      card.className='um-user-card';
+      card.innerHTML=`
+        <div class="um-avatar">${initial}</div>
+        <div class="um-user-info">
+          <div class="um-user-name">${u.displayName||'(no name)'}${isAdminUser?'<span class="um-badge-admin">Admin</span>':''}</div>
+          <div class="um-user-email">${u.email||'No email set'}</div>
+          <div class="um-user-meta">Login: ${u.loginEmail||'unknown'} · ${u.phone||'No phone'}</div>
+        </div>
+        <div class="um-actions">
+          <button class="um-btn reset" onclick="umResetPassword('${uid}','${(u.loginEmail||'').replace(/'/g,"\\'")}','${(u.displayName||'User').replace(/'/g,"\\'")}')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:12px;height:12px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            Reset PW
+          </button>
+          ${!isAdminUser?`<button class="um-btn" onclick="umEditEmail('${uid}','${(u.email||'').replace(/'/g,"\\'")}','${(u.displayName||'').replace(/'/g,"\\'")}')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:12px;height:12px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/></svg>
+            Edit Email
+          </button>`:''}
+        </div>`;
+      list.appendChild(card);
+    });
+  } catch(e){
+    list.innerHTML='<div class="um-empty">Failed to load users. Check your connection.</div>';
+    console.error(e);
+  }
+}
+
+// ── Reset password — sends Firebase reset email to user's personal email ──
+async function umResetPassword(uid, loginEmail, displayName){
+  if(!loginEmail){ showToast('No login email on record for this user.','err'); return; }
+  // Fetch the personal email from Firestore to send the reset to
+  try{
+    const uDoc=await db.collection(COL.USERS).doc(uid).get();
+    const personalEmail=(uDoc.exists && uDoc.data().email) ? uDoc.data().email : null;
+    const targetEmail=personalEmail||loginEmail;
+    const label=personalEmail ? `personal email (${personalEmail})` : `login email (${loginEmail})`;
+    if(!confirm(`Send a password reset link to ${displayName}'s ${label}?`)) return;
+    await auth.sendPasswordResetEmail(targetEmail);
+    showToast(`Reset link sent to ${targetEmail}`,'ok');
+  } catch(e){
+    const msg=e.code==='auth/user-not-found'?'User not found in Firebase Auth.'
+      : e.code==='auth/invalid-email'?'Invalid email address on record.'
+      : 'Failed to send reset email.';
+    showToast(msg,'err'); console.error(e);
+  }
+}
+
+// ── Edit personal email stored in Firestore ───────────────────────────────
+async function umEditEmail(uid, currentEmail, displayName){
+  const newEmail=window.prompt(`Update personal email for ${displayName}:\n(This is used for password resets, not for login)`, currentEmail||'');
+  if(newEmail===null) return; // cancelled
+  const trimmed=newEmail.trim();
+  if(!trimmed){ showToast('Email cannot be empty.','err'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)){ showToast('Please enter a valid email address.','err'); return; }
+  try{
+    await db.collection(COL.USERS).doc(uid).set({ email: trimmed }, { merge: true });
+    showToast(`Email updated for ${displayName}`,'ok');
+    umLoadUsers(); // refresh list
+  } catch(e){ showToast('Failed to update email.','err'); console.error(e); }
+}
+
+// ── Add new user via Firebase Auth REST API (client-side signup trick) ────
+// We use a secondary in-memory auth flow: create user, save profile, sign out secondary.
+// This works on the free Spark plan — no Admin SDK needed.
+async function umAddUser(){
+  const name    = document.getElementById('umNewName').value.trim();
+  const username= document.getElementById('umNewUsername').value.trim().toLowerCase();
+  const email   = document.getElementById('umNewEmail').value.trim();
+  const phone   = document.getElementById('umNewPhone').value.trim();
+  const password= document.getElementById('umNewPassword').value;
+  const company = document.getElementById('umNewCompany').value.trim();
+  const msgEl   = document.getElementById('umAddMsg');
+  const btn     = document.getElementById('umAddBtn');
+  const spin    = document.getElementById('umAddSpinner');
+
+  msgEl.className='um-msg'; msgEl.textContent='';
+
+  if(!name||!username||!password){
+    msgEl.className='um-msg err'; msgEl.textContent='Name, username, and password are required.'; return;
+  }
+  if(password.length<6){
+    msgEl.className='um-msg err'; msgEl.textContent='Password must be at least 6 characters.'; return;
+  }
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    msgEl.className='um-msg err'; msgEl.textContent='Please enter a valid personal email.'; return;
+  }
+
+  const loginEmail=`${username}@mitsumori.app`;
+
+  btn.disabled=true; spin.classList.add('on');
+  try{
+    // Create user using Firebase REST API so we don't disturb current admin session
+    const apiKey=FIREBASE_CONFIG.apiKey;
+    const resp=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ email:loginEmail, password, returnSecureToken:true })
+    });
+    const result=await resp.json();
+    if(result.error){
+      const code=result.error.message;
+      const friendly= code==='EMAIL_EXISTS'    ? `Username "${username}" is already taken.`
+                    : code==='WEAK_PASSWORD : Password should be at least 6 characters' ? 'Password must be at least 6 characters.'
+                    : `Create failed: ${code}`;
+      msgEl.className='um-msg err'; msgEl.textContent=friendly;
+      btn.disabled=false; spin.classList.remove('on'); return;
+    }
+    const newUid=result.localId;
+    // Save profile to Firestore using admin's existing db connection
+    await db.collection(COL.USERS).doc(newUid).set({
+      displayName : name,
+      loginEmail  : loginEmail,
+      email       : email||'',
+      phone       : phone||'',
+      companyName : company||'',
+      companyTagline:'', companyAddress:'', companyPhone:'',
+      createdAt   : firebase.firestore.FieldValue.serverTimestamp(),
+      createdBy   : currentUser?.uid||''
+    });
+    msgEl.className='um-msg ok';
+    msgEl.textContent=`✓ User "${name}" created. Login: ${username} · Share the temporary password via WhatsApp.`;
+    // Clear form
+    ['umNewName','umNewUsername','umNewEmail','umNewPhone','umNewPassword','umNewCompany']
+      .forEach(id=>{ document.getElementById(id).value=''; });
+    umLoadUsers();
+  } catch(e){
+    msgEl.className='um-msg err'; msgEl.textContent='An unexpected error occurred. Check console.';
+    console.error(e);
+  } finally { btn.disabled=false; spin.classList.remove('on'); }
+}
 
 // ── Toast ─────────────────────────────────────────────────────────────────
 let _tt;
