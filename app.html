@@ -209,6 +209,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 .tpl-form{padding:14px 16px;flex-shrink:0}
 .tpl-form-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#374151;margin-bottom:10px}
 .tpl-modal-footer{padding:12px 16px;border-top:1px solid #f1f5f9;display:flex;gap:8px;flex-shrink:0}
+
+.smart-markup-badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
 </style>
 </head>
 <body>
@@ -448,14 +450,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
         <button onclick="addEquipment()" class="btn-dark" id="addEquipBtn"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Add to Quotation</button>
       </div></div>
     <div class="sec"><div class="card">
-      <div class="disc-row"><span style="font-size:11px;font-weight:600;color:#374151">Discount Mode</span>
-        <div class="toggle-pill"><button id="btnModeIndividual" onclick="setDiscountMode('individual')" class="active">Individual</button><button id="btnModeOverall" onclick="setDiscountMode('overall')">Overall</button></div></div>
-      <div id="overallDiscountPanel" style="display:none">
-        <div style="margin-bottom:8px">
-          <label class="lbl">Discount %</label>
-          <input id="overallModPct" type="number" min="0" max="100" step="0.1" value="0" placeholder="e.g. 10" onchange="updateOverallDiscount()" class="inp"/>
-          <p style="font-size:10px;color:#64748b;margin-top:4px">Customer purchase price = Listed price × (1 − discount%)</p>
-        </div></div></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div>
+          <span style="font-size:11px;font-weight:700;color:#374151">Smart Markup Pricing</span>
+          <p style="font-size:10px;color:#64748b;margin-top:2px">Costing → Purchase Price → List Price (with apparent discount)</p>
+        </div>
+        <div class="smart-markup-badge">Active</div>
+      </div>
+      <div style="background:#f8fafc;border-radius:8px;padding:10px 12px;font-size:11px;color:#64748b;line-height:1.7">
+        <div>① <strong>Costing</strong> (your cost) ÷ (1 − Markup%) = <strong>Purchase Price</strong></div>
+        <div>② <strong>Purchase Price</strong> ÷ (1 − Apparent Discount%) = <strong>List Price</strong></div>
+        <div style="margin-top:4px;color:#94a3b8;font-size:10px">Customer sees a "discount" from list to purchase — real margin is protected by your markup.</div>
+      </div>
+    </div></div>
     <div class="sec">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <p class="sec-title" style="margin-bottom:0">Equipment Line Items</p>
@@ -480,6 +487,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
   <div id="tab-preview" class="tab-panel">
     <div style="display:flex;gap:8px;margin-bottom:12px">
       <button id="pdfBtn" onclick="downloadPDF()" class="pdf-btn btn-dark" style="flex:1;border-radius:10px;padding:10px"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Download PDF</button>
+      <button id="xlsBtn" onclick="downloadCostingXLS()" class="btn-dark" style="flex:1;border-radius:10px;padding:10px;background:linear-gradient(135deg,#15803d,#16a34a)!important"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Costing XLS</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
       <button onclick="openEmailDraft()" class="btn-dark" style="flex:1;border-radius:10px;padding:10px;background:linear-gradient(135deg,#0369a1,#0284c7)!important"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Email Draft</button>
     </div>
     <div class="card" style="margin-bottom:12px">
@@ -851,11 +861,12 @@ function goToDashboard(){ window.location.href='dashboard.html'; }
 // STATE
 // ═══════════════════════════════════════════════════════════════════════════
 let equipmentLib=[];let customerLib=[];let lineItems=[];let awItems=[];
-let logoDataUrl='';let currentTheme='default';let discountMode='individual';
-let overallModPct=0;
+let logoDataUrl='';let currentTheme='default';
 let specFontSize=11;let itemsFontSize=14;let menuFontSize=14;let currentPage=0;let mobilePage=0;
 let validityDays=0;let showOilCarryOver=false;let attachments=[];
 let termsTemplates=[];let payTemplates=[];
+// Costing history: { [modelKey]: [{quoteNo, cost, date}] } — stored in Firestore
+let _costingHistoryCache = {}; // model → [{quoteNo,cost,date}]
 
 // -- Global formatter (single source of truth) --
 function fmtRM(n){return'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -1458,7 +1469,7 @@ function save(){
     quoteNumber:v('quoteNumber'),quoteDate:v('quoteDate'),followUpDate:v('followUpDate'),quoteNotes:v('quoteNotes'),quotePayment:v('quotePayment'),quoteTerms:v('quoteTerms'),quoteFooter:v('quoteFooter'),
     salesName:v('salesName'),salesPhone:v('salesPhone'),salesEmail:v('salesEmail'),
     custName:v('custName'),custCompany:v('custCompany'),custPhone:v('custPhone'),custEmail:v('custEmail'),custAddress:v('custAddress'),
-    validityDays,lineItems,awItems,discountMode,overallModPct,
+    validityDays,lineItems,awItems,
     specFontSize,itemsFontSize,menuFontSize,currentTheme,logoDataUrl,showOilCarryOver,termsTemplates,payTemplates,customerLib:customerLib.slice(0,50),
     // CRM fields
     currentQuoteId,currentBaseNo,currentRevision,currentStatus,
@@ -1822,49 +1833,117 @@ function onQuoteDateChange(){
 function fmt(n){return Number(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function seriesType(s){if(!s)return'compressor';const sl=s.toLowerCase();if(sl.includes('dryer'))return'dryer';if(sl.includes('filter')||sl.includes(' af')||sl.startsWith('af'))return'af';if(sl.includes('tank')||sl.includes(' at')||sl.startsWith('at'))return'at';return'compressor';}
 
-function getModifier(item){
-  if(discountMode==='overall'){
-    const pct=overallModPct||0;
-    return{modType:pct>0?'discount':'none',modPct:pct,smartMarkupPct:0};
-  }
-  // Individual: item carries its own discount %
-  const pct=item.discountPct||0;
-  return{modType:pct>0?'discount':'none',modPct:pct,smartMarkupPct:0};
+// ── SMART MARKUP PRICING ─────────────────────────────────────────────────
+// Purchase Price  = costing / (1 - markupPct/100)
+// List Price      = purchasePrice / (1 - apparentDiscPct/100)
+// Margin %        = (purchasePrice - costing) / purchasePrice * 100  (should = markupPct)
+function calcPurchasePrice(costing, markupPct){
+  const m = Math.max(0, Math.min(99.9, parseFloat(markupPct)||0));
+  return m >= 100 ? costing : costing / (1 - m/100);
+}
+function calcListPrice(purchasePrice, apparentDiscPct){
+  const a = Math.max(0, Math.min(99.9, parseFloat(apparentDiscPct)||0));
+  return a >= 100 ? purchasePrice : purchasePrice / (1 - a/100);
+}
+function calcMarginPct(purchasePrice, costing){
+  if(!purchasePrice) return 0;
+  return (purchasePrice - costing) / purchasePrice * 100;
 }
 function calcUnitPrice(item){
-  // Returns the customer PURCHASE price
-  const e=equipmentLib[item.equipIdx];if(!e)return 0;
-  const listed=e.rmUnit; // default/listed price
-  const{modPct}=getModifier(item);
-  return modPct>0 ? listed*(1-modPct/100) : listed;
+  // Returns the customer PURCHASE price shown on quote
+  const costing = item.costing || 0;
+  const markupPct = item.markupPct || 0;
+  if(!costing) return item.manualPrice || 0;
+  return calcPurchasePrice(costing, markupPct);
 }
 function getListedPrice(item){
-  const e=equipmentLib[item.equipIdx];if(!e)return 0;
+  // Returns the inflated "list price" shown as struck through
+  const purchase = calcUnitPrice(item);
+  return calcListPrice(purchase, item.apparentDiscPct || 0);
+}
+function getRecommendedSellingPrice(item){
+  // The equipment library rmUnit is the recommended selling price reference
+  const e = equipmentLib[item.equipIdx]; if(!e) return 0;
   return e.rmUnit;
 }
-// calcSmartInflatedPrice removed — discount model only
+
 function updateItem(idx,key,val){
-  if(key==='qty')lineItems[idx].qty=Math.max(1,parseInt(val)||1);
-  else if(key==='discountPct')lineItems[idx].discountPct=Math.max(0,Math.min(100,parseFloat(val)||0));
-  else if(key==='ltMin')lineItems[idx].ltMin=parseInt(val)||0;
-  else if(key==='ltMax')lineItems[idx].ltMax=parseInt(val)||0;
-  renderLineItems();save();
+  if(key==='qty') lineItems[idx].qty=Math.max(1,parseInt(val)||1);
+  else if(key==='costing') lineItems[idx].costing=Math.max(0,parseFloat(val)||0);
+  else if(key==='markupPct') lineItems[idx].markupPct=Math.max(0,Math.min(99.9,parseFloat(val)||0));
+  else if(key==='apparentDiscPct') lineItems[idx].apparentDiscPct=Math.max(0,Math.min(99.9,parseFloat(val)||0));
+  else if(key==='ltMin') lineItems[idx].ltMin=parseInt(val)||0;
+  else if(key==='ltMax') lineItems[idx].ltMax=parseInt(val)||0;
+  renderLineItems(); schedulePreview(); save();
 }
-// setItemSmartPct removed
-function setDiscountMode(mode){
-  discountMode=mode;
-  document.getElementById('btnModeIndividual').classList.toggle('active',mode==='individual');
-  document.getElementById('btnModeOverall').classList.toggle('active',mode==='overall');
-  document.getElementById('overallDiscountPanel').style.display=mode==='overall'?'':'none';
-  if(mode==='overall'){
-    const el=document.getElementById('overallModPct');
-    if(el)el.value=overallModPct||0;
+
+// Legacy stubs so old saved data doesn't break
+function setDiscountMode(mode){ renderLineItems(); save(); }
+function updateOverallDiscount(){ renderLineItems(); save(); }
+
+// ── COSTING HISTORY (Firestore) ───────────────────────────────────────────
+function _modelKey(model){ return model.replace(/[^a-zA-Z0-9_-]/g,'_').substring(0,80); }
+
+async function loadCostingHistory(modelKey){
+  if(_costingHistoryCache[modelKey]) return _costingHistoryCache[modelKey];
+  try{
+    const snap = await db.collection('qt_costing_history').doc(modelKey).get();
+    const entries = snap.exists ? (snap.data().entries || []) : [];
+    _costingHistoryCache[modelKey] = entries;
+    return entries;
+  } catch(e){ return []; }
+}
+
+async function saveCostingEntry(model, cost, quoteNo){
+  if(!model || !cost || !quoteNo) return;
+  const key = _modelKey(model);
+  const entry = { quoteNo, cost: parseFloat(cost), date: new Date().toISOString().slice(0,10) };
+  try{
+    const ref = db.collection('qt_costing_history').doc(key);
+    await ref.set({
+      model,
+      entries: firebase.firestore.FieldValue.arrayUnion(entry),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    // Bust cache
+    delete _costingHistoryCache[key];
+  } catch(e){ console.warn('Costing history save failed:', e); }
+}
+
+async function getCostingAverage(model){
+  const key = _modelKey(model);
+  const entries = await loadCostingHistory(key);
+  if(!entries.length) return null;
+  const avg = entries.reduce((s,e)=>s+e.cost,0)/entries.length;
+  const latest = entries.sort((a,b)=>b.date.localeCompare(a.date))[0];
+  return { avg, count: entries.length, latestDate: latest.date, latestCost: latest.cost };
+}
+
+// Pre-fill costing for a newly added item
+async function prefillCosting(idx){
+  const item = lineItems[idx];
+  const e = equipmentLib[item.equipIdx]; if(!e) return;
+  const result = await getCostingAverage(e.model);
+  if(result){
+    lineItems[idx].costing = result.avg;
+    lineItems[idx]._costingMeta = result;
+    renderLineItems();
   }
-  renderLineItems();save();
 }
-function updateOverallDiscount(){overallModPct=parseFloat(document.getElementById('overallModPct').value)||0;renderLineItems();save();}
-// setOverallSmartPct removed
-// syncOverallSmartPct removed
+
+// Save all costing entries when saving to cloud
+async function persistCostingHistoryForQuote(){
+  if(!currentBaseNo) return;
+  for(const item of lineItems){
+    const e = equipmentLib[item.equipIdx]; if(!e || !item.costing) continue;
+    await saveCostingEntry(e.model, item.costing, currentBaseNo);
+  }
+  for(const aw of awItems){
+    if(!aw.desc || !aw.costing) continue;
+    await saveCostingEntry(aw.desc, aw.costing, currentBaseNo);
+  }
+}
+
 function updateFontSize(v){specFontSize=parseInt(v);document.getElementById('fontSizeLabel').textContent=v+'px';updatePreview();save();}
 function updateMenuFontSize(v){menuFontSize=parseInt(v);document.getElementById('menuFontSizeLabel').textContent=v+'px';applyMenuFontSize();save();}
 function applyMenuFontSize(){document.getElementById('leftPanel').style.fontSize=menuFontSize+'px';const lbl=document.getElementById('menuFontSize');if(lbl)lbl.value=menuFontSize;const lblTxt=document.getElementById('menuFontSizeLabel');if(lblTxt)lblTxt.textContent=menuFontSize+'px';}
@@ -1884,7 +1963,15 @@ function onStarterChange(){populateEquipDropdown();}
 function populateCustDropdown(){const sel=document.getElementById('customerSelect'),cur=sel.value;sel.innerHTML='<option value="">— Select or enter manually —</option>';customerLib.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.name+(c.company?` — ${c.company}`:'');if(String(i)===String(cur))o.selected=true;sel.appendChild(o);});}
 function selectCustomer(){const idx=document.getElementById('customerSelect').value;if(idx==='')return;const c=customerLib[parseInt(idx)];document.getElementById('custName').value=c.name;document.getElementById('custCompany').value=c.company;document.getElementById('custPhone').value=c.phone;document.getElementById('custEmail').value=c.email;document.getElementById('custAddress').value=c.address;updatePreview();}
 
-function addEquipment(){const idx=document.getElementById('equipSelect').value;if(idx===''){alert('Please select equipment first.');return;}lineItems.push({id:Date.now(),equipIdx:parseInt(idx),qty:1,discountPct:0,ltMin:0,ltMax:0});renderLineItems();save();}
+function addEquipment(){
+  const idx=document.getElementById('equipSelect').value;
+  if(idx===''){alert('Please select equipment first.');return;}
+  const newItem={id:Date.now(),equipIdx:parseInt(idx),qty:1,costing:0,markupPct:30,apparentDiscPct:20,ltMin:0,ltMax:0};
+  lineItems.push(newItem);
+  const pos=lineItems.length-1;
+  renderLineItems();save();
+  prefillCosting(pos);
+}
 let dragSrcIdx=null;
 function moveItem(idx,dir){const newIdx=idx+dir;if(newIdx<0||newIdx>=lineItems.length)return;const tmp=lineItems[idx];lineItems[idx]=lineItems[newIdx];lineItems[newIdx]=tmp;renderLineItems();save();}
 
@@ -1896,33 +1983,34 @@ function renderLineItems(){
     const e=equipmentLib[item.equipIdx];if(!e)return;
     const div=document.createElement('div');div.className='lcard';
     const isFirst=idx===0,isLast=idx===total-1;
-    const discPct=item.discountPct||0;
-    const listedPrice=getListedPrice(item);
-    const purchasePrice=calcUnitPrice(item);
-
-    // Build modifier block
-    let modHTML='';
-    if(discountMode==='individual'){
-      modHTML=`<div class="g2">
-        <div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div>
-        <div><label class="lbl">Discount %</label><input type="number" min="0" max="100" step="0.1" value="${discPct||''}" placeholder="0" onchange="updateItem(${idx},'discountPct',this.value)" class="inp"/></div>
+    const costing=item.costing||0;
+    const markupPct=item.markupPct!=null?item.markupPct:30;
+    const apparentDiscPct=item.apparentDiscPct!=null?item.apparentDiscPct:20;
+    const purchasePrice=costing>0?calcPurchasePrice(costing,markupPct):0;
+    const listPrice=purchasePrice>0?calcListPrice(purchasePrice,apparentDiscPct):0;
+    const marginPct=costing>0?calcMarginPct(purchasePrice,costing):0;
+    const recommendedPrice=getRecommendedSellingPrice(item);
+    const meta=item._costingMeta;
+    const metaHtml=meta?`<span style="font-size:10px;color:#8B8176;margin-left:6px">avg of ${meta.count} entr${meta.count>1?'ies':'y'} \u00b7 latest ${meta.latestDate}</span>`:'';
+    const costingRequired=!isLocked&&!costing;
+    let priceBoxHtml='';
+    if(!isLocked){
+      priceBoxHtml=`<div style="margin-top:8px;padding:10px 12px;background:${costing?'#f0fdf4':'#fff7ed'};border:1px solid ${costing?'#bbf7d0':'#fed7aa'};border-radius:8px">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+          <div style="font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.06em">Pricing Summary</div>
+          ${recommendedPrice?`<div style="font-size:10px;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:999px">Recommended: <strong>RM ${fmt(recommendedPrice)}</strong></div>`:''}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px">
+          <div><div style="color:#64748b;margin-bottom:2px">Costing/unit</div><div style="font-weight:700;color:#1e293b">${costing?'RM '+fmt(costing):'<span style="color:#c2410c">Required</span>'}</div></div>
+          <div><div style="color:#64748b;margin-bottom:2px">Purchase Price</div><div style="font-weight:700;color:#15803d">${costing?'RM '+fmt(purchasePrice):'-'}</div></div>
+          <div><div style="color:#64748b;margin-bottom:2px">List Price</div><div style="font-weight:700;color:#1d4ed8">${costing&&apparentDiscPct>0?'RM '+fmt(listPrice):'-'}</div></div>
+          <div><div style="color:#64748b;margin-bottom:2px">Markup</div><div style="font-weight:700;color:#1e293b">${markupPct}%</div></div>
+          <div><div style="color:#64748b;margin-bottom:2px">Apparent Disc.</div><div style="font-weight:700;color:#c2410c">${apparentDiscPct>0?apparentDiscPct+'%':'-'}</div></div>
+          <div><div style="color:#64748b;margin-bottom:2px">Margin</div><div style="font-weight:700;color:${marginPct>=20?'#15803d':marginPct>=10?'#c2410c':'#dc2626'}">${costing?marginPct.toFixed(1)+'%':'-'}</div></div>
+        </div>
       </div>`;
-    } else {
-      modHTML=`<div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div>`;
     }
-
-    // Price summary pill
-    let priceInfoHTML='';
-    const effDisc=discountMode==='overall'?(overallModPct||0):discPct;
-    if(effDisc>0){
-      priceInfoHTML=`<div style="display:flex;gap:10px;margin-top:6px;padding:6px 10px;background:#f0fdf4;border-radius:8px;align-items:center;flex-wrap:wrap">
-        <div style="font-size:11px;color:#374151">Listed: <strong>RM ${fmt(listedPrice)}</strong></div>
-        <div style="font-size:11px;color:#64748b">→ ${effDisc}% off</div>
-        <div style="font-size:11px;color:#15803d;font-weight:700">Purchase: RM ${fmt(purchasePrice)}/unit</div>
-      </div>`;
-    }
-
-    div.innerHTML=`<div class="lcard-hdr"><div style="flex:1;min-width:0"><p class="lcard-model" style="font-size:${itemsFontSize}px">${e.model}</p><p class="lcard-sub">${e.series||''}${e.kw?' · '+e.kw+'kW':''}</p></div><div style="display:flex;align-items:flex-start;gap:4px">${isLocked?'':`<button class="btn-xred" onclick="removeItem(${idx})" title="Remove"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`}<div class="move-btns"><button class="move-btn" onclick="moveItem(${idx},-1)" ${isFirst||isLocked?'disabled':''}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button><button class="move-btn" onclick="moveItem(${idx},1)" ${isLast||isLocked?'disabled':''}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button></div></div></div>${isLocked?'':`${modHTML}${priceInfoHTML}<div class="lcard-foot"><div class="lt-pair"><span>LT:</span><input type="number" min="0" value="${item.ltMin||0}" onchange="updateItem(${idx},'ltMin',this.value)" class="inp"/><span>–</span><input type="number" min="0" value="${item.ltMax||0}" onchange="updateItem(${idx},'ltMax',this.value)" class="inp"/><span>wks</span></div></div>`}${isLocked?`<p style="font-size:11px;color:#94a3b8;margin-top:6px">🔒 Locked — Win status</p>`:''}`;
+    div.innerHTML=`<div class="lcard-hdr"><div style="flex:1;min-width:0"><p class="lcard-model" style="font-size:${itemsFontSize}px">${e.model}</p><p class="lcard-sub">${e.series||''}${e.kw?' \u00b7 '+e.kw+'kW':''}</p></div><div style="display:flex;align-items:flex-start;gap:4px">${isLocked?'':`<button class="btn-xred" onclick="removeItem(${idx})" title="Remove"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>`}<div class="move-btns"><button class="move-btn" onclick="moveItem(${idx},-1)" ${isFirst||isLocked?'disabled':''}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button><button class="move-btn" onclick="moveItem(${idx},1)" ${isLast||isLocked?'disabled':''}><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button></div></div></div>${isLocked?'':`<div class="g2" style="margin-top:8px"><div><label class="lbl">Qty</label><input type="number" min="1" value="${item.qty}" onchange="updateItem(${idx},'qty',this.value)" class="inp"/></div><div><label class="lbl">Costing (per unit) <span style="color:#dc2626">*</span>${metaHtml}</label><input type="number" min="0" step="0.01" value="${costing||''}" placeholder="Required" onchange="updateItem(${idx},'costing',this.value)" class="inp" style="border-color:${costingRequired?'#f97316':''}"/></div></div><div class="g2" style="margin-top:8px"><div><label class="lbl">Markup %</label><input type="number" min="0" max="99.9" step="0.1" value="${markupPct}" onchange="updateItem(${idx},'markupPct',this.value)" class="inp"/></div><div><label class="lbl">Apparent Discount %</label><input type="number" min="0" max="99.9" step="0.1" value="${apparentDiscPct}" placeholder="0 = no list price" onchange="updateItem(${idx},'apparentDiscPct',this.value)" class="inp"/></div></div>${priceBoxHtml}<div class="lcard-foot" style="margin-top:8px"><div class="lt-pair"><span>LT:</span><input type="number" min="0" value="${item.ltMin||0}" onchange="updateItem(${idx},'ltMin',this.value)" class="inp"/><span>\u2013</span><input type="number" min="0" value="${item.ltMax||0}" onchange="updateItem(${idx},'ltMax',this.value)" class="inp"/><span>wks</span></div></div>`}${isLocked?`<p style="font-size:11px;color:#94a3b8;margin-top:6px">\ud83d\udd12 Locked \u2014 Win status</p>`:''}`;
     container.appendChild(div);
   });
   updatePreview();
@@ -1933,13 +2021,18 @@ function removeItem(idx){lineItems.splice(idx,1);renderLineItems();save();}
 let awDragIdx=null;
 function addAWItem(){awItems.push({id:Date.now(),desc:'',qty:1,unit:'lot',price:0});renderAWItems();save();}
 function removeAWItem(idx){awItems.splice(idx,1);renderAWItems();save();}
-function updateAW(idx,key,val){awItems[idx][key]=key==='price'||key==='qty'?parseFloat(val)||0:val;if(key!=='desc')renderAWItems();save();}
+function updateAW(idx,key,val){
+  if(key==='price'||key==='qty'||key==='costing') awItems[idx][key]=parseFloat(val)||0;
+  else awItems[idx][key]=val;
+  renderAWItems();save();
+}
 function renderAWItems(){
   const c=document.getElementById('awItemsContainer'),msg=document.getElementById('awNoItems');
   c.innerHTML='';if(!awItems.length){msg.style.display='';updatePreview();return;}msg.style.display='none';
   awItems.forEach((aw,i)=>{
     const d=document.createElement('div');d.className='card';d.style.cssText='padding:10px;margin-bottom:0';
-    d.innerHTML=`<div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><input value="${aw.desc||''}" placeholder="Description" class="inp" style="margin-bottom:6px;font-size:12px" oninput="awItems[${i}].desc=this.value;save()"/><div class="g2"><input type="number" min="1" value="${aw.qty||1}" class="inp" style="font-size:12px" onchange="updateAW(${i},'qty',this.value)"/><select class="inp" style="font-size:12px" onchange="updateAW(${i},'unit',this.value)"><option${aw.unit==='lot'?' selected':''}>lot</option><option${aw.unit==='unit'?' selected':''}>unit</option><option${aw.unit==='set'?' selected':''}>set</option><option${aw.unit==='pcs'?' selected':''}>pcs</option></select></div><input type="number" min="0" step="0.01" value="${aw.price||0}" placeholder="Unit price" class="inp" style="margin-top:6px;font-size:12px" onchange="updateAW(${i},'price',this.value)"/></div>${isLocked?'':`<button class="btn-xred" style="margin-top:2px" onclick="removeAWItem(${i})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>`}</div>`;
+    const awMargin=aw.costing>0&&aw.price>0?calcMarginPct(aw.price,aw.costing):null;
+    d.innerHTML=`<div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><input value="${aw.desc||''}" placeholder="Description" class="inp" style="margin-bottom:6px;font-size:12px" oninput="awItems[${i}].desc=this.value;save()"/><div class="g2"><input type="number" min="1" value="${aw.qty||1}" class="inp" style="font-size:12px" onchange="updateAW(${i},'qty',this.value)"/><select class="inp" style="font-size:12px" onchange="updateAW(${i},'unit',this.value)"><option${aw.unit==='lot'?' selected':''}>lot</option><option${aw.unit==='unit'?' selected':''}>unit</option><option${aw.unit==='set'?' selected':''}>set</option><option${aw.unit==='pcs'?' selected':''}>pcs</option></select></div><input type="number" min="0" step="0.01" value="${aw.price||0}" placeholder="Unit price" class="inp" style="margin-top:6px;font-size:12px" onchange="updateAW(${i},'price',this.value)"/><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="number" min="0" step="0.01" value="${aw.costing||''}" placeholder="Costing (internal) *" class="inp" style="font-size:12px;flex:1" onchange="updateAW(${i},'costing',this.value)"/>${awMargin!==null?`<span style="font-size:10px;font-weight:700;color:${awMargin>=20?'#15803d':awMargin>=10?'#c2410c':'#dc2626'};white-space:nowrap">${awMargin.toFixed(1)}% margin</span>`:''}</div></div>${isLocked?'':`<button class="btn-xred" style="margin-top:2px" onclick="removeAWItem(${i})"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>`}</div>`;
     c.appendChild(d);
   });
   updatePreview();
@@ -2141,7 +2234,7 @@ function _buildMainPage(ctx){
   const {companyName,companyTagline,companyAddress,companyPhone,custName,custCompany,
     custPhone,custEmail,custAddress,quoteNo,quoteDate,validTill,salesName,salesPhone,
     salesEmail,notes,payment,terms,footer,priceRows,awPriceRows,grandTotal,c,bgPage,
-    fontFamily,awTitle,awItems,pages,discountMode,overallModPct:oMP}=ctx;
+    fontFamily,awTitle,awItems,pages}=ctx;
   function getModifierCtx(item){
     if(discountMode==='overall'){const pct=oMP||0;return{modType:pct>0?'discount':'none',modPct:pct};}
     const pct=item.discountPct||0;return{modType:pct>0?'discount':'none',modPct:pct};
@@ -2212,7 +2305,7 @@ function _buildMainPage(ctx){
 
 // ── _buildSpecPages — one page per line item ─────────────────────────────────
 function _buildSpecPages(ctx){
-  const {priceRows,quoteNo,companyName,c,bgPage,fontFamily,fs,showOilCarryOver,pages,discountMode,overallModPct:oMP}=ctx;
+  const {priceRows,quoteNo,companyName,c,bgPage,fontFamily,fs,showOilCarryOver,pages}=ctx;
   function getModifierCtx(item){
     if(discountMode==='overall'){const pct=oMP||0;return{modType:pct>0?'discount':'none',modPct:pct};}
     const pct=item.discountPct||0;return{modType:pct>0?'discount':'none',modPct:pct};
@@ -2324,7 +2417,7 @@ function buildAllPages(){
   const ctx={companyName,companyTagline,companyAddress,companyPhone,custName,custCompany,
     custPhone,custEmail,custAddress,quoteNo,quoteDate,validTill,salesName,salesPhone,
     salesEmail,notes,payment,terms,footer,priceRows,awPriceRows,grandTotal,c,bgPage,
-    fontFamily,awTitle,awItems,pages,fs,showOilCarryOver,discountMode,overallModPct};
+    fontFamily,awTitle,awItems,pages,fs,showOilCarryOver};
   _buildMainPage(ctx);
   _buildSpecPages(ctx);
   return pages;
@@ -2369,6 +2462,92 @@ let activeTone=0;
 function openEmailDraft(){const tb=document.getElementById('toneBtns');tb.innerHTML=emailTones.map((t,i)=>`<button class="tone-btn${i===activeTone?' active':''}" onclick="setTone(${i})">${t.name}</button>`).join('');document.getElementById('emailBody').value=emailTones[activeTone].fn();document.getElementById('emailModal').classList.add('on');}
 function setTone(i){activeTone=i;document.querySelectorAll('.tone-btn').forEach((b,j)=>b.classList.toggle('active',i===j));document.getElementById('emailBody').value=emailTones[i].fn();}
 function copyEmail(){navigator.clipboard.writeText(document.getElementById('emailBody').value).then(()=>showToast('Copied to clipboard','ok'));}
+
+
+// ── Costing XLS Download ──────────────────────────────────────────────────
+async function downloadCostingXLS(){
+  const btn=document.getElementById('xlsBtn');
+  if(btn){btn.disabled=true;btn.innerHTML='Generating…';}
+  try{
+    const quoteNo=document.getElementById('quoteNumber')?.value||'Quote';
+    const custCo=document.getElementById('custCompany')?.value||document.getElementById('custName')?.value||'Client';
+    const dateStr=document.getElementById('quoteDate')?.value||new Date().toISOString().slice(0,10);
+    const salesPerson=document.getElementById('salesName')?.value||'';
+    const awTitleVal=document.getElementById('awTitle')?.value||'Additional Works';
+
+    // Build rows array
+    const headers=['#','Model / Description','Series','Qty','Purchase Price (RM/unit)','Total Price (RM)','Apparent Discount %','Costing (RM/unit)','Markup %','Margin %'];
+    const dataRows=[headers];
+    let itemNo=1;
+
+    lineItems.forEach(item=>{
+      const e=equipmentLib[item.equipIdx];if(!e)return;
+      const costing=item.costing||0;
+      const markupPct=item.markupPct!=null?item.markupPct:30;
+      const apparentDiscPct=item.apparentDiscPct!=null?item.apparentDiscPct:20;
+      const purchasePrice=costing>0?calcPurchasePrice(costing,markupPct):0;
+      const lineTotal=purchasePrice*(item.qty||1);
+      const marginPct=costing>0?calcMarginPct(purchasePrice,costing):0;
+      dataRows.push([
+        itemNo++, e.model, e.series||'', item.qty||1,
+        purchasePrice?+purchasePrice.toFixed(2):0,
+        lineTotal?+lineTotal.toFixed(2):0,
+        apparentDiscPct,
+        costing?+costing.toFixed(2):0,
+        markupPct,
+        costing?+marginPct.toFixed(2):0
+      ]);
+    });
+
+    if(awItems&&awItems.length){
+      dataRows.push(['','--- '+awTitleVal+' ---','','','','','','','','']);
+      awItems.forEach(aw=>{
+        const price=parseFloat(aw.price)||0;
+        const qty=aw.qty||1;
+        const costing=aw.costing||0;
+        const marginPct=costing>0&&price>0?calcMarginPct(price,costing):0;
+        dataRows.push([
+          itemNo++, aw.desc||'—', aw.unit||'', qty,
+          price?+price.toFixed(2):0,
+          +(price*qty).toFixed(2),
+          '', costing?+costing.toFixed(2):0, '', costing?+marginPct.toFixed(2):0
+        ]);
+      });
+    }
+
+    // Grand total row
+    const grandTotal=lineItems.reduce((s,item)=>{
+      const e=equipmentLib[item.equipIdx];if(!e)return s;
+      const c=item.costing||0,mp=item.markupPct!=null?item.markupPct:30;
+      const pp=c>0?calcPurchasePrice(c,mp):0;
+      return s+pp*(item.qty||1);
+    },0)+(awItems||[]).reduce((s,aw)=>(parseFloat(aw.price)||0)*(aw.qty||1)+s,0);
+    dataRows.push(['','','','','GRAND TOTAL',+grandTotal.toFixed(2),'','','','']);
+
+    // Build workbook with header info
+    const wb=XLSX.utils.book_new();
+    const allRows=[
+      ['COSTING SHEET — INTERNAL USE ONLY'],
+      ['Quote No.',quoteNo],
+      ['Customer',custCo],
+      ['Date',dateStr],
+      ['Prepared by',salesPerson],
+      [],
+      ...dataRows
+    ];
+    const ws=XLSX.utils.aoa_to_sheet(allRows);
+    ws['!cols']=[{wch:4},{wch:32},{wch:16},{wch:5},{wch:22},{wch:18},{wch:18},{wch:18},{wch:10},{wch:10}];
+    XLSX.utils.book_append_sheet(wb,ws,'Costing');
+    XLSX.writeFile(wb,`${quoteNo}_Costing_${custCo}_${dateStr}.xlsx`);
+    showToast('Costing XLS downloaded','ok');
+  }catch(err){
+    console.error('XLS error:',err);
+    showToast('XLS failed: '+err.message,'err');
+  }finally{
+    if(btn){btn.disabled=false;btn.innerHTML='<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Costing XLS';}
+  }
+}
+
 
 // ── PDF Download ─────────────────────────────────────────────────────────
 async function downloadPDF(){
