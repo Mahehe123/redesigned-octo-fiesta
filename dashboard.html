@@ -386,25 +386,6 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 <div class="main">
 
 
-  <!-- ── HOME PANEL ── -->
-  <div id="homeView" style="display:block">
-    <div class="home-panel">
-      <div class="home-section-title">Follow-up Actions</div>
-      <div id="homeActionList" class="action-list">
-        <div style="text-align:center;padding:20px;font-size:12px;color:#94a3b8">Loading…</div>
-      </div>
-    </div>
-    <div class="home-panel">
-      <div class="home-section-title">Ageing Quotations <span style="font-size:10px;font-weight:500;color:#94a3b8;text-transform:none;letter-spacing:0">(Delivered &amp; Negotiation — excludes Win/Loss)</span></div>
-      <div id="homeAgeingList" class="action-list">
-        <div style="text-align:center;padding:20px;font-size:12px;color:#94a3b8">Loading…</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── DASHBOARD VIEW ── -->
-  <div id="dashView" style="display:none">
-
   <!-- KPI Strip -->
   <div class="kpi-strip">
     <div class="kpi all active" onclick="setActiveKPI('all')">
@@ -453,8 +434,25 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
     </div>
   </div>
 
+  <!-- ── HOME VIEW ── -->
+  <div id="homeView" style="display:none">
+    <div class="home-panel">
+      <div class="home-section-title">Follow-up Actions</div>
+      <div id="homeActionList" class="action-list">
+        <div style="text-align:center;padding:20px;font-size:12px;color:#94a3b8">Loading…</div>
+      </div>
+    </div>
+    <div class="home-panel">
+      <div class="home-section-title">Ageing Quotations <span style="font-size:10px;font-weight:500;color:#94a3b8;text-transform:none;letter-spacing:0">(Delivered &amp; Negotiation — excludes Win/Loss)</span></div>
+      <div id="homeAgeingList" class="action-list">
+        <div style="text-align:center;padding:20px;font-size:12px;color:#94a3b8">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ── ALL panel ── -->
-  <div id="ctx-all" class="ctx-panel active">
+  <div id="ctx-all" class="ctx-panel">
     <div class="pipeline">
       <div class="pipeline-title">Pipeline Overview</div>
       <div class="pipeline-track" id="pipelineTrack"></div>
@@ -589,7 +587,6 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
     </div>
   </div>
 
-  </div><!-- /dashView -->
 
   <!-- Admin Tools (admin only) -->
   <div class="admin" id="adminPanel" style="display:none">
@@ -915,7 +912,11 @@ window.addEventListener('load', () => {
     } catch(e){ document.getElementById('userChip').textContent = user.email; }
     if(isAdmin) document.getElementById('adminPanel').style.display='';
     loadDashSettings();
-    loadDashboard();
+    loadFollowUpDays();
+    // Start on Home view — hide all ctx panels, homeView shows
+    document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
+    if(document.getElementById('homeTabBtn')) document.getElementById('homeTabBtn').classList.add('active');
+    loadDashboard().then(()=>renderHomePanel());
   });
 });
 
@@ -963,6 +964,11 @@ function _tickCacheAge(){
 // ── KPI active — lazy-fetch on tab switch ─────────────────────────────────
 function setActiveKPI(kpi){
   activeKPI = kpi;
+  // Hide Home panel, show dashboard content
+  const homeView = document.getElementById('homeView');
+  if(homeView) homeView.style.display='none';
+  const homeBtn = document.getElementById('homeTabBtn');
+  if(homeBtn) homeBtn.classList.remove('active');
   document.querySelectorAll('.kpi').forEach(el=>el.classList.remove('active'));
   document.querySelector('.kpi.'+kpi).classList.add('active');
   document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
@@ -1013,7 +1019,7 @@ function renderKPIs(){
   renderStatPills();
   renderActivityPills();
   // Refresh Home panel if visible
-  if(document.getElementById('homeView')?.style.display!=='none') renderHomePanel();
+  if(document.getElementById('homeView')?.style.display==='block') renderHomePanel();
 }
 
 function renderStatPills(){
@@ -1771,14 +1777,18 @@ let _followUpDays = 10; // loaded from Firestore
 
 function switchToHome(){
   document.getElementById('homeView').style.display='block';
-  document.getElementById('dashView').style.display='none';
+  // Hide all KPI context panels
+  document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('homeTabBtn').classList.add('active');
+  // Deactivate KPI card highlights
+  document.querySelectorAll('.kpi').forEach(k=>k.classList.remove('active'));
   renderHomePanel();
 }
 function switchToDash(){
   document.getElementById('homeView').style.display='none';
-  document.getElementById('dashView').style.display='block';
   document.getElementById('homeTabBtn').classList.remove('active');
+  // Restore last active KPI panel (default to 'all')
+  setActiveKPI(activeKPI||'all');
 }
 
 async function loadFollowUpDays(){
