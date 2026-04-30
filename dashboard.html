@@ -29,7 +29,7 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh;--dash-font-size:15px;--d
 .main{padding:24px 28px;max-width:1400px;margin:0 auto}
 
 /* ── KPI Strip ── */
-.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
+.kpi-strip{display:grid;grid-template-columns:auto repeat(6,1fr);gap:12px;margin-bottom:24px}
 .kpi{background:#fff;border:2px solid transparent;border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;transition:height .2s}
 .kpi.all::before{background:linear-gradient(90deg,#2C2C2C,#8B8176)}
@@ -174,7 +174,7 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 
 /* ── KPI responsive ── */
 @media (max-width:1100px){
-  .kpi-strip{grid-template-columns:repeat(3,1fr)}
+  .kpi-strip{grid-template-columns:repeat(4,1fr)}
 }
 @media (max-width:640px){
   .kpi-strip{grid-template-columns:repeat(2,1fr)}
@@ -340,10 +340,19 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 .remark-submit{border-radius:8px;background:#2C2C2C;color:#F5F0E8;font-size:12px;font-weight:600;padding:0 16px;border:none;cursor:pointer;font-family:inherit;flex-shrink:0}
 .remark-submit:hover{opacity:.88}
 .remark-empty{text-align:center;padding:20px;font-size:12px;color:#94a3b8}
-/* Home nav tab */
-.home-tab-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#374151;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
-.home-tab-btn.active{background:#2C2C2C;color:#F5F0E8;border-color:#2C2C2C}
-.home-tab-btn:hover:not(.active){background:#f1f5f9;border-color:#cbd5e1}
+
+
+/* ── Home KPI card ── */
+.kpi.home{background:#fff;border:2px solid transparent;border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:88px}
+.kpi.home::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;background:linear-gradient(90deg,#2C2C2C,#8B8176);transition:height .2s}
+.kpi.home:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.kpi.home.active{border-color:#2C2C2C;background:#f8f7f4}
+.kpi.home.active::before{height:4px}
+.kpi-home-icon{width:32px;height:32px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.kpi.home.active .kpi-home-icon{background:#2C2C2C}
+.kpi.home.active .kpi-home-icon svg{color:#F5F0E8}
+.kpi-home-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b;transition:color .2s}
+.kpi.home.active .kpi-home-label{color:#2C2C2C}
 
 </style>
 </head>
@@ -368,9 +377,6 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
     <button class="tb-btn" onclick="openProfileModal()" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>Profile
     </button>
-    <button class="home-tab-btn active" id="homeTabBtn" onclick="switchToHome()" style="margin-right:4px">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Home
-    </button>
     <button class="tb-btn primary" onclick="openNewQuoteModal()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Quote
     </button>
@@ -388,7 +394,14 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 
   <!-- KPI Strip -->
   <div class="kpi-strip">
-    <div class="kpi all active" onclick="setActiveKPI('all')">
+    <!-- Home card -->
+    <div class="kpi home active" id="homeTabBtn" onclick="switchToHome()" title="Home — Follow-ups & Ageing">
+      <div class="kpi-home-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;color:#64748b"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </div>
+      <div class="kpi-home-label">Home</div>
+    </div>
+    <div class="kpi all" onclick="setActiveKPI('all')">
       <div class="kpi-label">Total Quotes</div>
       <div class="kpi-val" id="kpiTotal">—</div>
       <div class="kpi-sub" id="kpiTotalVal">RM —</div>
@@ -1776,17 +1789,17 @@ function showToast(msg,type=''){const t=document.getElementById('toast');t.textC
 let _followUpDays = 10; // loaded from Firestore
 
 function switchToHome(){
-  document.getElementById('homeView').style.display='block';
-  // Hide all KPI context panels
-  document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('homeTabBtn').classList.add('active');
-  // Deactivate KPI card highlights
+  // Deactivate all KPI cards (including data ones)
   document.querySelectorAll('.kpi').forEach(k=>k.classList.remove('active'));
+  // Activate Home card
+  document.getElementById('homeTabBtn').classList.add('active');
+  // Hide all ctx panels, show Home view
+  document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('homeView').style.display='block';
   renderHomePanel();
 }
 function switchToDash(){
   document.getElementById('homeView').style.display='none';
-  document.getElementById('homeTabBtn').classList.remove('active');
   // Restore last active KPI panel (default to 'all')
   setActiveKPI(activeKPI||'all');
 }
