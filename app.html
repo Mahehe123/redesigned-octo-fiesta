@@ -2236,8 +2236,8 @@ function _buildMainPage(ctx){
     salesEmail,notes,payment,terms,footer,priceRows,awPriceRows,grandTotal,c,bgPage,
     fontFamily,awTitle,awItems,pages}=ctx;
   function getModifierCtx(item){
-    if(discountMode==='overall'){const pct=oMP||0;return{modType:pct>0?'discount':'none',modPct:pct};}
-    const pct=item.discountPct||0;return{modType:pct>0?'discount':'none',modPct:pct};
+    const pct=item.apparentDiscPct||0;
+    return{modType:pct>0?'discount':'none',modPct:pct};
   }
 
 
@@ -2274,7 +2274,7 @@ function _buildMainPage(ctx){
       const discPct=getModifierCtx(row.item).modPct||0;
       p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px"><span style="font-size:11px;color:#64748b;text-decoration:line-through">RM ${fmt(row.listedPrice)}</span><br/><strong style="color:#1e293b;font-size:13px">RM ${fmt(row.purchasePrice)}</strong><br/><span style="font-size:9px;color:#15803d;font-weight:700">${discPct}% discount</span></td>`;
     } else {
-      p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;color:#1e293b;font-weight:500">RM ${fmt(row.listedPrice)}</td>`;
+      p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;color:#1e293b;font-weight:500">RM ${fmt(row.purchasePrice)}</td>`;
     }
     p1+=`<td style="padding:10px 12px;text-align:right;font-size:13px;font-weight:700;color:${c.primary}">RM ${fmt(row.lineTotal)}</td></tr>`;
   });
@@ -2307,8 +2307,8 @@ function _buildMainPage(ctx){
 function _buildSpecPages(ctx){
   const {priceRows,quoteNo,companyName,c,bgPage,fontFamily,fs,showOilCarryOver,pages}=ctx;
   function getModifierCtx(item){
-    if(discountMode==='overall'){const pct=oMP||0;return{modType:pct>0?'discount':'none',modPct:pct};}
-    const pct=item.discountPct||0;return{modType:pct>0?'discount':'none',modPct:pct};
+    const pct=item.apparentDiscPct||0;
+    return{modType:pct>0?'discount':'none',modPct:pct};
   }
 
   // ── Tech spec pages ──────────────────────────────────────────────────────
