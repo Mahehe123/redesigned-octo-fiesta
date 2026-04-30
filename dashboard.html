@@ -10,26 +10,63 @@
 body{background:#F5F4F1;color:#1e293b;min-height:100vh;--dash-font-size:15px;--dash-kpi-val:28px;--dash-stat-val:23px;--dash-table-td:15px}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:#f1f5f9}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
 
-/* ── Topbar ── */
-.topbar{background:#fff;border-bottom:1px solid #e8e6e1;padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.brand{display:flex;align-items:center;gap:10px}
-.brand-icon{width:32px;height:32px;background:linear-gradient(135deg,#2C2C2C,#4a4a4a);border-radius:8px;display:flex;align-items:center;justify-content:center}
-.brand-icon svg{width:16px;height:16px;color:#F5F0E8}
-.brand-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#2C2C2C;letter-spacing:.01em}
-.brand-sep{width:1px;height:16px;background:#e2e8f0;margin:0 2px}
-.brand-page{font-size:12px;font-weight:600;color:#8B8176;letter-spacing:.04em;text-transform:uppercase}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.tb-btn{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#374151;background:#f8fafc;border:1px solid #e2e8f0;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit}
-.tb-btn:hover{background:#f1f5f9;border-color:#cbd5e1}.tb-btn svg{width:14px;height:14px}
-.tb-btn.primary{background:#2C2C2C;color:#F5F0E8;border-color:#2C2C2C}.tb-btn.primary:hover{background:#1a1a1a}
-.tb-btn.danger{background:#fef2f2;color:#dc2626;border-color:#fecaca}.tb-btn.danger:hover{background:#fee2e2}
-.user-chip{font-size:11px;font-weight:600;color:#64748b;background:#f1f5f9;border-radius:999px;padding:4px 12px}
+/* ── Sidebar Layout ── */
+body{display:flex;min-height:100vh}
+.sidebar{width:220px;min-width:220px;background:#fff;border-right:1px solid #e8e6e1;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;overflow:hidden}
+.sidebar-brand{padding:20px 18px 16px;border-bottom:1px solid #f1f5f9}
+.brand{display:flex;align-items:center;gap:9px}
+.brand-icon{width:30px;height:30px;background:linear-gradient(135deg,#2C2C2C,#4a4a4a);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon svg{width:15px;height:15px;color:#F5F0E8}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:#2C2C2C;letter-spacing:.01em}
+.sidebar-user{padding:10px 18px 12px;border-bottom:1px solid #f1f5f9}
+.user-chip{font-size:11px;font-weight:600;color:#64748b;background:#f1f5f9;border-radius:8px;padding:6px 10px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.sidebar-section-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#94a3b8;padding:8px 8px 4px;margin-top:4px}
+.sidebar-section-label:first-child{margin-top:0}
+.sidebar-actions{padding:12px 10px;border-top:1px solid #f1f5f9;display:flex;flex-direction:column;gap:4px}
+.tb-btn{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#374151;background:transparent;border:none;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit;width:100%;text-align:left}
+.tb-btn:hover{background:#f5f4f1;color:#1e293b}.tb-btn svg{width:14px;height:14px;flex-shrink:0}
+.tb-btn.primary{background:#2C2C2C;color:#F5F0E8;justify-content:center;border-radius:9px;padding:9px 10px;margin-bottom:4px}.tb-btn.primary:hover{background:#1a1a1a}
+.tb-btn.danger{color:#dc2626}.tb-btn.danger:hover{background:#fef2f2}
 
-/* ── Layout ── */
-.main{padding:24px 28px;max-width:1400px;margin:0 auto}
+/* ── Main content area ── */
+.main{margin-left:220px;padding:24px 28px;max-width:1400px;width:calc(100% - 220px)}
 
-/* ── KPI Strip ── */
+/* ── Sidebar KPI nav buttons ── */
+.kpi-nav-btn{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;border:none;background:transparent;width:100%;text-align:left;font-family:inherit;position:relative}
+.kpi-nav-btn:hover{background:#f5f4f1}
+.kpi-nav-btn.active{background:#f8f7f4}
+.kpi-nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:transform .15s}
+.kpi-nav-btn.active .kpi-nav-dot{transform:scale(1.3)}
+.kpi-nav-label{font-size:12px;font-weight:600;color:#374151;flex:1}
+.kpi-nav-btn.active .kpi-nav-label{color:#1e293b}
+.kpi-nav-count{font-size:12px;font-weight:700;color:#64748b}
+.kpi-nav-btn.active .kpi-nav-count{color:#1e293b}
+.kpi-nav-btn.focus-btn{border:1.5px solid transparent}
+.kpi-nav-btn.focus-btn.active{background:#f8f7f4;border-color:#2C2C2C}
+
+/* ── Enhanced table row priority states ── */
+/* Overdue row — stronger red tint, takes priority over ageing */
+table.summary-table tr.row-overdue td, table.aq-table tr.row-overdue td{background:#fef1f1!important;border-left:none}
+table.summary-table tr.row-overdue:hover td, table.aq-table tr.row-overdue:hover td{background:#fee5e5!important}
+table.summary-table tr.row-overdue td:first-child, table.aq-table tr.row-overdue td:first-child{box-shadow:inset 3px 0 0 #ef4444}
+/* Urgent follow-up — left border accent */
+table.summary-table tr.row-urgent-fu td:first-child, table.aq-table tr.row-urgent-fu td:first-child{box-shadow:inset 3px 0 0 #f97316}
+table.summary-table tr.row-urgent-fu td, table.aq-table tr.row-urgent-fu td{background:#fffbf7!important}
+table.summary-table tr.row-urgent-fu:hover td, table.aq-table tr.row-urgent-fu:hover td{background:#fff4ec!important}
+/* High value row — subtle bold bg */
+table.summary-table tr.row-highval td, table.aq-table tr.row-highval td{background:#fafbff!important}
+table.summary-table tr.row-highval:hover td, table.aq-table tr.row-highval:hover td{background:#f3f6ff!important}
+table.summary-table tr.row-highval .td-value, table.aq-table tr.row-highval .td-value{color:#1d4ed8!important;font-weight:800!important}
+/* Negotiation status row — orange left border for urgency signaling */
+table.summary-table tr.row-negotiation td:first-child{box-shadow:inset 3px 0 0 #f97316}
+/* Win row — calmer green left accent */
+table.summary-table tr.row-win td:first-child{box-shadow:inset 3px 0 0 #22c55e}
+
+/* ── KPI strip (kept for data cards, hidden visually as tabs) ── */
 .kpi-strip{display:grid;grid-template-columns:auto repeat(6,1fr);gap:12px;margin-bottom:24px}
+/* ── KPI Strip (hidden — data via sidebar nav) ── */
+.kpi-strip{display:none!important}
 .kpi{background:#fff;border:2px solid transparent;border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;transition:height .2s}
 .kpi.all::before{background:linear-gradient(90deg,#2C2C2C,#8B8176)}
@@ -47,7 +84,7 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh;--dash-font-size:15px;--d
 .kpi.active.loss{border-color:#ef4444;background:#fef2f2}
 .kpi.active::before{height:4px}
 .kpi-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
-.kpi-val{font-size:var(--dash-kpi-val,28px);font-weight:700;color:#1e293b;line-height:1}
+.kpi-val{font-size:var(--dash-kpi-val,28px);font-weight:800;color:#0f172a;line-height:1}
 .kpi-sub{font-size:var(--dash-font-size,15px);color:#64748b;margin-top:4px;font-weight:500}
 
 /* ── Context panels ── */
@@ -55,7 +92,7 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh;--dash-font-size:15px;--d
 
 /* ── Pipeline bar ── */
 .pipeline{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 24px;margin-bottom:24px}
-.pipeline-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px}
+.pipeline-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1e293b;margin-bottom:14px}
 .pipeline-track{height:12px;border-radius:999px;background:#f1f5f9;overflow:hidden;display:flex;margin-bottom:10px}
 .pipeline-seg{height:100%}
 .pipeline-seg:first-child{border-radius:999px 0 0 999px}.pipeline-seg:last-child{border-radius:0 999px 999px 0}
@@ -77,7 +114,7 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh;--dash-font-size:15px;--d
 /* ── Analysis grid (2 col) ── */
 .analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
 .analysis-card{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:18px 20px}
-.analysis-card-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px}
+.analysis-card-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1e293b;margin-bottom:14px}
 .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .bar-row:last-child{margin-bottom:0}
 .bar-label{font-size:12px;font-weight:500;color:#374151;min-width:88px;flex-shrink:0}
@@ -103,7 +140,7 @@ body{background:#F5F4F1;color:#1e293b;min-height:100vh;--dash-font-size:15px;--d
 .summary-table-wrap{overflow-x:auto}
 table.summary-table{width:100%;border-collapse:collapse}
 table.summary-table thead tr{background:#faf9f7}
-table.summary-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#374151;white-space:nowrap;border-bottom:1px solid #f1f5f9}
+table.summary-table th{padding:11px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1e293b;white-space:nowrap;border-bottom:1px solid #e8e6e1}
 table.summary-table td{padding:10px 14px;font-size:var(--dash-table-td,15px);border-bottom:1px solid #faf9f7;color:#1e293b;vertical-align:middle}
 table.summary-table tr:last-child td{border-bottom:none}
 table.summary-table tr:hover td{background:#faf9f7;cursor:pointer}
@@ -157,7 +194,7 @@ table.summary-table tr.win-incomplete:hover td{background:#fef9c3!important}
 .aq-modal-body{flex:1;overflow-y:auto;min-height:200px}
 table.aq-table{width:100%;border-collapse:collapse}
 table.aq-table thead tr{background:#faf9f7;position:sticky;top:0;z-index:2}
-table.aq-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#374151;white-space:nowrap;border-bottom:1px solid #f1f5f9;cursor:pointer;user-select:none}
+table.aq-table th{padding:11px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1e293b;white-space:nowrap;border-bottom:1px solid #e8e6e1;cursor:pointer;user-select:none}
 table.aq-table th:hover{color:#1e293b}.table.aq-table th.sorted{color:#2C2C2C}
 table.aq-table td{padding:10px 14px;font-size:var(--dash-table-td,15px);border-bottom:1px solid #faf9f7;color:#1e293b;vertical-align:middle}
 table.aq-table tr:last-child td{border-bottom:none}
@@ -284,7 +321,7 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 
 /* ── Home Panel ── */
 .home-panel{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:22px 24px;margin-bottom:24px}
-.home-section-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#374151;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.home-section-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1e293b;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .home-section-title::after{content:'';flex:1;height:1px;background:#f1f5f9}
 .action-list{display:flex;flex-direction:column;gap:8px}
 .action-item{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:10px;border:1.5px solid #e8e6e1;background:#faf9f7;cursor:pointer;transition:all .15s}
@@ -354,34 +391,107 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 .kpi-home-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b;transition:color .2s}
 .kpi.home.active .kpi-home-label{color:#2C2C2C}
 
-</style>
+/* ── Focus: Top 5 Deals card ── */
+.focus-top5{background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:20px 24px;margin-bottom:20px}
+.focus-top5-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.focus-top5-title{font-size:13px;font-weight:700;color:#0f172a;display:flex;align-items:center;gap:8px}
+.focus-top5-title svg{width:16px;height:16px;color:#f97316}
+.focus-top5-sub{font-size:11px;color:#64748b;margin-top:1px}
+.focus-deal{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;border:1.5px solid #e8e6e1;background:#faf9f7;cursor:pointer;transition:all .15s;margin-bottom:8px}
+.focus-deal:last-child{margin-bottom:0}
+.focus-deal:hover{border-color:#8B8176;background:#f5f4f1;transform:translateX(2px)}
+.focus-deal.score-hot{border-color:#fca5a5;background:#fef2f2}
+.focus-deal.score-warm{border-color:#fdba74;background:#fff7ed}
+.focus-rank{width:22px;height:22px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#64748b;flex-shrink:0}
+.focus-rank.r1{background:#2C2C2C;color:#F5F0E8}
+.focus-rank.r2{background:#4a4a4a;color:#F5F0E8}
+.focus-rank.r3{background:#8B8176;color:#fff}
+.focus-deal-body{flex:1;min-width:0}
+.focus-deal-title{font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.focus-deal-meta{font-size:11px;color:#64748b;margin-top:1px}
+.focus-deal-value{font-size:12px;font-weight:700;color:#374151;white-space:nowrap;flex-shrink:0}
+.focus-score-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:999px;background:#fef9c3;color:#854d0e;border:1px solid #fde047;white-space:nowrap;flex-shrink:0}
+.focus-score-badge.hot{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+
+/* ── Sidebar cache age label ── */
+.cache-age{font-size:10px;font-weight:500;color:#94a3b8;margin-left:4px}
+
+
 </head>
 <body>
 
 <div id="loadingOverlay"><div class="spinner"></div><div class="loading-text">Loading dashboard…</div></div>
 <div id="equipTooltip" class="equip-tooltip"></div>
 
-<!-- Topbar -->
-<div class="topbar">
-  <div class="brand">
-    <div class="brand-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
-    <div class="brand-name">Mitsumori</div><div class="brand-sep"></div>
-    <div class="brand-page">Dashboard</div>
+<!-- ── Sidebar ── -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand">
+      <div class="brand-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+      <div class="brand-name">Mitsumori</div>
+    </div>
   </div>
-  <div class="topbar-right">
+  <div class="sidebar-user">
     <span class="user-chip" id="userChip">Loading…</span>
-    <button class="tb-btn" onclick="openSettingsModal()" title="Dashboard Settings">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-      Settings
+  </div>
+  <div class="sidebar-nav">
+    <div class="sidebar-section-label">Views</div>
+    <!-- Focus tab -->
+    <button class="kpi-nav-btn focus-btn active" id="homeTabBtn" onclick="switchToHome()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;flex-shrink:0;color:#2C2C2C"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      <span class="kpi-nav-label" style="color:#1e293b">Focus</span>
     </button>
-    <button class="tb-btn" onclick="openProfileModal()" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>Profile
+    <div class="sidebar-section-label" style="margin-top:8px">Pipeline</div>
+    <button class="kpi-nav-btn" id="nav-all" onclick="setActiveKPI('all')">
+      <div class="kpi-nav-dot" style="background:linear-gradient(135deg,#2C2C2C,#8B8176)"></div>
+      <span class="kpi-nav-label">All Quotes</span>
+      <span class="kpi-nav-count" id="kpiTotal">—</span>
     </button>
+    <button class="kpi-nav-btn" id="nav-draft" onclick="setActiveKPI('draft')">
+      <div class="kpi-nav-dot" style="background:#94a3b8"></div>
+      <span class="kpi-nav-label">Draft</span>
+      <span class="kpi-nav-count" id="kpiDraft">—</span>
+    </button>
+    <button class="kpi-nav-btn" id="nav-delivered" onclick="setActiveKPI('delivered')">
+      <div class="kpi-nav-dot" style="background:#3b82f6"></div>
+      <span class="kpi-nav-label">Delivered</span>
+      <span class="kpi-nav-count" id="kpiDelivered">—</span>
+    </button>
+    <button class="kpi-nav-btn" id="nav-negotiation" onclick="setActiveKPI('negotiation')">
+      <div class="kpi-nav-dot" style="background:#f97316"></div>
+      <span class="kpi-nav-label">Negotiation</span>
+      <span class="kpi-nav-count" id="kpiNego">—</span>
+    </button>
+    <button class="kpi-nav-btn" id="nav-win" onclick="setActiveKPI('win')">
+      <div class="kpi-nav-dot" style="background:#22c55e"></div>
+      <span class="kpi-nav-label">Win</span>
+      <span class="kpi-nav-count" id="kpiWin">—</span>
+    </button>
+    <button class="kpi-nav-btn" id="nav-loss" onclick="setActiveKPI('loss')">
+      <div class="kpi-nav-dot" style="background:#ef4444"></div>
+      <span class="kpi-nav-label">Loss</span>
+      <span class="kpi-nav-count" id="kpiLoss">—</span>
+    </button>
+    <!-- KPI value sub-labels (hidden, kept for JS compat) -->
+    <span id="kpiTotalVal" style="display:none"></span>
+    <span id="kpiDraftVal" style="display:none"></span>
+    <span id="kpiDeliveredVal" style="display:none"></span>
+    <span id="kpiNegoVal" style="display:none"></span>
+    <span id="kpiWinVal" style="display:none"></span>
+    <span id="kpiLossVal" style="display:none"></span>
+  </div>
+  <div class="sidebar-actions">
     <button class="tb-btn primary" onclick="openNewQuoteModal()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Quote
     </button>
-    <button class="tb-btn" onclick="refreshDashboard()" title="Force refresh all data" id="refreshBtn">
+    <button class="tb-btn" onclick="refreshDashboard()" id="refreshBtn">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Refresh<span class="cache-age" id="cacheAgeLabel"></span>
+    </button>
+    <button class="tb-btn" onclick="openSettingsModal()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>Settings
+    </button>
+    <button class="tb-btn" onclick="openProfileModal()" style="color:#15803d">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>Profile
     </button>
     <button class="tb-btn danger" onclick="doLogout()">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Sign Out
@@ -392,46 +502,7 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
 <div class="main">
 
 
-  <!-- KPI Strip -->
-  <div class="kpi-strip">
-    <!-- Home card -->
-    <div class="kpi home active" id="homeTabBtn" onclick="switchToHome()" title="Home — Follow-ups & Ageing">
-      <div class="kpi-home-icon">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;color:#64748b"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-      </div>
-      <div class="kpi-home-label">Home</div>
-    </div>
-    <div class="kpi all" onclick="setActiveKPI('all')">
-      <div class="kpi-label">Total Quotes</div>
-      <div class="kpi-val" id="kpiTotal">—</div>
-      <div class="kpi-sub" id="kpiTotalVal">RM —</div>
-    </div>
-    <div class="kpi draft" onclick="setActiveKPI('draft')" style="cursor:pointer">
-      <div class="kpi-label">Draft</div>
-      <div class="kpi-val" id="kpiDraft">—</div>
-      <div class="kpi-sub" id="kpiDraftVal" style="font-size:10px">Unsaved / In Progress</div>
-    </div>
-    <div class="kpi delivered" onclick="setActiveKPI('delivered')">
-      <div class="kpi-label">Delivered</div>
-      <div class="kpi-val" id="kpiDelivered">—</div>
-      <div class="kpi-sub" id="kpiDeliveredVal">RM —</div>
-    </div>
-    <div class="kpi negotiation" onclick="setActiveKPI('negotiation')">
-      <div class="kpi-label">Negotiation</div>
-      <div class="kpi-val" id="kpiNego">—</div>
-      <div class="kpi-sub" id="kpiNegoVal">RM —</div>
-    </div>
-    <div class="kpi win" onclick="setActiveKPI('win')">
-      <div class="kpi-label">Win</div>
-      <div class="kpi-val" id="kpiWin">—</div>
-      <div class="kpi-sub" id="kpiWinVal">RM —</div>
-    </div>
-    <div class="kpi loss" onclick="setActiveKPI('loss')">
-      <div class="kpi-label">Loss</div>
-      <div class="kpi-val" id="kpiLoss">—</div>
-      <div class="kpi-sub" id="kpiLossVal">RM —</div>
-    </div>
-  </div>
+  <!-- KPI data kept in hidden spans — counts shown in sidebar nav (see sidebar HTML above) -->
 
   <!-- ── Activity Pills (week + month) — shown only on All/Total Quotes panel ── -->
   <div id="activityPillsRow" class="stat-pills" style="margin-bottom:20px;display:none">
@@ -447,8 +518,21 @@ table.aq-table tr.win-incomplete:hover td{background:#fef9c3!important}
     </div>
   </div>
 
-  <!-- ── HOME VIEW ── -->
+  <!-- ── FOCUS VIEW ── -->
   <div id="homeView" style="display:none">
+    <!-- Top 5 Deals to Act On Today -->
+    <div class="focus-top5">
+      <div class="focus-top5-header">
+        <div>
+          <div class="focus-top5-title">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Top Deals to Act On Today
+          </div>
+          <div class="focus-top5-sub">Scored by urgency · value · status</div>
+        </div>
+      </div>
+      <div id="focusTop5List"><div style="text-align:center;padding:20px;font-size:12px;color:#94a3b8">Loading…</div></div>
+    </div>
     <div class="home-panel">
       <div class="home-section-title">Follow-up Actions</div>
       <div id="homeActionList" class="action-list">
@@ -977,13 +1061,15 @@ function _tickCacheAge(){
 // ── KPI active — lazy-fetch on tab switch ─────────────────────────────────
 function setActiveKPI(kpi){
   activeKPI = kpi;
-  // Hide Home panel, show dashboard content
+  // Hide Home/Focus panel, show dashboard content
   const homeView = document.getElementById('homeView');
   if(homeView) homeView.style.display='none';
-  const homeBtn = document.getElementById('homeTabBtn');
-  if(homeBtn) homeBtn.classList.remove('active');
-  document.querySelectorAll('.kpi').forEach(el=>el.classList.remove('active'));
-  document.querySelector('.kpi.'+kpi).classList.add('active');
+  // Update sidebar nav active states
+  document.getElementById('homeTabBtn').classList.remove('active');
+  ['all','draft','delivered','negotiation','win','loss'].forEach(k=>{
+    const btn = document.getElementById('nav-'+k);
+    if(btn) btn.classList.toggle('active', k===kpi);
+  });
   document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('ctx-'+kpi).classList.add('active');
   renderActivityPills();
@@ -1021,6 +1107,7 @@ function renderKPIs(){
   const sum=arr=>arr.reduce((a,q)=>a+(q.totals?.grandTotal||0),0);
   const by=s=>allQuotes.filter(q=>(q.status||'draft')===s);
   const drafts=by('draft');
+  // Update sidebar nav counts
   document.getElementById('kpiTotal').textContent=allQuotes.length;
   document.getElementById('kpiTotalVal').textContent=fmt(sum(allQuotes));
   document.getElementById('kpiDraft').textContent=drafts.length;
@@ -1031,7 +1118,7 @@ function renderKPIs(){
   });
   renderStatPills();
   renderActivityPills();
-  // Refresh Home panel if visible
+  // Refresh Focus panel if visible
   if(document.getElementById('homeView')?.style.display==='block') renderHomePanel();
 }
 
@@ -1789,18 +1876,19 @@ function showToast(msg,type=''){const t=document.getElementById('toast');t.textC
 let _followUpDays = 10; // loaded from Firestore
 
 function switchToHome(){
-  // Deactivate all KPI cards (including data ones)
-  document.querySelectorAll('.kpi').forEach(k=>k.classList.remove('active'));
-  // Activate Home card
+  // Update sidebar nav
+  ['all','draft','delivered','negotiation','win','loss'].forEach(k=>{
+    const btn = document.getElementById('nav-'+k);
+    if(btn) btn.classList.remove('active');
+  });
   document.getElementById('homeTabBtn').classList.add('active');
-  // Hide all ctx panels, show Home view
+  // Hide all ctx panels, show Focus view
   document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('homeView').style.display='block';
   renderHomePanel();
 }
 function switchToDash(){
   document.getElementById('homeView').style.display='none';
-  // Restore last active KPI panel (default to 'all')
   setActiveKPI(activeKPI||'all');
 }
 
@@ -1852,6 +1940,7 @@ function _daysUntil(dateStr){
 }
 
 function renderHomePanel(){
+  renderTop5();
   const today = new Date().toISOString().slice(0,10);
   const N = _followUpDays;
   const halfN = Math.ceil(N/2);
@@ -2100,14 +2189,28 @@ function renderSummaryTable(key,rows,showStatus){
     const unseenCount = _countUnseenRemarks(q);
     const remarkCell=`<td class="remark-cell" onclick="event.stopPropagation();openRemarkModal('${q._id}','${(q.displayQuoteNo||q.quoteNo||'').replace(/'/g,"\\'")}','${(q.customer?.company||q.customer?.name||'').replace(/'/g,"\\'")}','${status}')" title="${lastRemark||'Click to add remark'}">${lastRemark?lastRemark.substring(0,50)+(lastRemark.length>50?'\u2026':''):'<span style="color:#cbd5e1">+ add remark</span>'}<span class="admin-remark-badge" data-remark-docid="${q._id}" style="display:${unseenCount>0?'':'none'}">${unseenCount||''}</span></td>`;
 
-    return `<tr class="${ageCls}${winIncomplete?' win-incomplete':''}" onclick="openQuote('${q.quoteNo||''}')">
+    // ── Priority row classes (cascade: overdue > urgent-fu > highval > status) ──
+    const HIGH_VAL = 50000;
+    const grandTotal = q.totals?.grandTotal||0;
+    const isOverdue = fu && fu < today;
+    const isUrgentFU = !isOverdue && fu && _daysUntil(fu) !== null && _daysUntil(fu) <= Math.ceil(_followUpDays/2);
+    const isHighVal = grandTotal >= HIGH_VAL;
+    let priorityCls = '';
+    if(isOverdue) priorityCls = ' row-overdue';
+    else if(isUrgentFU) priorityCls = ' row-urgent-fu';
+    else if(isHighVal) priorityCls = ' row-highval';
+    // Status color cues
+    if(!priorityCls && status==='negotiation') priorityCls = ' row-negotiation';
+    if(!priorityCls && status==='win') priorityCls = ' row-win';
+
+    return `<tr class="${ageCls}${winIncomplete?' win-incomplete':''}${priorityCls}" onclick="openQuote('${q.quoteNo||''}')">
       <td>${q.createdByName||'\u2014'}</td>
       <td><span class="td-mono">${q.displayQuoteNo||q.quoteNo||'\u2014'}</span>${revPill}</td>
       <td>${q.quoteDate||'\u2014'}${ageBadge}</td>
       <td>${fuHtml}</td>
       <td><span class="td-bold">${q.customer?.company||q.customer?.name||'\u2014'}</span>${q.customer?.company&&q.customer?.name?`<br/><span style="font-size:11px;color:#94a3b8">${q.customer.name}</span>`:''}</td>
       ${statusCell}
-      <td class="td-value">RM ${total}${warnPill}</td>
+      <td class="td-value${isHighVal?' ':''}">${isHighVal?'<strong>':''} RM ${total}${isHighVal?'</strong>':''}${warnPill}</td>
       <td onclick="event.stopPropagation()">${equipCell}</td>
       ${remarkCell}
     </tr>`;
@@ -2123,7 +2226,68 @@ function renderSummaryTable(key,rows,showStatus){
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// HOME VIEW INIT — called after loadDashboard
+// FOCUS VIEW — Top 5 scoring
+// ═══════════════════════════════════════════════════════════════════════════
+function _scoreDeal(q){
+  const today = new Date().toISOString().slice(0,10);
+  const fu = q.followUpDate||'';
+  const grandTotal = q.totals?.grandTotal||0;
+  let score = 0;
+  // Overdue follow-up: +3
+  if(fu && fu < today) score += 3;
+  // Upcoming follow-up within 5 days: +2
+  else if(fu && _daysUntil(fu) !== null && _daysUntil(fu) <= 5) score += 2;
+  // Negotiation status: +2
+  if(q.status==='negotiation') score += 2;
+  // High value (≥ RM 50k): +1
+  if(grandTotal >= 50000) score += 1;
+  // Very high value (≥ RM 100k): +1 more
+  if(grandTotal >= 100000) score += 1;
+  // Ageing 60+ days: +1
+  const daysSince = _daysSince(q.quoteDate||'');
+  if(daysSince !== null && daysSince >= 60) score += 1;
+  return score;
+}
+
+function renderTop5(){
+  const fmtRM = n=>'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:0});
+  const active = allQuotes.filter(q=>q.status==='delivered'||q.status==='negotiation');
+  const scored = active.map(q=>({q, score:_scoreDeal(q)}))
+    .filter(x=>x.score>0)
+    .sort((a,b)=>b.score-a.score||(b.q.totals?.grandTotal||0)-(a.q.totals?.grandTotal||0));
+  const top5 = scored.slice(0,5);
+  const el = document.getElementById('focusTop5List');
+  if(!el) return;
+  if(!top5.length){
+    el.innerHTML='<div style="text-align:center;padding:16px;font-size:13px;color:#94a3b8">\u2713 No urgent deals right now</div>';
+    return;
+  }
+  el.innerHTML = top5.map(({q,score},i)=>{
+    const rank = i+1;
+    const rankCls = rank<=3?`r${rank}`:'';
+    const isHot = score>=5;
+    const isWarm = score>=3&&score<5;
+    const dealCls = isHot?'score-hot':isWarm?'score-warm':'';
+    const badgeCls = isHot?'hot':'';
+    const today = new Date().toISOString().slice(0,10);
+    const fu = q.followUpDate||'';
+    let metaParts = [q.createdByName||'', q.status||'draft'];
+    if(fu && fu<today) metaParts.push(`\u26a0 overdue ${fu}`);
+    else if(fu) metaParts.push(`follow-up ${fu}`);
+    return `<div class="focus-deal ${dealCls}" onclick="openQuote('${q.quoteNo||''}')">
+      <div class="focus-rank ${rankCls}">${rank}</div>
+      <div class="focus-deal-body">
+        <div class="focus-deal-title">${q.displayQuoteNo||q.quoteNo||'\u2014'} \u00b7 ${q.customer?.company||q.customer?.name||'\u2014'}</div>
+        <div class="focus-deal-meta">${metaParts.filter(Boolean).join(' \u00b7 ')}</div>
+      </div>
+      <div class="focus-deal-value">${fmtRM(q.totals?.grandTotal)}</div>
+      <div class="focus-score-badge ${badgeCls}">Score ${score}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FOCUS VIEW INIT — called after loadDashboard
 // ═══════════════════════════════════════════════════════════════════════════
 
 
