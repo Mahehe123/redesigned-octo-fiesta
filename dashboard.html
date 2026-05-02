@@ -1005,7 +1005,8 @@ const tooltip = document.getElementById('equipTooltip');
 // Each status bucket is fetched on first tab click, then cached for 5 minutes.
 // 'all' is always fetched on load (for KPI counts + pipeline overview).
 // Subsequent tab switches within the TTL window use the cache.
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL_MS   = 5 * 60 * 1000; // 5 minutes in-memory TTL
+const LAST_FETCH_KEY = 'qt_lastFetch_v1'; // localStorage key for Tier 2 delta-fetch
 const _tabCache = {}; // { status: { quotes: [], fetchedAt: timestamp } }
 
 function _cacheValid(status){
@@ -1028,6 +1029,11 @@ function _mergeIntoAllQuotes(status, freshDocs){
 window.addEventListener('load', () => {
   if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   auth = firebase.auth(); db = firebase.firestore();
+  // Tier 1 — offline persistence: serves from IndexedDB on reload, zero reads for unchanged docs
+  db.enablePersistence({ synchronizeTabs: true }).catch(err => {
+    if(err.code === 'failed-precondition') console.warn('Firestore persistence: multiple tabs open, persistence enabled in first tab only.');
+    else if(err.code === 'unimplemented') console.warn('Firestore persistence: browser does not support IndexedDB.');
+  });
   auth.onAuthStateChanged(async user => {
     if(!user){ window.location.href='index.html'; return; }
     currentUser = user;
@@ -1049,13 +1055,53 @@ window.addEventListener('load', () => {
 
 function doLogout(){ auth.signOut().then(()=>window.location.href='index.html'); }
 
-// ── Initial load — fetch ALL quotes once for KPI strip + pipeline ─────────
-async function loadDashboard(){
+// ── Initial load — Tier 2 delta-fetch: only read docs changed since last visit ──
+// On first visit (no stored timestamp) → full fetch.
+// On return visits → query only docs where updatedAt > lastFetchedAt, then
+// merge with the IndexedDB-persisted cache (Tier 1). Drastically cuts read usage.
+async function loadDashboard(forceFull = false){
   document.getElementById('loadingOverlay').style.display='flex';
   try{
-    const snap = await db.collection(COL.QUOTATIONS).orderBy('updatedAt','desc').get();
-    allQuotes = snap.docs.map(d=>({_id:d.id,...d.data()}));
-    // Prime the cache for all statuses from this full fetch
+    const storedMs  = parseInt(localStorage.getItem(LAST_FETCH_KEY) || '0');
+    const isFirstLoad = !storedMs || forceFull;
+
+    if(isFirstLoad){
+      // Full fetch — also warms the Firestore IndexedDB cache for Tier 1
+      const snap = await db.collection(COL.QUOTATIONS).orderBy('updatedAt','desc').get();
+      allQuotes = snap.docs.map(d=>({_id:d.id,...d.data()}));
+    } else {
+      // Delta fetch — only docs updated since last successful load
+      const lastTs = firebase.firestore.Timestamp.fromMillis(storedMs);
+      const deltaSnap = await db.collection(COL.QUOTATIONS)
+        .where('updatedAt','>', lastTs)
+        .orderBy('updatedAt','desc')
+        .get();
+
+      if(deltaSnap.empty){
+        // Nothing changed server-side — use whatever is already in allQuotes
+        // (Firestore offline persistence already served the full set from IndexedDB)
+        if(!allQuotes.length){
+          // Edge case: allQuotes is empty (e.g. page reload with no prior in-memory state)
+          // Fall back to a full fetch served from IndexedDB — zero network reads
+          const snap = await db.collection(COL.QUOTATIONS).orderBy('updatedAt','desc').get();
+          allQuotes = snap.docs.map(d=>({_id:d.id,...d.data()}));
+        }
+      } else {
+        // Merge changed docs into allQuotes
+        const changedIds = new Set(deltaSnap.docs.map(d=>d.id));
+        const unchanged  = allQuotes.filter(q=>!changedIds.has(q._id));
+        const updated    = deltaSnap.docs.map(d=>({_id:d.id,...d.data()}));
+        allQuotes = [...updated, ...unchanged].sort((a,b)=>{
+          const ta = a.updatedAt?.seconds||0, tb = b.updatedAt?.seconds||0;
+          return tb - ta;
+        });
+      }
+    }
+
+    // Persist timestamp for next visit's delta-fetch
+    localStorage.setItem(LAST_FETCH_KEY, Date.now().toString());
+
+    // Prime in-memory tab cache from the merged allQuotes
     ['draft','delivered','negotiation','win','loss'].forEach(st=>{
       _cacheSet(st, allQuotes.filter(q=>(q.status||'draft')===st));
     });
@@ -1067,10 +1113,11 @@ async function loadDashboard(){
   document.getElementById('loadingOverlay').style.display='none';
 }
 
-// ── Manual refresh button ─────────────────────────────────────────────────
+// ── Manual refresh button — always does a full fetch and resets the delta baseline ─
 async function refreshDashboard(){
   _cacheInvalidate();
-  await loadDashboard();
+  try{ localStorage.removeItem(LAST_FETCH_KEY); } catch(e){}
+  await loadDashboard(true);
   showToast('Dashboard refreshed','ok');
 }
 
